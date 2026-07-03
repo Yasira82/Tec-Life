@@ -4,11 +4,10 @@ import { jwtVerify }                 from 'jose';
 // Hub SSO landing: verifies the signed SSO token, then sets the platform
 // cookies and redirects into the app.
 //
-// TODO(new app): set the audiences to YOUR production + Vercel domains, and the
-// default redirect path for this app.
+// Audiences the Hub SSO token may be minted for (this app's production + Vercel domains).
 const ALLOWED_AUDIENCES = [
-  'https://your-app.vercel.app',
-  'https://your-app.tecosystem.app',
+  'https://life.tecosystem.app',
+  'https://tec-life.vercel.app',
 ];
 const DEFAULT_REDIRECT = '/app';
 
