@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { TEC_COLORS } from '@yasser172/tec-ui';
-import { useGoals, usePreferences, type GoalStatus } from '@/lib-client/life/useLife';
+import { useGoals, usePreferences, useActivity, type GoalStatus } from '@/lib-client/life/useLife';
 
 const card = {
   background:   TEC_COLORS.surface,
@@ -145,6 +145,65 @@ function Preferences() {
   );
 }
 
+const EVENT_LABEL: Record<string, string> = {
+  'payment.completed': 'Payment completed',
+  'order.created':     'Order placed',
+  'user.created':      'Joined TEC',
+  'kyc.verified':      'Identity verified',
+};
+const prettyType = (t: string) => EVENT_LABEL[t] ?? t.replace(/\./g, ' · ');
+const fmtWhen = (iso: string) => { try { return new Date(iso).toLocaleString(); } catch { return iso; } };
+const piAmount = (payload: Record<string, unknown> | null): string | null => {
+  const a = payload?.amount;
+  return (typeof a === 'number' || typeof a === 'string') ? `π ${a}` : null;
+};
+
+// C-106 §4: the caller's own activity, presented from Analytics (eventual).
+// Life never stores or re-derives transaction truth.
+function Activity() {
+  const { events, loading, error } = useActivity(25);
+
+  return (
+    <section style={{ marginTop: 24 }}>
+      <SectionTitle emoji="📈" title="Activity" hint="your recent economic activity" />
+      <div style={{ ...card }}>
+        {loading ? (
+          <p style={{ fontSize: 13, color: TEC_COLORS.subtext, margin: 0 }}>Loading…</p>
+        ) : error ? (
+          <p style={{ fontSize: 13, color: TEC_COLORS.subtext, margin: 0 }}>
+            No activity to show yet. It appears here as you use the ecosystem.
+          </p>
+        ) : events.length === 0 ? (
+          <p style={{ fontSize: 13, color: TEC_COLORS.subtext, margin: 0 }}>
+            No activity yet. As you pay, trade and create across TEC, it appears here.
+          </p>
+        ) : (
+          <>
+            {events.map((ev, i) => {
+              const amt = piAmount(ev.payload);
+              return (
+                <div key={ev.id ?? i}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderTop: i === 0 ? 'none' : `1px solid ${TEC_COLORS.border}` }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 999, background: TEC_COLORS.gold, flexShrink: 0 }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, color: TEC_COLORS.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prettyType(ev.type)}</div>
+                    <div style={{ fontSize: 11, color: TEC_COLORS.subtext }}>{fmtWhen(ev.created_at)}</div>
+                  </div>
+                  {amt && <div style={{ fontSize: 14, fontWeight: 800, color: TEC_COLORS.gold, whiteSpace: 'nowrap' }}>{amt}</div>}
+                </div>
+              );
+            })}
+            <p style={{ fontSize: 11, color: TEC_COLORS.subtext, margin: '12px 0 0', lineHeight: 1.5 }}>
+              Presented from Analytics (eventual consistency). Life never re-derives
+              transaction truth — the owning services are the source.
+            </p>
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
 export default function LifeHome() {
   const { user, isLoading } = usePiAuth();
   const name = user?.piUsername ? `@${user.piUsername}` : 'there';
@@ -165,17 +224,7 @@ export default function LifeHome() {
 
         <Goals />
         <Preferences />
-
-        <section style={{ marginTop: 24 }}>
-          <SectionTitle emoji="📈" title="Activity" hint="coming soon" />
-          <div style={{ ...card }}>
-            <p style={{ fontSize: 13, color: TEC_COLORS.subtext, margin: 0, lineHeight: 1.6 }}>
-              Your economic timeline — spending, trading and creating — will appear here,
-              drawn from platform activity (eventual consistency). It reads the owning
-              services; Life never re-derives their truth.
-            </p>
-          </div>
-        </section>
+        <Activity />
       </div>
     </main>
   );

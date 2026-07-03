@@ -161,7 +161,10 @@ Next (before live):
      'identity/life') behind /api/bff/life/* → /api/identity/life/*. Interactive
      Goals (add/done/delete) + Preferences (focus, language) in /app. Owner = session
      identity (never a param). Needs: tec-identity-service deployed + wired.
-  □ FEATURE slice 2 — Activity timeline (eventual, from payment.*/order.* events)
+  ✅ FEATURE slice 2 — Activity timeline (eventual): /app "Activity" reads the caller's
+     own recent events from Analytics (GET /analytics/me/activity, strict own-scope,
+     fails closed) via /api/bff/life/activity. C-106 §4 — Life PRESENTS activity from
+     Analytics, never stores or re-derives transaction truth.
 ```
 
 > Payment scaffold (`src/lib/pi-payment.ts`, ADR-007 guard) is kept for compliance +
