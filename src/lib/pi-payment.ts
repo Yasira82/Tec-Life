@@ -29,8 +29,8 @@ export interface PaymentResult {
   message?:   string;
 }
 
-// TODO(new app): set your app slug.
-const APP_SOURCE = 'app';
+// APP_SOURCE slug — payment-service resolves PI_API_KEY_LIFE from this (C-12 §11).
+const APP_SOURCE = 'life';
 
 const HUB_URL = process.env.NEXT_PUBLIC_HUB_URL ?? 'https://hub.tecosystem.app';
 

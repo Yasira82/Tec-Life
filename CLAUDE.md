@@ -1,15 +1,63 @@
-# TEC Domain App Template — Claude Code Instructions
+# TEC Life — Claude Code Instructions
 
-## What This Repo Is
+> ⚡ **SESSION START:** اقرأ `knowledge-base/C-02___CURRENT_STATE_.md` + **app charter
+> `knowledge-base/C-106___LIFE_INSTITUTIONAL_CHARTER.md`** من `yasira82/tec-knowledge-base`.
 
-The **golden starter template** for a new app in the TEC Federated Platform.
-It ships a correct, Portal-ready skeleton: Hub SSO, dual-mode Pi payments,
-CSRF, legal pages, and CI policy guards. Clone it, run the "New app setup"
-checklist below, and you have a compliant app — no missing pieces.
+## What This App Is
 
-**Reference of record:** `yasira82/tec-knowledge-base` — especially
-`C-12_Dual_Mode_Payment.md` (payment + anti-regression) and
-`audits/PORTAL_SUBMISSION_RUNBOOK_*.md`.
+**System of Record (Personal)** for the TEC Federated Platform — Life models each
+user's personal economic context: **goals, skills, activity timeline, preferences,
+trajectory, and intent**. It is the *memory* of the TEC identity — without Life, TEC AI
+has no personal context, Connection has no relationship baseline, and Ecommerce has no
+personalization signal (C-106).
+
+Built from `tec-template-base` (Next.js 15 frontend). Personal data is **sovereign** —
+self-declared, private, and never consumed by another app without explicit consent.
+
+**Current Phase: Phase 0 — customized from template.** Identity/domain/slug/legal +
+themed home shell done. Login (C-123 landing) + the first feature slice (Goals &
+Preferences) are the next steps. Not yet deployed.
+
+---
+
+## Pi App Identity
+
+| Field | Value |
+|-------|-------|
+| **App** | TEC Life |
+| **Domain** | `https://life.tecosystem.app` |
+| **Pi App ID** | `TBD` — register in Pi Developer Portal |
+| **APP_SOURCE slug** | `life` (payment-service resolves `PI_API_KEY_LIFE`) |
+| **PI_SANDBOX** | `false` (Mainnet) |
+
+---
+
+## Life-Specific Rules (C-106)
+
+### Data ownership boundary
+Life **OWNS**: goals, skills (self-declared + activity-inferred), activity timeline,
+preferences, trajectory, intent signals. Life does **NOT OWN**: payment truth
+(`tec-payment-service`), asset ownership (`tec-asset-service`), identity
+(`tec-auth-service`), the relationship graph (Connection, C-107), or recommendations
+(TEC AI, C-104). Read those as **ID-only references** — never re-derive or mutate them.
+
+### Consistency model
+- **Self-declared** data (goals, preferences) = **strong** consistency — the user controls it.
+- **Activity-inferred** data (from the event stream) = **eventual** consistency.
+- Intent signals = Redis with TTL (recalculated on context load).
+
+### Privacy / sovereignty (C-106 §5)
+- Life data is sovereign — the user controls what any other app (esp. TEC AI) may see.
+- Explicit consent per data category before AI consumption.
+- Right to delete: purge Life data while keeping payment records (owned by payment-service — Life cannot delete those).
+- Identity anchor = `tec_user.piUsername` (permanent Pi identity) — Life data survives identity migration.
+
+### Isolation (P6)
+A user sees ONLY their own Life data — derive identity from the `tec_user` session cookie
+server-side, **never** from a query param or request body. No session → no data (fail closed).
+
+**Reference of record:** `yasira82/tec-knowledge-base` — `C-106___LIFE_INSTITUTIONAL_CHARTER.md`
+(charter) + `C-12_Dual_Mode_Payment.md` (payment anti-regression) + `C-123` (session/cookies).
 
 ---
 
@@ -90,19 +138,31 @@ src/styles/tec-design-tokens.css           import in app/layout.tsx
 
 ---
 
-## New app setup checklist
+## Setup status + Roadmap (C-106 §11)
 
 ```
-□ package.json: set "name"
-□ middleware.ts: adjust PROTECTED_ROUTES
-□ sso-callback/route.ts: set ALLOWED_AUDIENCES + DEFAULT_REDIRECT to your domain
-□ src/lib/pi-payment.ts + payment/create: set APP_SOURCE slug
-□ privacy/page.tsx + terms/page.tsx: set APP / DOMAIN / governing law / contacts
-□ Add ADR-007 isHubNavigation() guard to every buy handler
-□ .env: API_GATEWAY_URL · INTERNAL_SECRET · SSO_SECRET · NEXT_PUBLIC_PI_APP_ID · PI_SANDBOX=false (prod)
-□ Pi Developer Portal: register domain + App ID; set /privacy + /terms URLs
-□ Verify a real Pi payment Mode 1 (via Hub) AND Mode 2 (standalone)
+Phase 0 — customized from template:
+  ✅ package.json name = tec-life · APP_SOURCE = 'life'
+  ✅ sso-callback ALLOWED_AUDIENCES → life.tecosystem.app + tec-life.vercel.app
+  ✅ privacy + terms → TEC Life / life.tecosystem.app
+  ✅ NEW-A: no NEXT_PUBLIC_API_GATEWAY_URL / Railway host in the client bundle
+  ✅ layout Pi init is hub-entry-aware (C-12 §3 / ADR-007 foreign-session skip)
+  ✅ /app themed as the Life home shell (Goals · Preferences · Activity cards)
+
+Next (before live):
+  □ C-123 login: SSO landing still uses a 3xx redirect + Set-Cookie — migrate to the
+     200 HTML landing + `none/secure/Partitioned` cookies (LAW 2: Pi Browser drops
+     3xx Set-Cookie). Pre-launch blocker for login inside Pi Browser.
+  □ Pi Developer Portal: register domain + App ID (analytics did this) → fill C-01/C-106
+  □ .env on Vercel: API_GATEWAY_URL · INTERNAL_SECRET · SSO_SECRET · NEXT_PUBLIC_PI_APP_ID · PI_SANDBOX=false
+  □ FEATURE slice 1 — Goals & Preferences (self-declared, strong consistency):
+     needs a Life store in tec-identity-service (4004) behind /api/bff/life/*
+  □ FEATURE slice 2 — Activity timeline (eventual, from payment.*/order.* events)
 ```
+
+> Payment scaffold (`src/lib/pi-payment.ts`, ADR-007 guard) is kept for compliance +
+> optionality. Life monetization is expected to be subscription-via-Hub (like Analytics);
+> if a direct buy is added it MUST keep the `isHubNavigation()` guard.
 
 ---
 
