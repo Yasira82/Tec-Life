@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { TEC_COLORS } from '@yasser172/tec-ui';
 import { useGoals, usePreferences, useActivity, type GoalStatus } from '@/lib-client/life/useLife';
+import { LifePro } from './components/LifePro';
 
 const card = {
   background:   TEC_COLORS.surface,
@@ -222,6 +223,7 @@ export default function LifeHome() {
           </p>
         </header>
 
+        <LifePro />
         <Goals />
         <Preferences />
         <Activity />

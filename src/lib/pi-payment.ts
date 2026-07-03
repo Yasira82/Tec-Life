@@ -34,10 +34,21 @@ const APP_SOURCE = 'life';
 
 const HUB_URL = process.env.NEXT_PUBLIC_HUB_URL ?? 'https://hub.tecosystem.app';
 
-/** ADR-007: true when the user arrived FROM the Hub (Pi session is foreign). */
-export const isHubNavigation = (): boolean =>
-  typeof document !== 'undefined' &&
-  document.referrer.toLowerCase().includes('hub.tecosystem.app');
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://life.tecosystem.app';
+
+/**
+ * ADR-007 / C-12 §3: true when the user arrived FROM the Hub (Pi session is
+ * foreign). Two signals — the per-tab hub-entry flag (the C-123 landing's
+ * location.replace() erases the referrer) OR a hub referrer for direct hops.
+ */
+export const isHubNavigation = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  try {
+    if (sessionStorage.getItem('__tec_hub_entry') === '1') return true;
+  } catch { /* sessionStorage blocked → fall back to referrer */ }
+  return typeof document !== 'undefined' &&
+    document.referrer.toLowerCase().includes('hub.tecosystem.app');
+};
 
 /** Mode 1 — hand the payment off to the Hub modal. `/hub?pay=1` is LOCKED (C-76/ADR-007). */
 export const redirectToHubPayment = (params: {
@@ -45,10 +56,12 @@ export const redirectToHubPayment = (params: {
 }): void => {
   if (typeof window === 'undefined') return;
   const q = new URLSearchParams({
-    pay:    '1',
-    source: APP_SOURCE,
-    amount: String(params.amount),
-    item:   params.itemId,
+    pay:        '1',
+    source:     APP_SOURCE,
+    amount:     String(params.amount),
+    product_id: params.itemId,
+    item:       params.itemId, // back-compat
+    return_url: `${APP_URL}/app`,
     ...(params.memo ? { memo: params.memo } : {}),
   });
   window.location.href = `${HUB_URL}/hub?${q.toString()}`;
