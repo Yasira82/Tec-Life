@@ -17,6 +17,15 @@ export interface Goal {
   updated_at:   string;
 }
 
+// Activity timeline item (C-106 §4) — the caller's own economic event, presented
+// from Analytics (eventual consistency). Life never re-derives transaction truth.
+export interface ActivityEvent {
+  id:         string;
+  type:       string;
+  payload:    Record<string, unknown> | null;
+  created_at: string;
+}
+
 // The service wraps payloads as { success, data: {...} }.
 async function readJson(res: Response): Promise<Record<string, unknown>> {
   const json = (await res.json().catch(() => ({}))) as Record<string, unknown>;
@@ -121,4 +130,25 @@ export function usePreferences() {
   }, [reload]);
 
   return { prefs, loading, saving, error, save };
+}
+
+// ── Activity timeline (C-106 §4 — eventual, presented from Analytics) ────────
+export function useActivity(limit = 25) {
+  const [events,  setEvents]  = useState<ActivityEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState<string | null>(null);
+
+  const reload = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    fetch(`/api/bff/life/activity?limit=${limit}`, { credentials: 'include', cache: 'no-store' })
+      .then(readJson)
+      .then((d) => setEvents((Array.isArray(d) ? d : (d as { data?: ActivityEvent[] }).data) as ActivityEvent[] ?? []))
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Failed to load activity'))
+      .finally(() => setLoading(false));
+  }, [limit]);
+
+  useEffect(() => reload(), [reload]);
+
+  return { events, loading, error, reload };
 }
