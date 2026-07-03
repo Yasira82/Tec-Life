@@ -155,8 +155,11 @@ Next (before live):
      3xx Set-Cookie). Pre-launch blocker for login inside Pi Browser.
   □ Pi Developer Portal: register domain + App ID (analytics did this) → fill C-01/C-106
   □ .env on Vercel: API_GATEWAY_URL · INTERNAL_SECRET · SSO_SECRET · NEXT_PUBLIC_PI_APP_ID · PI_SANDBOX=false
-  □ FEATURE slice 1 — Goals & Preferences (self-declared, strong consistency):
-     needs a Life store in tec-identity-service (4004) behind /api/bff/life/*
+  ✅ FEATURE slice 1 — Goals & Preferences (self-declared, strong consistency):
+     Life store in tec-identity-service (LifeGoal + LifePreference, @Controller
+     'identity/life') behind /api/bff/life/* → /api/identity/life/*. Interactive
+     Goals (add/done/delete) + Preferences (focus, language) in /app. Owner = session
+     identity (never a param). Needs: tec-identity-service deployed + wired.
   □ FEATURE slice 2 — Activity timeline (eventual, from payment.*/order.* events)
 ```
 
