@@ -26,7 +26,7 @@ Preferences) are the next steps. Not yet deployed.
 |-------|-------|
 | **App** | TEC Life |
 | **Domain** | `https://life.tecosystem.app` |
-| **Pi App ID** | `TBD` — register in Pi Developer Portal |
+| **Pi App ID** | `life-app-c468e9eb5bf115fa` ✅ Registered · Vercel `NEXT_PUBLIC_PI_APP_ID` |
 | **APP_SOURCE slug** | `life` (payment-service resolves `PI_API_KEY_LIFE`) |
 | **PI_SANDBOX** | `false` (Mainnet) |
 
@@ -150,11 +150,12 @@ Phase 0 — customized from template:
   ✅ /app themed as the Life home shell (Goals · Preferences · Activity cards)
 
 Next (before live):
-  □ C-123 login: SSO landing still uses a 3xx redirect + Set-Cookie — migrate to the
-     200 HTML landing + `none/secure/Partitioned` cookies (LAW 2: Pi Browser drops
-     3xx Set-Cookie). Pre-launch blocker for login inside Pi Browser.
-  □ Pi Developer Portal: register domain + App ID (analytics did this) → fill C-01/C-106
-  □ .env on Vercel: API_GATEWAY_URL · INTERNAL_SECRET · SSO_SECRET · NEXT_PUBLIC_PI_APP_ID · PI_SANDBOX=false
+  ✅ C-123 login: SSO landing migrated to the 200 HTML landing + verified entry
+     (/api/auth/me) + `none/secure/Partitioned` cookies + hub-entry flag (LAW 2/3, §3).
+  ✅ Pi App ID registered: life-app-c468e9eb5bf115fa · Vercel vars set (API_GATEWAY_URL ·
+     INTERNAL_SECRET · SSO_SECRET · NEXT_PUBLIC_PI_APP_ID · PI_SANDBOX=false).
+  □ Deploy: tec-identity-service (life_goals/life_preferences via db push) → then Vercel.
+  □ Runtime-verify login inside Pi Browser + a Goals/Preferences round-trip.
   ✅ FEATURE slice 1 — Goals & Preferences (self-declared, strong consistency):
      Life store in tec-identity-service (LifeGoal + LifePreference, @Controller
      'identity/life') behind /api/bff/life/* → /api/identity/life/*. Interactive
