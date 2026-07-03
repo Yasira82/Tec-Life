@@ -1,20 +1,12 @@
 'use client';
 
 // TEC Life — System of Record (Personal). C-106.
-// Home shell for the user's personal economic context. Feature slices
-// (Goals & Preferences, Activity timeline) mount into the cards below.
+// The user's personal economic context: self-declared goals + preferences
+// (strong consistency) and, later, an activity timeline (eventual).
+import { useState } from 'react';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { TEC_COLORS } from '@yasser172/tec-ui';
-
-type Section = { emoji: string; title: string; blurb: string; status: string };
-
-// C-106 §4 Owns: goals, preferences, activity timeline. Self-declared data is
-// strong-consistency (the user controls it); activity is eventual (event stream).
-const SECTIONS: Section[] = [
-  { emoji: '🎯', title: 'Goals',       blurb: 'What you’re working toward — self-declared aspirations and targets.', status: 'coming soon' },
-  { emoji: '⚙️', title: 'Preferences', blurb: 'How TEC should tailor your experience across the ecosystem.',        status: 'coming soon' },
-  { emoji: '📈', title: 'Activity',     blurb: 'Your economic timeline — spending, trading and creating over time.',  status: 'coming soon' },
-];
+import { useGoals, usePreferences, type GoalStatus } from '@/lib-client/life/useLife';
 
 const card = {
   background:   TEC_COLORS.surface,
@@ -23,6 +15,136 @@ const card = {
   padding:      '20px 22px',
 } as const;
 
+const inputStyle = {
+  flex: 1, minWidth: 0, background: TEC_COLORS.bg, color: TEC_COLORS.text,
+  border: `1px solid ${TEC_COLORS.border}`, borderRadius: 10, padding: '10px 12px', fontSize: 14,
+} as const;
+
+const goldBtn = {
+  background: `linear-gradient(135deg, ${TEC_COLORS.gold}, ${TEC_COLORS.goldDark})`,
+  color: '#0a0800', border: 'none', borderRadius: 10, padding: '10px 16px',
+  fontSize: 14, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
+} as const;
+
+const STATUS_COLOR: Record<GoalStatus, string> = {
+  ACTIVE:   TEC_COLORS.gold,
+  DONE:     TEC_COLORS.success,
+  ARCHIVED: TEC_COLORS.subtext,
+};
+
+function SectionTitle({ emoji, title, hint }: { emoji: string; title: string; hint?: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 12 }}>
+      <span style={{ fontSize: 20 }}>{emoji}</span>
+      <h2 style={{ fontSize: 18, fontWeight: 800, color: TEC_COLORS.text, margin: 0 }}>{title}</h2>
+      {hint && <span style={{ fontSize: 12, color: TEC_COLORS.subtext }}>{hint}</span>}
+    </div>
+  );
+}
+
+function Goals() {
+  const { goals, loading, error, busy, addGoal, setStatus, removeGoal } = useGoals();
+  const [title, setTitle] = useState('');
+
+  const submit = async () => {
+    const t = title.trim();
+    if (!t) return;
+    setTitle('');
+    await addGoal(t);
+  };
+
+  return (
+    <section style={{ marginTop: 24 }}>
+      <SectionTitle emoji="🎯" title="Goals" hint="what you’re working toward" />
+
+      <div style={{ ...card }}>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <input
+            style={inputStyle}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
+            placeholder="Add a goal — e.g. Save 100π this month"
+            maxLength={200}
+          />
+          <button style={{ ...goldBtn, opacity: busy ? 0.6 : 1 }} onClick={submit} disabled={busy}>Add</button>
+        </div>
+
+        {error && <p style={{ color: TEC_COLORS.error, fontSize: 13, marginTop: 10 }}>{error}</p>}
+
+        <div style={{ marginTop: 14 }}>
+          {loading ? (
+            <p style={{ color: TEC_COLORS.subtext, fontSize: 13 }}>Loading…</p>
+          ) : goals.length === 0 ? (
+            <p style={{ color: TEC_COLORS.subtext, fontSize: 13 }}>No goals yet. Add your first above.</p>
+          ) : (
+            goals.map((g, i) => (
+              <div key={g.id}
+                style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderTop: i === 0 ? 'none' : `1px solid ${TEC_COLORS.border}` }}>
+                <button
+                  title={g.status === 'DONE' ? 'Mark active' : 'Mark done'}
+                  onClick={() => setStatus(g.id, g.status === 'DONE' ? 'ACTIVE' : 'DONE')}
+                  style={{ width: 20, height: 20, borderRadius: 6, cursor: 'pointer', flexShrink: 0,
+                           border: `2px solid ${STATUS_COLOR[g.status]}`,
+                           background: g.status === 'DONE' ? TEC_COLORS.success : 'transparent', color: '#0a0800', fontSize: 12, lineHeight: '16px' }}>
+                  {g.status === 'DONE' ? '✓' : ''}
+                </button>
+                <span style={{ flex: 1, minWidth: 0, fontSize: 14, color: TEC_COLORS.text,
+                               textDecoration: g.status === 'DONE' ? 'line-through' : 'none',
+                               opacity: g.status === 'DONE' ? 0.6 : 1,
+                               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {g.title}
+                </span>
+                <button onClick={() => removeGoal(g.id)} title="Delete"
+                  style={{ background: 'none', border: 'none', color: TEC_COLORS.subtext, cursor: 'pointer', fontSize: 16, flexShrink: 0 }}>×</button>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const FOCUS_OPTIONS = ['Saving', 'Earning', 'Learning', 'Building', 'Trading'];
+const LANG_OPTIONS  = [['en', 'English'], ['ar', 'العربية']] as const;
+
+function Preferences() {
+  const { prefs, loading, saving, error, save } = usePreferences();
+
+  const selectStyle = {
+    background: TEC_COLORS.bg, color: TEC_COLORS.text, border: `1px solid ${TEC_COLORS.border}`,
+    borderRadius: 10, padding: '9px 12px', fontSize: 14, minWidth: 160,
+  } as const;
+
+  return (
+    <section style={{ marginTop: 24 }}>
+      <SectionTitle emoji="⚙️" title="Preferences" hint="how TEC tailors your experience" />
+      <div style={{ ...card, display: 'grid', gap: 14 }}>
+        <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <span style={{ fontSize: 14, color: TEC_COLORS.text }}>Primary focus</span>
+          <select style={selectStyle} value={prefs.focus ?? ''} disabled={loading || saving}
+            onChange={(e) => save({ focus: e.target.value })}>
+            <option value="">Not set</option>
+            {FOCUS_OPTIONS.map((f) => <option key={f} value={f}>{f}</option>)}
+          </select>
+        </label>
+
+        <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <span style={{ fontSize: 14, color: TEC_COLORS.text }}>Language</span>
+          <select style={selectStyle} value={prefs.language ?? 'en'} disabled={loading || saving}
+            onChange={(e) => save({ language: e.target.value })}>
+            {LANG_OPTIONS.map(([v, label]) => <option key={v} value={v}>{label}</option>)}
+          </select>
+        </label>
+
+        {error && <p style={{ color: TEC_COLORS.error, fontSize: 13, margin: 0 }}>{error}</p>}
+        {saving && <p style={{ color: TEC_COLORS.subtext, fontSize: 12, margin: 0 }}>Saving…</p>}
+      </div>
+    </section>
+  );
+}
+
 export default function LifeHome() {
   const { user, isLoading } = usePiAuth();
   const name = user?.piUsername ? `@${user.piUsername}` : 'there';
@@ -30,33 +152,29 @@ export default function LifeHome() {
   return (
     <main style={{ minHeight: '100vh', background: TEC_COLORS.bg, color: TEC_COLORS.text, padding: '32px 22px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <div style={{ maxWidth: 760, margin: '0 auto' }}>
-        <header style={{ marginBottom: 8 }}>
+        <header>
           <div style={{ fontSize: 12, letterSpacing: 1, color: TEC_COLORS.subtext, textTransform: 'uppercase' }}>TEC Life · System of Record</div>
           <h1 style={{ fontSize: 26, fontWeight: 900, color: TEC_COLORS.gold, margin: '6px 0 0' }}>
             {isLoading ? 'Welcome' : `Welcome, ${name}`}
           </h1>
           <p style={{ fontSize: 14, color: TEC_COLORS.subtext, margin: '6px 0 0', lineHeight: 1.6 }}>
-            Life is your personal context in the TEC ecosystem — the goals, preferences and
-            activity that make everything else relevant to you. Your data is yours (C-106):
+            Your personal context in the TEC ecosystem. Your data is yours (C-106) —
             self-declared, private, and never used without your consent.
           </p>
         </header>
 
-        <section style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12, marginTop: 24 }}>
-          {SECTIONS.map((s) => (
-            <div key={s.title} style={card}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{ fontSize: 22 }}>{s.emoji}</span>
-                  <h2 style={{ fontSize: 16, fontWeight: 800, color: TEC_COLORS.text, margin: 0 }}>{s.title}</h2>
-                </div>
-                <span style={{ fontSize: 11, color: TEC_COLORS.gold, border: `1px solid ${TEC_COLORS.gold}55`, borderRadius: 999, padding: '2px 10px', whiteSpace: 'nowrap' }}>
-                  {s.status}
-                </span>
-              </div>
-              <p style={{ fontSize: 13, color: TEC_COLORS.subtext, margin: '10px 0 0', lineHeight: 1.6 }}>{s.blurb}</p>
-            </div>
-          ))}
+        <Goals />
+        <Preferences />
+
+        <section style={{ marginTop: 24 }}>
+          <SectionTitle emoji="📈" title="Activity" hint="coming soon" />
+          <div style={{ ...card }}>
+            <p style={{ fontSize: 13, color: TEC_COLORS.subtext, margin: 0, lineHeight: 1.6 }}>
+              Your economic timeline — spending, trading and creating — will appear here,
+              drawn from platform activity (eventual consistency). It reads the owning
+              services; Life never re-derives their truth.
+            </p>
+          </div>
         </section>
       </div>
     </main>
