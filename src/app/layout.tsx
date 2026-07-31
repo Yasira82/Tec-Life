@@ -1,3 +1,5 @@
+import { RefCapture } from '@/components/referral/RefCapture';
+import { RefApply } from '@/components/referral/RefApply';
 import type { Metadata } from 'next';
 import '@/styles/tec-design-tokens.css';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -58,7 +60,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body><ErrorBoundary>{children}</ErrorBoundary></body>
+      <body><ErrorBoundary><RefCapture /><RefApply />{children}</ErrorBoundary></body>
     </html>
   );
 }
