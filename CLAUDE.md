@@ -16,7 +16,7 @@ self-declared, private, and never consumed by another app without explicit conse
 
 **Current Phase: Phase 0 — customized from template.** Identity/domain/slug/legal +
 themed home shell done. Login (C-123 landing) + the first feature slice (Goals &
-Preferences) are the next steps. Not yet deployed.
+Preferences) are the next steps. Deployed (Mainnet) · Pi App ID registered · env set · payment live · referral growth loop wired (C-133).
 
 ---
 

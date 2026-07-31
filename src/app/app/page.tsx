@@ -4,6 +4,7 @@
 // The user's personal economic context: self-declared goals + preferences
 // (strong consistency) and, later, an activity timeline (eventual).
 import { useState } from 'react';
+import { InviteCard } from '@/components/referral/InviteCard';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { TEC_COLORS } from '@yasser172/tec-ui';
 import { useGoals, usePreferences, useActivity, type GoalStatus } from '@/lib-client/life/useLife';
@@ -227,6 +228,7 @@ export default function LifeHome() {
         <Goals />
         <Preferences />
         <Activity />
+        <InviteCard />
       </div>
     </main>
   );
