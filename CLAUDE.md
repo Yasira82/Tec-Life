@@ -165,6 +165,12 @@ Next (before live):
      own recent events from Analytics (GET /analytics/me/activity, strict own-scope,
      fails closed) via /api/bff/life/activity. C-106 §4 — Life PRESENTS activity from
      Analytics, never stores or re-derives transaction truth.
+  ✅ FEATURE slice 3 — Goal progress tracking (self-declared, strong consistency):
+     LifeGoal gains target_amount (optional π target) + progress. Log progress
+     (POST /identity/life/goals/:id/progress via /api/bff/life/goals/:id/progress) →
+     server clamps to [0, target] + auto-completes on reaching it (owner-scoped, P6).
+     /app: an Overview strip (active · completed · π tracked) + per-goal progress bars
+     + a "Log π" control. Turns Goals from a checklist into a tracker.
 ```
 
 > Payment scaffold (`src/lib/pi-payment.ts`, ADR-007 guard) is kept for compliance +
