@@ -33,7 +33,7 @@ const asText = (v: unknown): string => {
 
 type Status = 'idle' | 'creating' | 'paying' | 'success' | 'error';
 
-export function LifePro() {
+export function LifePro({ isPro = false }: { isPro?: boolean }) {
   const [piReady, setPiReady] = useState(false);
   const [status,  setStatus]  = useState<Status>('idle');
   const [message, setMessage] = useState('');
@@ -102,12 +102,25 @@ export function LifePro() {
     marginTop:    24,
   };
 
+  // Already subscribed (source of truth = the session's subscription, activated by
+  // commerce-service when the payment completed) — show the entitlement, not the upsell.
+  if (isPro) {
+    return (
+      <div style={{ ...card, borderColor: `${TEC_COLORS.success}66` }}>
+        <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.success }}>🌱 You’re on Life Pro</div>
+        <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 6 }}>
+          Unlimited goals, goal reminders, and personal economic reports are unlocked. Thanks for supporting TEC Life.
+        </div>
+      </div>
+    );
+  }
+
   if (status === 'success') {
     return (
       <div style={{ ...card, borderColor: `${TEC_COLORS.success}66` }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.success }}>✅ Life Pro active</div>
+        <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.success }}>✅ Payment received</div>
         <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 6 }}>
-          Payment received. Thanks for supporting TEC Life 🌱.
+          Activating Life Pro… this can take a few seconds. Reopen the app if the ★ PRO badge isn’t showing yet.
         </div>
       </div>
     );
