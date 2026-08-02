@@ -9,9 +9,10 @@ export async function GET(req: NextRequest) {
 }
 
 const CreateGoalSchema = z.object({
-  title:       z.string().min(1).max(200),
-  description: z.string().max(2000).optional(),
-  target_date: z.string().optional(),
+  title:         z.string().min(1).max(200),
+  description:   z.string().max(2000).optional(),
+  target_date:   z.string().optional(),
+  target_amount: z.number().positive().max(1_000_000_000).optional(),
 });
 
 export async function POST(req: NextRequest) {

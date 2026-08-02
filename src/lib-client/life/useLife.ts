@@ -8,13 +8,15 @@ import { useCallback, useEffect, useState } from 'react';
 export type GoalStatus = 'ACTIVE' | 'DONE' | 'ARCHIVED';
 
 export interface Goal {
-  id:           string;
-  title:        string;
-  description:  string | null;
-  status:       GoalStatus;
-  target_date:  string | null;
-  created_at:   string;
-  updated_at:   string;
+  id:            string;
+  title:         string;
+  description:   string | null;
+  status:        GoalStatus;
+  target_date:   string | null;
+  target_amount: number | null; // optional π target — enables progress tracking
+  progress:      number;        // π logged toward the target
+  created_at:    string;
+  updated_at:    string;
 }
 
 // Activity timeline item (C-106 §4) — the caller's own economic event, presented
@@ -68,11 +70,18 @@ export function useGoals() {
     }
   }, [reload]);
 
-  const addGoal = useCallback((title: string, description?: string) =>
+  const addGoal = useCallback((title: string, targetAmount?: number) =>
     mutate(() => fetch('/api/bff/life/goals', {
       method: 'POST', credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, ...(description ? { description } : {}) }),
+      body: JSON.stringify({ title, ...(targetAmount && targetAmount > 0 ? { target_amount: targetAmount } : {}) }),
+    })), [mutate]);
+
+  const addProgress = useCallback((id: string, delta: number) =>
+    mutate(() => fetch(`/api/bff/life/goals/${id}/progress`, {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ delta }),
     })), [mutate]);
 
   const setStatus = useCallback((id: string, status: GoalStatus) =>
@@ -86,7 +95,7 @@ export function useGoals() {
     mutate(() => fetch(`/api/bff/life/goals/${id}`, { method: 'DELETE', credentials: 'include' })),
     [mutate]);
 
-  return { goals, loading, error, busy, reload, addGoal, setStatus, removeGoal };
+  return { goals, loading, error, busy, reload, addGoal, addProgress, setStatus, removeGoal };
 }
 
 // ── Preferences ──────────────────────────────────────────────

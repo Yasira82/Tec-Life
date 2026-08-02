@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { InviteCard } from '@/components/referral/InviteCard';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { TEC_COLORS } from '@yasser172/tec-ui';
-import { useGoals, usePreferences, useActivity, type GoalStatus } from '@/lib-client/life/useLife';
+import { useGoals, usePreferences, useActivity, type Goal, type GoalStatus } from '@/lib-client/life/useLife';
 import { LifePro } from './components/LifePro';
 
 const card = {
@@ -44,62 +44,171 @@ function SectionTitle({ emoji, title, hint }: { emoji: string; title: string; hi
   );
 }
 
+// Trim a π amount for display: 100, 42.5, 0.25 — never "100.00".
+const fmtPi = (n: number) => {
+  const r = Math.round(n * 100) / 100;
+  return Number.isInteger(r) ? String(r) : String(r);
+};
+
+// Three-at-a-glance stats derived from the caller's own goals (summary before detail).
+function Overview({ goals }: { goals: Goal[] }) {
+  const active = goals.filter((g) => g.status === 'ACTIVE').length;
+  const done   = goals.filter((g) => g.status === 'DONE').length;
+  const tracked = goals.reduce((sum, g) => sum + (g.target_amount ? (g.progress ?? 0) : 0), 0);
+
+  const stat = (label: string, value: string, accent: string = TEC_COLORS.text) => (
+    <div style={{ flex: 1, textAlign: 'center' }}>
+      <div style={{ fontSize: 24, fontWeight: 900, color: accent, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
+      <div style={{ fontSize: 11, color: TEC_COLORS.subtext, marginTop: 2 }}>{label}</div>
+    </div>
+  );
+
+  return (
+    <div style={{ ...card, display: 'flex', gap: 8, marginBottom: 12 }}>
+      {stat('Active', String(active), TEC_COLORS.gold)}
+      <div style={{ width: 1, background: TEC_COLORS.border }} />
+      {stat('Completed', String(done), TEC_COLORS.success)}
+      <div style={{ width: 1, background: TEC_COLORS.border }} />
+      {stat('π tracked', `π ${fmtPi(tracked)}`)}
+    </div>
+  );
+}
+
+// One goal row. If it has a π target, shows a progress bar + a compact "log progress"
+// control (the momentum loop). Ownership + clamping/auto-complete are server-side.
+function GoalItem({
+  goal, first, busy, onToggle, onDelete, onLog,
+}: {
+  goal: Goal; first: boolean; busy: boolean;
+  onToggle: () => void; onDelete: () => void; onLog: (delta: number) => void;
+}) {
+  const [amt, setAmt] = useState('');
+  const hasTarget = typeof goal.target_amount === 'number' && goal.target_amount > 0;
+  const pct = hasTarget ? Math.min(100, Math.round(((goal.progress ?? 0) / (goal.target_amount as number)) * 100)) : 0;
+
+  const log = () => {
+    const d = parseFloat(amt);
+    if (!Number.isFinite(d) || d <= 0) return;
+    setAmt('');
+    onLog(d);
+  };
+
+  return (
+    <div style={{ padding: '12px 0', borderTop: first ? 'none' : `1px solid ${TEC_COLORS.border}` }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <button
+          title={goal.status === 'DONE' ? 'Mark active' : 'Mark done'}
+          onClick={onToggle}
+          style={{ width: 20, height: 20, borderRadius: 6, cursor: 'pointer', flexShrink: 0,
+                   border: `2px solid ${STATUS_COLOR[goal.status]}`,
+                   background: goal.status === 'DONE' ? TEC_COLORS.success : 'transparent', color: '#0a0800', fontSize: 12, lineHeight: '16px' }}>
+          {goal.status === 'DONE' ? '✓' : ''}
+        </button>
+        <span style={{ flex: 1, minWidth: 0, fontSize: 14, color: TEC_COLORS.text,
+                       textDecoration: goal.status === 'DONE' ? 'line-through' : 'none',
+                       opacity: goal.status === 'DONE' ? 0.6 : 1,
+                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {goal.title}
+        </span>
+        {hasTarget && (
+          <span style={{ fontSize: 12, fontWeight: 700, color: TEC_COLORS.gold, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
+            π {fmtPi(goal.progress ?? 0)} / {fmtPi(goal.target_amount as number)}
+          </span>
+        )}
+        <button onClick={onDelete} title="Delete"
+          style={{ background: 'none', border: 'none', color: TEC_COLORS.subtext, cursor: 'pointer', fontSize: 16, flexShrink: 0 }}>×</button>
+      </div>
+
+      {hasTarget && (
+        <div style={{ marginTop: 8, marginLeft: 30 }}>
+          <div style={{ height: 6, borderRadius: 999, background: TEC_COLORS.bg, overflow: 'hidden' }}>
+            <div style={{ width: `${pct}%`, height: '100%', borderRadius: 999,
+                          background: `linear-gradient(90deg, ${TEC_COLORS.gold}, ${TEC_COLORS.goldDark})`, transition: 'width .3s' }} />
+          </div>
+          {goal.status !== 'DONE' && (
+            <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+              <input
+                style={{ ...inputStyle, flex: '0 0 110px', padding: '7px 10px', fontSize: 13 }}
+                value={amt}
+                onChange={(e) => setAmt(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') log(); }}
+                inputMode="decimal"
+                placeholder="+ π amount"
+              />
+              <button
+                onClick={log}
+                disabled={busy}
+                style={{ background: 'transparent', color: TEC_COLORS.gold, border: `1px solid ${TEC_COLORS.gold}55`,
+                         borderRadius: 10, padding: '7px 14px', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: busy ? 0.6 : 1 }}>
+                Log
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Goals() {
-  const { goals, loading, error, busy, addGoal, setStatus, removeGoal } = useGoals();
-  const [title, setTitle] = useState('');
+  const { goals, loading, error, busy, addGoal, addProgress, setStatus, removeGoal } = useGoals();
+  const [title,  setTitle]  = useState('');
+  const [target, setTarget] = useState('');
 
   const submit = async () => {
     const t = title.trim();
     if (!t) return;
+    const amt = parseFloat(target);
     setTitle('');
-    await addGoal(t);
+    setTarget('');
+    await addGoal(t, Number.isFinite(amt) && amt > 0 ? amt : undefined);
   };
 
   return (
     <section style={{ marginTop: 24 }}>
-      <SectionTitle emoji="🎯" title="Goals" hint="what you’re working toward" />
+      <SectionTitle emoji="🎯" title="Goals" hint="set a target · track your progress" />
+
+      {!loading && goals.length > 0 && <Overview goals={goals} />}
 
       <div style={{ ...card }}>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <input
             style={inputStyle}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
-            placeholder="Add a goal — e.g. Save 100π this month"
+            placeholder="Add a goal — e.g. Save for a laptop"
             maxLength={200}
+          />
+          <input
+            style={{ ...inputStyle, flex: '0 0 120px' }}
+            value={target}
+            onChange={(e) => setTarget(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
+            inputMode="decimal"
+            placeholder="π target (opt)"
           />
           <button style={{ ...goldBtn, opacity: busy ? 0.6 : 1 }} onClick={submit} disabled={busy}>Add</button>
         </div>
 
         {error && <p style={{ color: TEC_COLORS.error, fontSize: 13, marginTop: 10 }}>{error}</p>}
 
-        <div style={{ marginTop: 14 }}>
+        <div style={{ marginTop: 6 }}>
           {loading ? (
             <p style={{ color: TEC_COLORS.subtext, fontSize: 13 }}>Loading…</p>
           ) : goals.length === 0 ? (
-            <p style={{ color: TEC_COLORS.subtext, fontSize: 13 }}>No goals yet. Add your first above.</p>
+            <p style={{ color: TEC_COLORS.subtext, fontSize: 13 }}>No goals yet. Add one above — give it a π target to track your progress.</p>
           ) : (
             goals.map((g, i) => (
-              <div key={g.id}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderTop: i === 0 ? 'none' : `1px solid ${TEC_COLORS.border}` }}>
-                <button
-                  title={g.status === 'DONE' ? 'Mark active' : 'Mark done'}
-                  onClick={() => setStatus(g.id, g.status === 'DONE' ? 'ACTIVE' : 'DONE')}
-                  style={{ width: 20, height: 20, borderRadius: 6, cursor: 'pointer', flexShrink: 0,
-                           border: `2px solid ${STATUS_COLOR[g.status]}`,
-                           background: g.status === 'DONE' ? TEC_COLORS.success : 'transparent', color: '#0a0800', fontSize: 12, lineHeight: '16px' }}>
-                  {g.status === 'DONE' ? '✓' : ''}
-                </button>
-                <span style={{ flex: 1, minWidth: 0, fontSize: 14, color: TEC_COLORS.text,
-                               textDecoration: g.status === 'DONE' ? 'line-through' : 'none',
-                               opacity: g.status === 'DONE' ? 0.6 : 1,
-                               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {g.title}
-                </span>
-                <button onClick={() => removeGoal(g.id)} title="Delete"
-                  style={{ background: 'none', border: 'none', color: TEC_COLORS.subtext, cursor: 'pointer', fontSize: 16, flexShrink: 0 }}>×</button>
-              </div>
+              <GoalItem
+                key={g.id}
+                goal={g}
+                first={i === 0}
+                busy={busy}
+                onToggle={() => setStatus(g.id, g.status === 'DONE' ? 'ACTIVE' : 'DONE')}
+                onDelete={() => removeGoal(g.id)}
+                onLog={(delta) => addProgress(g.id, delta)}
+              />
             ))
           )}
         </div>

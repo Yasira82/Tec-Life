@@ -5,10 +5,12 @@ import { forwardLife } from '@/lib/bff/lifeGateway';
 // PATCH  /api/bff/life/goals/:id  → update own goal (ownership enforced server-side).
 // DELETE /api/bff/life/goals/:id  → delete own goal.
 const UpdateGoalSchema = z.object({
-  title:       z.string().min(1).max(200).optional(),
-  description: z.string().max(2000).nullable().optional(),
-  status:      z.enum(['ACTIVE', 'DONE', 'ARCHIVED']).optional(),
-  target_date: z.string().nullable().optional(),
+  title:         z.string().min(1).max(200).optional(),
+  description:   z.string().max(2000).nullable().optional(),
+  status:        z.enum(['ACTIVE', 'DONE', 'ARCHIVED']).optional(),
+  target_date:   z.string().nullable().optional(),
+  target_amount: z.number().positive().max(1_000_000_000).nullable().optional(),
+  progress:      z.number().min(0).max(1_000_000_000).optional(),
 });
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
