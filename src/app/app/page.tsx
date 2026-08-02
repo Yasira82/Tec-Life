@@ -34,6 +34,15 @@ const STATUS_COLOR: Record<GoalStatus, string> = {
   ARCHIVED: TEC_COLORS.subtext,
 };
 
+// Pro entitlement (source of truth = the subscription on the session user, activated
+// by commerce-service when a Pro payment completes). FREE users get a soft goal cap;
+// Pro/Enterprise = unlimited — the concrete benefit behind "unlimited goals".
+const FREE_ACTIVE_GOAL_CAP = 3;
+const isProPlan = (plan?: string | null) => {
+  const p = (plan ?? '').toUpperCase();
+  return p === 'PRO' || p === 'ENTERPRISE';
+};
+
 function SectionTitle({ emoji, title, hint }: { emoji: string; title: string; hint?: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 12 }}>
@@ -150,14 +159,23 @@ function GoalItem({
   );
 }
 
-function Goals() {
+function Goals({ isPro }: { isPro: boolean }) {
   const { goals, loading, error, busy, addGoal, addProgress, setStatus, removeGoal } = useGoals();
   const [title,  setTitle]  = useState('');
   const [target, setTarget] = useState('');
+  const [gate,   setGate]   = useState<string | null>(null);
+
+  const activeCount = goals.filter((g) => g.status === 'ACTIVE').length;
+  const atFreeCap   = !isPro && activeCount >= FREE_ACTIVE_GOAL_CAP;
 
   const submit = async () => {
     const t = title.trim();
     if (!t) return;
+    if (atFreeCap) {
+      setGate(`Free plan is limited to ${FREE_ACTIVE_GOAL_CAP} active goals. Upgrade to Life Pro for unlimited.`);
+      return;
+    }
+    setGate(null);
     const amt = parseFloat(target);
     setTitle('');
     setTarget('');
@@ -192,6 +210,12 @@ function Goals() {
         </div>
 
         {error && <p style={{ color: TEC_COLORS.error, fontSize: 13, marginTop: 10 }}>{error}</p>}
+        {gate  && <p style={{ color: TEC_COLORS.gold,  fontSize: 12, marginTop: 10 }}>🔒 {gate}</p>}
+        {!isPro && !gate && activeCount >= FREE_ACTIVE_GOAL_CAP - 1 && activeCount < FREE_ACTIVE_GOAL_CAP && (
+          <p style={{ color: TEC_COLORS.subtext, fontSize: 11, marginTop: 10 }}>
+            Free plan: {activeCount}/{FREE_ACTIVE_GOAL_CAP} active goals. Life Pro = unlimited.
+          </p>
+        )}
 
         <div style={{ marginTop: 6 }}>
           {loading ? (
@@ -317,13 +341,23 @@ function Activity() {
 
 export default function LifeHome() {
   const { user, isLoading } = usePiAuth();
-  const name = user?.piUsername ? `@${user.piUsername}` : 'there';
+  const name  = user?.piUsername ? `@${user.piUsername}` : 'there';
+  const isPro = isProPlan((user as { subscriptionPlan?: string } | null)?.subscriptionPlan);
 
   return (
     <main style={{ minHeight: '100vh', background: TEC_COLORS.bg, color: TEC_COLORS.text, padding: '32px 22px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <div style={{ maxWidth: 760, margin: '0 auto' }}>
         <header>
-          <div style={{ fontSize: 12, letterSpacing: 1, color: TEC_COLORS.subtext, textTransform: 'uppercase' }}>TEC Life · System of Record</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ fontSize: 12, letterSpacing: 1, color: TEC_COLORS.subtext, textTransform: 'uppercase' }}>TEC Life · System of Record</div>
+            {isPro && (
+              <span style={{
+                fontSize: 10, fontWeight: 900, letterSpacing: 0.5, color: '#0a0800',
+                background: `linear-gradient(135deg, ${TEC_COLORS.gold}, ${TEC_COLORS.goldDark})`,
+                borderRadius: 999, padding: '2px 9px',
+              }}>★ PRO</span>
+            )}
+          </div>
           <h1 style={{ fontSize: 26, fontWeight: 900, color: TEC_COLORS.gold, margin: '6px 0 0' }}>
             {isLoading ? 'Welcome' : `Welcome, ${name}`}
           </h1>
@@ -333,8 +367,8 @@ export default function LifeHome() {
           </p>
         </header>
 
-        <LifePro />
-        <Goals />
+        <LifePro isPro={isPro} />
+        <Goals isPro={isPro} />
         <Preferences />
         <Activity />
         <InviteCard />
