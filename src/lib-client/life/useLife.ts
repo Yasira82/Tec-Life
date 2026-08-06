@@ -141,7 +141,29 @@ export function usePreferences() {
   return { prefs, loading, saving, error, save };
 }
 
-// ── Activity timeline (C-106 §4 — eventual, presented from Analytics) ────────
+// ── Subscription (Pro entitlement — read from commerce, the Subscription owner) ──
+export function useSubscription() {
+  const [plan,    setPlan]    = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/bff/subscription', { credentials: 'include', cache: 'no-store' })
+      .then((r) => r.json().catch(() => ({})))
+      .then((j: Record<string, unknown>) => {
+        const data = (j?.data ?? j) as Record<string, unknown>;
+        const sub  = (data?.subscription ?? data) as Record<string, unknown>;
+        const p    = typeof sub?.plan === 'string' ? sub.plan : null;
+        if (alive) setPlan(p);
+      })
+      .catch(() => { if (alive) setPlan(null); })   // fail closed → treat as FREE
+      .finally(() => { if (alive) setLoading(false); });
+    return () => { alive = false; };
+  }, []);
+
+  return { plan, loading };
+}
+
 export function useActivity(limit = 25) {
   const [events,  setEvents]  = useState<ActivityEvent[]>([]);
   const [loading, setLoading] = useState(true);
