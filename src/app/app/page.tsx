@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { InviteCard } from '@/components/referral/InviteCard';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { TEC_COLORS } from '@yasser172/tec-ui';
-import { useGoals, usePreferences, useActivity, type Goal, type GoalStatus } from '@/lib-client/life/useLife';
+import { useGoals, usePreferences, useActivity, useSubscription, type Goal, type GoalStatus } from '@/lib-client/life/useLife';
 import { LifePro } from './components/LifePro';
 
 const card = {
@@ -341,8 +341,9 @@ function Activity() {
 
 export default function LifeHome() {
   const { user, isLoading } = usePiAuth();
+  const { plan } = useSubscription(); // source of truth = commerce subscription (auth /me does not carry it)
   const name  = user?.piUsername ? `@${user.piUsername}` : 'there';
-  const isPro = isProPlan((user as { subscriptionPlan?: string } | null)?.subscriptionPlan);
+  const isPro = isProPlan(plan ?? (user as { subscriptionPlan?: string } | null)?.subscriptionPlan);
 
   return (
     <main style={{ minHeight: '100vh', background: TEC_COLORS.bg, color: TEC_COLORS.text, padding: '32px 22px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
