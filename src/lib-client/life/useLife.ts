@@ -153,8 +153,18 @@ export function useSubscription() {
       .then((j: Record<string, unknown>) => {
         const data = (j?.data ?? j) as Record<string, unknown>;
         const sub  = (data?.subscription ?? data) as Record<string, unknown>;
-        const p    = typeof sub?.plan === 'string' ? sub.plan : null;
-        if (alive) setPlan(p);
+        const raw  = typeof sub?.plan === 'string' ? sub.plan : null;
+
+        // A paid plan is an entitlement ONLY while the period is live. There is no
+        // auto-renewal (Pi U2A is one-time) and no server downgrade job yet, so the
+        // record can read plan:PRO past its end date — gate on isActive + expiry
+        // (with a date fallback) so the badge/benefit end when the month lapses.
+        const end       = typeof sub?.current_period_end === 'string' ? new Date(sub.current_period_end) : null;
+        const expired   = sub?.isExpired === true || (end !== null && end.getTime() < Date.now());
+        const inactive  = sub?.isActive === false;
+        const effective = raw && (expired || inactive) ? 'FREE' : raw;
+
+        if (alive) setPlan(effective);
       })
       .catch(() => { if (alive) setPlan(null); })   // fail closed → treat as FREE
       .finally(() => { if (alive) setLoading(false); });
