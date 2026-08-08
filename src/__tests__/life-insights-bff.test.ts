@@ -34,7 +34,7 @@ describe('GET /api/bff/life/goals/insights (Pro Goal Insights, gated)', () => {
 
   it('non-Pro → { pro:false } and NEVER fetches the insights aggregate (P5 gate)', async () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch')
-      .mockResolvedValueOnce(ok({ data: { plan: 'FREE', isActive: true } })); // sub = not Pro
+      .mockResolvedValueOnce(ok({ data: { subscription: { plan: 'FREE', isActive: true } } })); // sub = not Pro
     const { GET } = await import('@/app/api/bff/life/goals/insights/route');
     const res  = await GET(makeReq({ tec_access_token: 'tok' }));
     const json = await res.json();
@@ -46,7 +46,7 @@ describe('GET /api/bff/life/goals/insights (Pro Goal Insights, gated)', () => {
 
   it('Pro → returns the owner’s goal insights', async () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch')
-      .mockResolvedValueOnce(ok({ data: { plan: 'PRO', isActive: true, isExpired: false } }))          // sub = Pro
+      .mockResolvedValueOnce(ok({ data: { subscription: { plan: 'PRO', isActive: true, isExpired: false } } }))          // sub = Pro
       .mockResolvedValueOnce(ok({ data: { insights: { total: 4, completionRate: 33, reached: 1 } } })); // insights
     const { GET } = await import('@/app/api/bff/life/goals/insights/route');
     const res  = await GET(makeReq({ tec_access_token: 'tok' }));
