@@ -9,6 +9,7 @@ import { usePiAuth } from '@yasser172/tec-auth';
 import { TEC_COLORS } from '@yasser172/tec-ui';
 import { useGoals, usePreferences, useActivity, useSubscription, type Goal, type GoalStatus } from '@/lib-client/life/useLife';
 import { LifePro } from './components/LifePro';
+import { LifeInsights } from './components/LifeInsights';
 
 const card = {
   background:   TEC_COLORS.surface,
@@ -187,6 +188,9 @@ function Goals({ isPro }: { isPro: boolean }) {
       <SectionTitle emoji="🎯" title="Goals" hint="set a target · track your progress" />
 
       {!loading && goals.length > 0 && <Overview goals={goals} />}
+
+      {/* Life Pro — Goal Insights (deeper own-data analytics; gated behind live Pro) */}
+      {!loading && goals.length > 0 && <LifeInsights />}
 
       <div style={{ ...card }}>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
