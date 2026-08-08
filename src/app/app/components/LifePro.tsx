@@ -137,9 +137,10 @@ export function LifePro({ isPro = false }: { isPro?: boolean }) {
         </div>
       </div>
       <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 8, lineHeight: 1.5 }}>
-        Premium planning for your Pi life — unlimited goals, goal reminders, and
-        personal economic reports (your spending, saving and trajectory over time).
-        Your data stays yours (C-106). Early price, locked in.
+        Premium planning for your Pi life — <strong style={{ color: TEC_COLORS.text }}>unlimited goals</strong> plus
+        a <strong style={{ color: TEC_COLORS.text }}>📊 Goal Insights</strong> dashboard (completion rate, funding
+        progress toward your π targets, goals reached) — a deeper read of your own data (C-106).
+        Your data stays yours. Early price, locked in.
       </div>
 
       <button
