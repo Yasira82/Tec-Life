@@ -33,7 +33,7 @@ const asText = (v: unknown): string => {
 
 type Status = 'idle' | 'creating' | 'paying' | 'success' | 'error';
 
-export function LifePro({ isPro = false }: { isPro?: boolean }) {
+export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boolean; daysRemaining?: number | null }) {
   const [piReady, setPiReady] = useState(false);
   const [status,  setStatus]  = useState<Status>('idle');
   const [message, setMessage] = useState('');
@@ -105,12 +105,21 @@ export function LifePro({ isPro = false }: { isPro?: boolean }) {
   // Already subscribed (source of truth = the session's subscription, activated by
   // commerce-service when the payment completed) — show the entitlement, not the upsell.
   if (isPro) {
+    // Renewal reminder — Pi Pro is a one-time monthly payment (no auto-renewal), so
+    // nudge a re-subscribe as the period runs down. Amber inside the last week.
+    const soon = typeof daysRemaining === 'number' && daysRemaining <= 7;
     return (
       <div style={{ ...card, borderColor: `${TEC_COLORS.success}66` }}>
         <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.success }}>🌱 You’re on Life Pro</div>
         <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 6 }}>
           Unlimited goals, goal reminders, and personal economic reports are unlocked. Thanks for supporting TEC Life.
         </div>
+        {typeof daysRemaining === 'number' && (
+          <div style={{ fontSize: 12, fontWeight: soon ? 700 : 600, color: soon ? TEC_COLORS.gold : TEC_COLORS.subtext, marginTop: 8 }}>
+            {soon ? '⏳ ' : ''}Expires in {daysRemaining} day{daysRemaining === 1 ? '' : 's'}
+            {soon ? ' — re-subscribe to keep Pro (one-time monthly payment, no auto-renewal).' : '.'}
+          </div>
+        )}
       </div>
     );
   }
