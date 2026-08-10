@@ -345,7 +345,7 @@ function Activity() {
 
 export default function LifeHome() {
   const { user, isLoading } = usePiAuth();
-  const { plan } = useSubscription(); // source of truth = commerce subscription (auth /me does not carry it)
+  const { plan, daysRemaining } = useSubscription(); // source of truth = commerce subscription (auth /me does not carry it)
   const name  = user?.piUsername ? `@${user.piUsername}` : 'there';
   const isPro = isProPlan(plan ?? (user as { subscriptionPlan?: string } | null)?.subscriptionPlan);
 
@@ -372,7 +372,7 @@ export default function LifeHome() {
           </p>
         </header>
 
-        <LifePro isPro={isPro} />
+        <LifePro isPro={isPro} daysRemaining={daysRemaining} />
         <Goals isPro={isPro} />
         <Preferences />
         <Activity />
