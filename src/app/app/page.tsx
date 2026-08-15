@@ -367,7 +367,7 @@ export default function LifeHome() {
             {isLoading ? 'Welcome' : `Welcome, ${name}`}
           </h1>
           <p style={{ fontSize: 14, color: TEC_COLORS.subtext, margin: '6px 0 0', lineHeight: 1.6 }}>
-            Your personal context in the TEC ecosystem. Your data is yours (C-106) —
+            Your personal context in the TEC ecosystem. Your data is yours —
             self-declared, private, and never used without your consent.
           </p>
         </header>
