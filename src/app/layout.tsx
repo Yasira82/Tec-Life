@@ -3,6 +3,7 @@ import { RefApply } from '@/components/referral/RefApply';
 import type { Metadata } from 'next';
 import '@/styles/tec-design-tokens.css';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LocaleProvider } from '@/lib/i18n';
 
 export const metadata: Metadata = {
   title:       'TEC Life',
@@ -60,7 +61,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body><ErrorBoundary><RefCapture /><RefApply />{children}</ErrorBoundary></body>
+      <body><ErrorBoundary><LocaleProvider><RefCapture /><RefApply />{children}</LocaleProvider></ErrorBoundary></body>
     </html>
   );
 }

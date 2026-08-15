@@ -22,4 +22,40 @@ export const en = {
     appsTitle: 'TEC Ecosystem',
     appsCount: '24 Apps',
   },
+  life: {
+    brand:       'TEC Life · Your personal space',
+    pro:         'PRO',
+    welcome:     'Welcome',
+    welcomeName: 'Welcome, {name}',
+    subtitle:    'Your personal context in the TEC ecosystem. Your data is yours — self-declared, private, and never used without your consent.',
+    nav: { home: 'Home', goals: 'Goals', activity: 'Activity', settings: 'Settings' },
+    cards: {
+      goals:    { title: 'Goals',       hint: 'Set targets and track your progress' },
+      activity: { title: 'Activity',    hint: 'Your recent activity across TEC' },
+      prefs:    { title: 'Preferences', hint: 'Tailor your experience' },
+    },
+    goals: {
+      title: 'Goals', hint: 'set a target · track your progress',
+      active: 'Active', completed: 'Completed', tracked: 'π tracked',
+      insights: 'Goal insights',
+      addPlaceholder: 'Add a goal', targetPlaceholder: 'π target (opt)', add: 'Add',
+      logPlaceholder: '+ π amount', log: 'Log',
+      empty: 'No goals yet — add your first above.',
+    },
+    prefs: {
+      title: 'Preferences', hint: 'how TEC tailors your experience',
+      primaryFocus: 'Primary focus', language: 'Language',
+      focus: { earning: 'Earning', learning: 'Learning', building: 'Building', saving: 'Saving', general: 'General' },
+    },
+    activity: {
+      title: 'Activity', hint: 'your recent economic activity',
+      empty: 'No activity yet — it appears here as you use TEC.',
+    },
+    settings: {
+      profile: 'Profile', planFree: 'Free', planPro: 'Pro', connectedPi: 'Connected to Pi', notSignedIn: 'Not signed in',
+      appearance: 'Appearance', languageDesc: 'Display language',
+      about: 'About', version: 'Version', domain: 'Domain', ecosystem: 'Ecosystem', builtOn: 'Built on', builtOnPi: 'Pi Network',
+      logout: 'Logout',
+    },
+  },
 };
