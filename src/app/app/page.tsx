@@ -7,11 +7,12 @@ import { useState } from 'react';
 import { InviteCard } from '@/components/referral/InviteCard';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { TEC_COLORS } from '@yasser172/tec-ui';
-import { useGoals, usePreferences, useActivity, useSubscription, type Goal, type GoalStatus } from '@/lib-client/life/useLife';
+import { useGoals, useActivity, useSubscription, type Goal, type GoalStatus } from '@/lib-client/life/useLife';
 import { LifePro } from './components/LifePro';
 import { LifeInsights } from './components/LifeInsights';
 import { BottomNav, type LifeTab } from './components/BottomNav';
 import { Icon, type LifeIconName } from './components/Icon';
+import { SettingsView } from './components/SettingsView';
 import { useTranslation } from '@/lib/i18n';
 
 const card = {
@@ -250,50 +251,6 @@ function Goals({ isPro }: { isPro: boolean }) {
   );
 }
 
-const FOCUS_OPTIONS = ['Saving', 'Earning', 'Learning', 'Building', 'Trading'];
-const LANG_OPTIONS  = [['en', 'English'], ['ar', 'العربية']] as const;
-
-function Preferences() {
-  const { t, locale, setLocale } = useTranslation();
-  const { prefs, loading, saving, error, save } = usePreferences();
-
-  const selectStyle = {
-    background: TEC_COLORS.bg, color: TEC_COLORS.text, border: `1px solid ${TEC_COLORS.border}`,
-    borderRadius: 10, padding: '9px 12px', fontSize: 14, minWidth: 160,
-  } as const;
-
-  return (
-    <section style={{ marginTop: 24 }}>
-      <SectionTitle emoji="⚙️" title={t.life.prefs.title} hint={t.life.prefs.hint} />
-      <div style={{ ...card, display: 'grid', gap: 14 }}>
-        <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-          <span style={{ fontSize: 14, color: TEC_COLORS.text }}>{t.life.prefs.primaryFocus}</span>
-          <select style={selectStyle} value={prefs.focus ?? ''} disabled={loading || saving}
-            onChange={(e) => save({ focus: e.target.value })}>
-            <option value="">—</option>
-            {FOCUS_OPTIONS.map((f) => <option key={f} value={f}>{f}</option>)}
-          </select>
-        </label>
-
-        <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-          <span style={{ fontSize: 14, color: TEC_COLORS.text }}>{t.life.prefs.language}</span>
-          <select style={selectStyle} value={(prefs.language ?? locale)} disabled={loading || saving}
-            onChange={(e) => {
-              const v = e.target.value;
-              if (v === 'en' || v === 'ar') setLocale(v); // switch the app UI immediately
-              save({ language: v });                       // persist the preference
-            }}>
-            {LANG_OPTIONS.map(([v, label]) => <option key={v} value={v}>{label}</option>)}
-          </select>
-        </label>
-
-        {error && <p style={{ color: TEC_COLORS.error, fontSize: 13, margin: 0 }}>{error}</p>}
-        {saving && <p style={{ color: TEC_COLORS.subtext, fontSize: 12, margin: 0 }}>{t.common.loading}</p>}
-      </div>
-    </section>
-  );
-}
-
 const EVENT_LABEL: Record<string, string> = {
   'payment.completed': 'Payment completed',
   'order.created':     'Order placed',
@@ -422,12 +379,7 @@ export default function LifeHome() {
         )}
         {tab === 'goals'    && <Goals isPro={isPro} />}
         {tab === 'activity' && <Activity />}
-        {tab === 'settings' && (
-          <>
-            <Preferences />
-            <InviteCard />
-          </>
-        )}
+        {tab === 'settings' && <SettingsView isPro={isPro} />}
       </div>
 
       <BottomNav active={tab} onSelect={setTab} />

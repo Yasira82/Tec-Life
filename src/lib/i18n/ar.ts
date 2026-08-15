@@ -51,5 +51,11 @@ export const ar = {
       title: 'النشاط', hint: 'نشاطك الاقتصادي الأخير',
       empty: 'لا نشاط بعد — يظهر هنا مع استخدامك لـ TEC.',
     },
+    settings: {
+      profile: 'الملف الشخصي', planFree: 'مجاني', planPro: 'Pro', connectedPi: 'متصل بـ Pi', notSignedIn: 'غير مسجّل الدخول',
+      appearance: 'المظهر', languageDesc: 'لغة العرض',
+      about: 'حول', version: 'الإصدار', domain: 'النطاق', ecosystem: 'المنظومة', builtOn: 'مبني على', builtOnPi: 'شبكة Pi',
+      logout: 'تسجيل الخروج',
+    },
   },
 };

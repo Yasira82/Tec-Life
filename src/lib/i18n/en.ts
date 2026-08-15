@@ -51,5 +51,11 @@ export const en = {
       title: 'Activity', hint: 'your recent economic activity',
       empty: 'No activity yet — it appears here as you use TEC.',
     },
+    settings: {
+      profile: 'Profile', planFree: 'Free', planPro: 'Pro', connectedPi: 'Connected to Pi', notSignedIn: 'Not signed in',
+      appearance: 'Appearance', languageDesc: 'Display language',
+      about: 'About', version: 'Version', domain: 'Domain', ecosystem: 'Ecosystem', builtOn: 'Built on', builtOnPi: 'Pi Network',
+      logout: 'Logout',
+    },
   },
 };
