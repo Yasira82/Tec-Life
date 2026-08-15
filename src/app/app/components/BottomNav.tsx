@@ -3,17 +3,18 @@
 // App-shell bottom navigation — same quality bar as tec-assets: vector icons from
 // tec-ui (not emoji), glass backdrop, active scale + underline, light haptic.
 import { Icon, type LifeIconName } from './Icon';
+import { useTranslation } from '@/lib/i18n';
 
 export type LifeTab = 'home' | 'goals' | 'activity' | 'settings';
 
-const ITEMS: { key: LifeTab; icon: LifeIconName; label: string }[] = [
-  { key: 'home',     icon: 'home',     label: 'Home'     },
-  { key: 'goals',    icon: 'trophy',   label: 'Goals'    },
-  { key: 'activity', icon: 'chart',    label: 'Activity' },
-  { key: 'settings', icon: 'settings', label: 'Settings' },
-];
-
 export function BottomNav({ active, onSelect }: { active: LifeTab; onSelect: (t: LifeTab) => void }) {
+  const { t } = useTranslation();
+  const ITEMS: { key: LifeTab; icon: LifeIconName; label: string }[] = [
+    { key: 'home',     icon: 'home',     label: t.life.nav.home     },
+    { key: 'goals',    icon: 'trophy',   label: t.life.nav.goals    },
+    { key: 'activity', icon: 'chart',    label: t.life.nav.activity },
+    { key: 'settings', icon: 'settings', label: t.life.nav.settings },
+  ];
   return (
     <nav style={{
       position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 200,

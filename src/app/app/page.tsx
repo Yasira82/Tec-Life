@@ -12,6 +12,7 @@ import { LifePro } from './components/LifePro';
 import { LifeInsights } from './components/LifeInsights';
 import { BottomNav, type LifeTab } from './components/BottomNav';
 import { Icon, type LifeIconName } from './components/Icon';
+import { useTranslation } from '@/lib/i18n';
 
 const card = {
   background:   TEC_COLORS.surface,
@@ -64,6 +65,7 @@ const fmtPi = (n: number) => {
 
 // Three-at-a-glance stats derived from the caller's own goals (summary before detail).
 function Overview({ goals }: { goals: Goal[] }) {
+  const { t } = useTranslation();
   const active = goals.filter((g) => g.status === 'ACTIVE').length;
   const done   = goals.filter((g) => g.status === 'DONE').length;
   const tracked = goals.reduce((sum, g) => sum + (g.target_amount ? (g.progress ?? 0) : 0), 0);
@@ -77,11 +79,11 @@ function Overview({ goals }: { goals: Goal[] }) {
 
   return (
     <div style={{ ...card, display: 'flex', gap: 8, marginBottom: 12 }}>
-      {stat('Active', String(active), TEC_COLORS.gold)}
+      {stat(t.life.goals.active, String(active), TEC_COLORS.gold)}
       <div style={{ width: 1, background: TEC_COLORS.border }} />
-      {stat('Completed', String(done), TEC_COLORS.success)}
+      {stat(t.life.goals.completed, String(done), TEC_COLORS.success)}
       <div style={{ width: 1, background: TEC_COLORS.border }} />
-      {stat('π tracked', `π ${fmtPi(tracked)}`)}
+      {stat(t.life.goals.tracked, `π ${fmtPi(tracked)}`)}
     </div>
   );
 }
@@ -163,6 +165,7 @@ function GoalItem({
 }
 
 function Goals({ isPro }: { isPro: boolean }) {
+  const { t } = useTranslation();
   const { goals, loading, error, busy, addGoal, addProgress, setStatus, removeGoal } = useGoals();
   const [title,  setTitle]  = useState('');
   const [target, setTarget] = useState('');
@@ -187,7 +190,7 @@ function Goals({ isPro }: { isPro: boolean }) {
 
   return (
     <section style={{ marginTop: 24 }}>
-      <SectionTitle emoji="🎯" title="Goals" hint="set a target · track your progress" />
+      <SectionTitle emoji="🎯" title={t.life.goals.title} hint={t.life.goals.hint} />
 
       {!loading && goals.length > 0 && <Overview goals={goals} />}
 
@@ -201,7 +204,7 @@ function Goals({ isPro }: { isPro: boolean }) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
-            placeholder="Add a goal — e.g. Save for a laptop"
+            placeholder={t.life.goals.addPlaceholder}
             maxLength={200}
           />
           <input
@@ -210,9 +213,9 @@ function Goals({ isPro }: { isPro: boolean }) {
             onChange={(e) => setTarget(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
             inputMode="decimal"
-            placeholder="π target (opt)"
+            placeholder={t.life.goals.targetPlaceholder}
           />
-          <button style={{ ...goldBtn, opacity: busy ? 0.6 : 1 }} onClick={submit} disabled={busy}>Add</button>
+          <button style={{ ...goldBtn, opacity: busy ? 0.6 : 1 }} onClick={submit} disabled={busy}>{t.life.goals.add}</button>
         </div>
 
         {error && <p style={{ color: TEC_COLORS.error, fontSize: 13, marginTop: 10 }}>{error}</p>}
@@ -227,7 +230,7 @@ function Goals({ isPro }: { isPro: boolean }) {
           {loading ? (
             <p style={{ color: TEC_COLORS.subtext, fontSize: 13 }}>Loading…</p>
           ) : goals.length === 0 ? (
-            <p style={{ color: TEC_COLORS.subtext, fontSize: 13 }}>No goals yet. Add one above — give it a π target to track your progress.</p>
+            <p style={{ color: TEC_COLORS.subtext, fontSize: 13 }}>{t.life.goals.empty}</p>
           ) : (
             goals.map((g, i) => (
               <GoalItem
@@ -251,6 +254,7 @@ const FOCUS_OPTIONS = ['Saving', 'Earning', 'Learning', 'Building', 'Trading'];
 const LANG_OPTIONS  = [['en', 'English'], ['ar', 'العربية']] as const;
 
 function Preferences() {
+  const { t, locale, setLocale } = useTranslation();
   const { prefs, loading, saving, error, save } = usePreferences();
 
   const selectStyle = {
@@ -260,27 +264,31 @@ function Preferences() {
 
   return (
     <section style={{ marginTop: 24 }}>
-      <SectionTitle emoji="⚙️" title="Preferences" hint="how TEC tailors your experience" />
+      <SectionTitle emoji="⚙️" title={t.life.prefs.title} hint={t.life.prefs.hint} />
       <div style={{ ...card, display: 'grid', gap: 14 }}>
         <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-          <span style={{ fontSize: 14, color: TEC_COLORS.text }}>Primary focus</span>
+          <span style={{ fontSize: 14, color: TEC_COLORS.text }}>{t.life.prefs.primaryFocus}</span>
           <select style={selectStyle} value={prefs.focus ?? ''} disabled={loading || saving}
             onChange={(e) => save({ focus: e.target.value })}>
-            <option value="">Not set</option>
+            <option value="">—</option>
             {FOCUS_OPTIONS.map((f) => <option key={f} value={f}>{f}</option>)}
           </select>
         </label>
 
         <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-          <span style={{ fontSize: 14, color: TEC_COLORS.text }}>Language</span>
-          <select style={selectStyle} value={prefs.language ?? 'en'} disabled={loading || saving}
-            onChange={(e) => save({ language: e.target.value })}>
+          <span style={{ fontSize: 14, color: TEC_COLORS.text }}>{t.life.prefs.language}</span>
+          <select style={selectStyle} value={(prefs.language ?? locale)} disabled={loading || saving}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v === 'en' || v === 'ar') setLocale(v); // switch the app UI immediately
+              save({ language: v });                       // persist the preference
+            }}>
             {LANG_OPTIONS.map(([v, label]) => <option key={v} value={v}>{label}</option>)}
           </select>
         </label>
 
         {error && <p style={{ color: TEC_COLORS.error, fontSize: 13, margin: 0 }}>{error}</p>}
-        {saving && <p style={{ color: TEC_COLORS.subtext, fontSize: 12, margin: 0 }}>Saving…</p>}
+        {saving && <p style={{ color: TEC_COLORS.subtext, fontSize: 12, margin: 0 }}>{t.common.loading}</p>}
       </div>
     </section>
   );
@@ -302,11 +310,12 @@ const piAmount = (payload: Record<string, unknown> | null): string | null => {
 // C-106 §4: the caller's own activity, presented from Analytics (eventual).
 // Life never stores or re-derives transaction truth.
 function Activity() {
+  const { t } = useTranslation();
   const { events, loading, error } = useActivity(25);
 
   return (
     <section style={{ marginTop: 24 }}>
-      <SectionTitle emoji="📈" title="Activity" hint="your recent economic activity" />
+      <SectionTitle emoji="📈" title={t.life.activity.title} hint={t.life.activity.hint} />
       <div style={{ ...card }}>
         {loading ? (
           <p style={{ fontSize: 13, color: TEC_COLORS.subtext, margin: 0 }}>Loading…</p>
@@ -346,10 +355,11 @@ function Activity() {
 
 // Home tab — quick-launch cards into each section, so the shell feels navigable.
 function HomeQuickNav({ onGo }: { onGo: (t: LifeTab) => void }) {
+  const { t } = useTranslation();
   const items: { id: LifeTab; icon: LifeIconName; title: string; hint: string }[] = [
-    { id: 'goals',    icon: 'trophy',   title: 'Goals',       hint: 'Set targets and track your progress' },
-    { id: 'activity', icon: 'chart',    title: 'Activity',    hint: 'Your recent activity across TEC' },
-    { id: 'settings', icon: 'settings', title: 'Preferences', hint: 'Tailor your experience' },
+    { id: 'goals',    icon: 'trophy',   title: t.life.cards.goals.title,    hint: t.life.cards.goals.hint },
+    { id: 'activity', icon: 'chart',    title: t.life.cards.activity.title, hint: t.life.cards.activity.hint },
+    { id: 'settings', icon: 'settings', title: t.life.cards.prefs.title,    hint: t.life.cards.prefs.hint },
   ];
   return (
     <div style={{ display: 'grid', gap: 10, marginTop: 20 }}>
@@ -380,30 +390,30 @@ export default function LifeHome() {
   const name  = user?.piUsername ? `@${user.piUsername}` : 'there';
   const isPro = isProPlan(plan ?? (user as { subscriptionPlan?: string } | null)?.subscriptionPlan);
   const [tab, setTab] = useState<LifeTab>('home');
+  const { t } = useTranslation();
 
   return (
     <main style={{ minHeight: '100vh', background: TEC_COLORS.bg, color: TEC_COLORS.text, fontFamily: 'system-ui, -apple-system, sans-serif', paddingBottom: 96 }}>
       <div style={{ maxWidth: 760, margin: '0 auto', padding: '28px 22px 0' }}>
         {/* Compact persistent app header (chrome). Each section renders its own title. */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ fontSize: 12, letterSpacing: 1, color: TEC_COLORS.subtext, textTransform: 'uppercase' }}>TEC Life · Your personal space</div>
+          <div style={{ fontSize: 12, letterSpacing: 1, color: TEC_COLORS.subtext, textTransform: 'uppercase' }}>{t.life.brand}</div>
           {isPro && (
             <span style={{
               fontSize: 10, fontWeight: 900, letterSpacing: 0.5, color: '#0a0800',
               background: `linear-gradient(135deg, ${TEC_COLORS.gold}, ${TEC_COLORS.goldDark})`,
               borderRadius: 999, padding: '2px 9px',
-            }}>★ PRO</span>
+            }}>★ {t.life.pro}</span>
           )}
         </div>
 
         {tab === 'home' && (
           <>
             <h1 style={{ fontSize: 26, fontWeight: 900, color: TEC_COLORS.gold, margin: '6px 0 0' }}>
-              {isLoading ? 'Welcome' : `Welcome, ${name}`}
+              {isLoading ? t.life.welcome : t.life.welcomeName.replace('{name}', name)}
             </h1>
             <p style={{ fontSize: 14, color: TEC_COLORS.subtext, margin: '6px 0 0', lineHeight: 1.6 }}>
-              Your personal context in the TEC ecosystem. Your data is yours —
-              self-declared, private, and never used without your consent.
+              {t.life.subtitle}
             </p>
             <LifePro isPro={isPro} daysRemaining={daysRemaining} />
             <HomeQuickNav onGo={setTab} />
