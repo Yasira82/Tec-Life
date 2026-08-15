@@ -49,7 +49,7 @@ export function LifeInsights() {
           <div style={{ color: TEC_COLORS.text, fontWeight: 800, fontSize: 14 }}>🔒 Go deeper on your goals</div>
           <p style={{ color: TEC_COLORS.subtext, fontSize: 13, lineHeight: 1.6, marginTop: 8 }}>
             Life Pro adds a completion rate, funding progress toward your π targets, and how many goals
-            you&apos;ve reached — beyond the summary above. It&apos;s your own data (C-106). Upgrade below.
+            you&apos;ve reached — beyond the summary above. It&apos;s your own data. Upgrade below.
           </p>
         </div>
       ) : data.total === 0 ? (

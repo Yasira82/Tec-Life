@@ -148,7 +148,7 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
       <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 8, lineHeight: 1.5 }}>
         Premium planning for your Pi life — <strong style={{ color: TEC_COLORS.text }}>unlimited goals</strong> plus
         a <strong style={{ color: TEC_COLORS.text }}>📊 Goal Insights</strong> dashboard (completion rate, funding
-        progress toward your π targets, goals reached) — a deeper read of your own data (C-106).
+        progress toward your π targets, goals reached) — a deeper read of your own data.
         Your data stays yours. Early price, locked in.
       </div>
 
