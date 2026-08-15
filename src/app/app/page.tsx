@@ -333,8 +333,7 @@ function Activity() {
               );
             })}
             <p style={{ fontSize: 11, color: TEC_COLORS.subtext, margin: '12px 0 0', lineHeight: 1.5 }}>
-              Presented from Analytics (eventual consistency). Life never re-derives
-              transaction truth — the owning services are the source.
+              A summary of your recent activity. Figures update periodically.
             </p>
           </>
         )}
@@ -354,7 +353,7 @@ export default function LifeHome() {
       <div style={{ maxWidth: 760, margin: '0 auto' }}>
         <header>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ fontSize: 12, letterSpacing: 1, color: TEC_COLORS.subtext, textTransform: 'uppercase' }}>TEC Life · System of Record</div>
+            <div style={{ fontSize: 12, letterSpacing: 1, color: TEC_COLORS.subtext, textTransform: 'uppercase' }}>TEC Life · Your personal space</div>
             {isPro && (
               <span style={{
                 fontSize: 10, fontWeight: 900, letterSpacing: 0.5, color: '#0a0800',
