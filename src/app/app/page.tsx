@@ -342,15 +342,49 @@ function Activity() {
   );
 }
 
+const TABS = [
+  { id: 'home',     label: 'Home',     icon: '🏠' },
+  { id: 'goals',    label: 'Goals',    icon: '🎯' },
+  { id: 'activity', label: 'Activity', icon: '📈' },
+  { id: 'settings', label: 'Settings', icon: '⚙️' },
+] as const;
+type TabId = (typeof TABS)[number]['id'];
+
+// Home tab — quick-launch cards into each section, so the shell feels navigable.
+function HomeQuickNav({ onGo }: { onGo: (t: TabId) => void }) {
+  const items: { id: TabId; icon: string; title: string; hint: string }[] = [
+    { id: 'goals',    icon: '🎯', title: 'Goals',       hint: 'Set targets and track your progress' },
+    { id: 'activity', icon: '📈', title: 'Activity',    hint: 'Your recent activity across TEC' },
+    { id: 'settings', icon: '⚙️', title: 'Preferences', hint: 'Tailor your experience' },
+  ];
+  return (
+    <div style={{ display: 'grid', gap: 10, marginTop: 20 }}>
+      {items.map((it) => (
+        <button key={it.id} onClick={() => onGo(it.id)}
+          style={{ ...card, display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left', cursor: 'pointer', width: '100%' }}>
+          <span style={{ fontSize: 24, lineHeight: 1 }}>{it.icon}</span>
+          <span style={{ flex: 1 }}>
+            <span style={{ display: 'block', fontSize: 15, fontWeight: 800, color: TEC_COLORS.text }}>{it.title}</span>
+            <span style={{ display: 'block', fontSize: 12, color: TEC_COLORS.subtext, marginTop: 2 }}>{it.hint}</span>
+          </span>
+          <span style={{ fontSize: 18, color: TEC_COLORS.subtext }}>›</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function LifeHome() {
   const { user, isLoading } = usePiAuth();
   const { plan, daysRemaining } = useSubscription(); // source of truth = commerce subscription (auth /me does not carry it)
   const name  = user?.piUsername ? `@${user.piUsername}` : 'there';
   const isPro = isProPlan(plan ?? (user as { subscriptionPlan?: string } | null)?.subscriptionPlan);
+  const [tab, setTab] = useState<TabId>('home');
+  const activeTab = TABS.find((t) => t.id === tab);
 
   return (
-    <main style={{ minHeight: '100vh', background: TEC_COLORS.bg, color: TEC_COLORS.text, padding: '32px 22px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      <div style={{ maxWidth: 760, margin: '0 auto' }}>
+    <main style={{ minHeight: '100vh', background: TEC_COLORS.bg, color: TEC_COLORS.text, fontFamily: 'system-ui, -apple-system, sans-serif', paddingBottom: 96 }}>
+      <div style={{ maxWidth: 760, margin: '0 auto', padding: '28px 22px 0' }}>
         <header>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ fontSize: 12, letterSpacing: 1, color: TEC_COLORS.subtext, textTransform: 'uppercase' }}>TEC Life · Your personal space</div>
@@ -362,21 +396,64 @@ export default function LifeHome() {
               }}>★ PRO</span>
             )}
           </div>
-          <h1 style={{ fontSize: 26, fontWeight: 900, color: TEC_COLORS.gold, margin: '6px 0 0' }}>
-            {isLoading ? 'Welcome' : `Welcome, ${name}`}
-          </h1>
-          <p style={{ fontSize: 14, color: TEC_COLORS.subtext, margin: '6px 0 0', lineHeight: 1.6 }}>
-            Your personal context in the TEC ecosystem. Your data is yours —
-            self-declared, private, and never used without your consent.
-          </p>
+
+          {tab === 'home' ? (
+            <>
+              <h1 style={{ fontSize: 26, fontWeight: 900, color: TEC_COLORS.gold, margin: '6px 0 0' }}>
+                {isLoading ? 'Welcome' : `Welcome, ${name}`}
+              </h1>
+              <p style={{ fontSize: 14, color: TEC_COLORS.subtext, margin: '6px 0 0', lineHeight: 1.6 }}>
+                Your personal context in the TEC ecosystem. Your data is yours —
+                self-declared, private, and never used without your consent.
+              </p>
+            </>
+          ) : (
+            <h1 style={{ fontSize: 24, fontWeight: 900, color: TEC_COLORS.gold, margin: '6px 0 0' }}>
+              {activeTab?.icon} {activeTab?.label}
+            </h1>
+          )}
         </header>
 
-        <LifePro isPro={isPro} daysRemaining={daysRemaining} />
-        <Goals isPro={isPro} />
-        <Preferences />
-        <Activity />
-        <InviteCard />
+        {tab === 'home' && (
+          <>
+            <LifePro isPro={isPro} daysRemaining={daysRemaining} />
+            <HomeQuickNav onGo={setTab} />
+            <InviteCard />
+          </>
+        )}
+        {tab === 'goals'    && <Goals isPro={isPro} />}
+        {tab === 'activity' && <Activity />}
+        {tab === 'settings' && (
+          <>
+            <Preferences />
+            <InviteCard />
+          </>
+        )}
       </div>
+
+      {/* Bottom navigation — the app shell that makes Life feel like an app, not a page. */}
+      <nav style={{
+        position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 20,
+        display: 'flex', justifyContent: 'space-around',
+        background: TEC_COLORS.surface, borderTop: `1px solid ${TEC_COLORS.border}`,
+        padding: '8px 6px calc(8px + env(safe-area-inset-bottom))',
+        boxShadow: '0 -4px 20px rgba(0,0,0,0.35)',
+      }}>
+        {TABS.map((t) => {
+          const active = t.id === tab;
+          return (
+            <button key={t.id} onClick={() => setTab(t.id)} aria-label={t.label} aria-current={active ? 'page' : undefined}
+              style={{
+                flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
+                background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0',
+                color: active ? TEC_COLORS.gold : TEC_COLORS.subtext,
+              }}>
+              <span style={{ fontSize: 20, lineHeight: 1, opacity: active ? 1 : 0.7 }}>{t.icon}</span>
+              <span style={{ fontSize: 10.5, fontWeight: active ? 800 : 600, letterSpacing: 0.2 }}>{t.label}</span>
+            </button>
+          );
+        })}
+      </nav>
     </main>
   );
 }
