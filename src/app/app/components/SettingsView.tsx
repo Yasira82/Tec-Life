@@ -6,6 +6,7 @@
 import { usePiAuth } from '@yasser172/tec-auth';
 import { TEC_COLORS } from '@yasser172/tec-ui';
 import { usePreferences } from '@/lib-client/life/useLife';
+import { useMe } from '@/lib-client/hooks/useMe';
 import { useTranslation } from '@/lib/i18n';
 import { InviteCard } from '@/components/referral/InviteCard';
 
@@ -66,12 +67,16 @@ function Pills<T extends string>({ value, options, onChange }: { value: T; optio
 export function SettingsView({ isPro }: { isPro: boolean }) {
   const { t, locale, setLocale } = useTranslation();
   const { user, isAuthenticated, logout } = usePiAuth();
+  const me = useMe();
   const { prefs, loading, saving, save } = usePreferences();
   const s = t.life.settings;
-  const username = user?.piUsername ?? null;
-  // A live Pro/subscription or an authenticated session means the user IS signed in,
-  // even if the username hasn't hydrated yet — never show "Not signed in" to a member.
-  const signedIn = isAuthenticated || isPro || !!username;
+  // Prefer the server-resolved Pi username (/api/auth/me) — in Pi Browser the client
+  // can't read the tec_user cookie, so usePiAuth alone shows no name. Show the real
+  // Pi login name, not a generic fallback.
+  const username = me.username ?? user?.piUsername ?? null;
+  // A resolved session, a live Pro subscription, or an authenticated hook state all
+  // mean the user IS signed in — never show "Not signed in" to a member.
+  const signedIn = me.authenticated || isAuthenticated || isPro || !!username;
 
   const selectStyle = {
     background: TEC_COLORS.bg, color: TEC_COLORS.text, border: `1px solid ${TEC_COLORS.border}`,
