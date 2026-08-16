@@ -8,6 +8,7 @@ import { InviteCard } from '@/components/referral/InviteCard';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { TEC_COLORS } from '@yasser172/tec-ui';
 import { useGoals, useActivity, useSubscription, type Goal, type GoalStatus } from '@/lib-client/life/useLife';
+import { useMe } from '@/lib-client/hooks/useMe';
 import { LifePro } from './components/LifePro';
 import { LifeInsights } from './components/LifeInsights';
 import { BottomNav, type LifeTab } from './components/BottomNav';
@@ -343,8 +344,10 @@ function HomeQuickNav({ onGo }: { onGo: (t: LifeTab) => void }) {
 
 export default function LifeHome() {
   const { user, isLoading } = usePiAuth();
+  const me = useMe(); // server-resolved Pi username (Pi Browser hides tec_user from client JS — C-123 §3)
   const { plan, daysRemaining } = useSubscription(); // source of truth = commerce subscription (auth /me does not carry it)
-  const name  = user?.piUsername ? `@${user.piUsername}` : '';
+  const piName = me.username ?? user?.piUsername ?? null;
+  const name  = piName ? `@${piName}` : '';
   const isPro = isProPlan(plan ?? (user as { subscriptionPlan?: string } | null)?.subscriptionPlan);
   const [tab, setTab] = useState<LifeTab>('home');
   const { t } = useTranslation();
