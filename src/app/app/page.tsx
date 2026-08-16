@@ -344,7 +344,7 @@ function HomeQuickNav({ onGo }: { onGo: (t: LifeTab) => void }) {
 export default function LifeHome() {
   const { user, isLoading } = usePiAuth();
   const { plan, daysRemaining } = useSubscription(); // source of truth = commerce subscription (auth /me does not carry it)
-  const name  = user?.piUsername ? `@${user.piUsername}` : 'there';
+  const name  = user?.piUsername ? `@${user.piUsername}` : '';
   const isPro = isProPlan(plan ?? (user as { subscriptionPlan?: string } | null)?.subscriptionPlan);
   const [tab, setTab] = useState<LifeTab>('home');
   const { t } = useTranslation();
@@ -367,7 +367,7 @@ export default function LifeHome() {
         {tab === 'home' && (
           <>
             <h1 style={{ fontSize: 26, fontWeight: 900, color: TEC_COLORS.gold, margin: '6px 0 0' }}>
-              {isLoading ? t.life.welcome : t.life.welcomeName.replace('{name}', name)}
+              {isLoading || !name ? t.life.welcome : t.life.welcomeName.replace('{name}', name)}
             </h1>
             <p style={{ fontSize: 14, color: TEC_COLORS.subtext, margin: '6px 0 0', lineHeight: 1.6 }}>
               {t.life.subtitle}

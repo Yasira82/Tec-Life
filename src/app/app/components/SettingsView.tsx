@@ -65,10 +65,13 @@ function Pills<T extends string>({ value, options, onChange }: { value: T; optio
 
 export function SettingsView({ isPro }: { isPro: boolean }) {
   const { t, locale, setLocale } = useTranslation();
-  const { user, logout } = usePiAuth();
+  const { user, isAuthenticated, logout } = usePiAuth();
   const { prefs, loading, saving, save } = usePreferences();
   const s = t.life.settings;
   const username = user?.piUsername ?? null;
+  // A live Pro/subscription or an authenticated session means the user IS signed in,
+  // even if the username hasn't hydrated yet — never show "Not signed in" to a member.
+  const signedIn = isAuthenticated || isPro || !!username;
 
   const selectStyle = {
     background: TEC_COLORS.bg, color: TEC_COLORS.text, border: `1px solid ${TEC_COLORS.border}`,
@@ -88,10 +91,10 @@ export function SettingsView({ isPro }: { isPro: boolean }) {
           }}>{(username ?? 'Y').charAt(0).toUpperCase()}</div>
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 18, fontWeight: 800, color: TEC_COLORS.text }}>
-              {username ? `@${username}` : s.notSignedIn}
+              {username ? `@${username}` : signedIn ? s.member : s.notSignedIn}
             </div>
             <div style={{ fontSize: 13, color: TEC_COLORS.subtext, marginTop: 2 }}>{isPro ? s.planPro : s.planFree}</div>
-            {username && (
+            {signedIn && (
               <span style={{
                 display: 'inline-block', marginTop: 8, fontSize: 12, fontWeight: 700,
                 color: TEC_COLORS.success, background: 'rgba(34,197,94,0.10)',
@@ -134,7 +137,7 @@ export function SettingsView({ isPro }: { isPro: boolean }) {
 
       <div style={{ marginTop: 20 }}><InviteCard /></div>
 
-      {username && (
+      {signedIn && (
         <button
           onClick={() => { void logout(); }}
           style={{
