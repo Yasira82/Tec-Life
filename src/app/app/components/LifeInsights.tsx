@@ -6,7 +6,7 @@
 // goals reached. Your own self-declared data (no population needed). The aggregate is
 // gated server-side behind live Pro (P5); a non-Pro sees an honest teaser. Own-scope (P6).
 import { useEffect, useState } from 'react';
-import { TEC_COLORS } from '@yasser172/tec-ui';
+import { Icon, TEC_COLORS } from '@yasser172/tec-ui';
 
 interface Insights {
   total: number;
@@ -40,7 +40,7 @@ export function LifeInsights() {
   return (
     <section style={{ marginTop: 16 }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 10 }}>
-        <h3 style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.text, margin: 0 }}>📊 Goal insights</h3>
+        <h3 style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.text, margin: 0, display: 'flex', alignItems: 'center', gap: 7 }}><Icon name="chart" size={17} color={TEC_COLORS.gold} strokeWidth={1.9} />Goal insights</h3>
         <span style={{ fontSize: 11, color: TEC_COLORS.gold, border: `1px solid ${TEC_COLORS.gold}55`, borderRadius: 999, padding: '1px 8px' }}>PRO</span>
       </div>
 

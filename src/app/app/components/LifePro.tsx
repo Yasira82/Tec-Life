@@ -6,7 +6,7 @@
 // dual-mode: Hub navigation → Mode 1 (Hub modal); standalone in Pi Browser →
 // Mode 2 (direct createU2APayment).
 import { useEffect, useState } from 'react';
-import { TEC_COLORS } from '@yasser172/tec-ui';
+import { Icon, TEC_COLORS } from '@yasser172/tec-ui';
 import {
   isHubNavigation,
   redirectToHubPayment,
@@ -110,7 +110,7 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
     const soon = typeof daysRemaining === 'number' && daysRemaining <= 7;
     return (
       <div style={{ ...card, borderColor: `${TEC_COLORS.success}66` }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.success }}>🌱 You’re on Life Pro</div>
+        <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.success, display: 'flex', alignItems: 'center', gap: 7 }}><Icon name="sprout" size={17} color={TEC_COLORS.success} strokeWidth={1.9} />You’re on Life Pro</div>
         <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 6 }}>
           Unlimited goals, goal reminders, and personal economic reports are unlocked. Thanks for supporting TEC Life.
         </div>
@@ -127,7 +127,7 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
   if (status === 'success') {
     return (
       <div style={{ ...card, borderColor: `${TEC_COLORS.success}66` }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.success }}>✅ Payment received</div>
+        <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.success, display: 'flex', alignItems: 'center', gap: 7 }}><Icon name="check" size={17} color={TEC_COLORS.success} strokeWidth={2} />Payment received</div>
         <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 6 }}>
           Activating Life Pro… this can take a few seconds. Reopen the app if the ★ PRO badge isn’t showing yet.
         </div>
@@ -140,14 +140,14 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
   return (
     <div style={card}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12 }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.gold }}>🌱 Life Pro</div>
+        <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.gold, display: 'flex', alignItems: 'center', gap: 7 }}><Icon name="sprout" size={17} color={TEC_COLORS.gold} strokeWidth={1.9} />Life Pro</div>
         <div style={{ fontSize: 20, fontWeight: 900, color: TEC_COLORS.text }}>
           {PRICE}π<span style={{ fontSize: 12, color: TEC_COLORS.subtext, fontWeight: 600 }}> / month</span>
         </div>
       </div>
       <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 8, lineHeight: 1.5 }}>
         Premium planning for your Pi life — <strong style={{ color: TEC_COLORS.text }}>unlimited goals</strong> plus
-        a <strong style={{ color: TEC_COLORS.text }}>📊 Goal Insights</strong> dashboard (completion rate, funding
+        a <strong style={{ color: TEC_COLORS.text }}>Goal Insights</strong> dashboard (completion rate, funding
         progress toward your π targets, goals reached) — a deeper read of your own data.
         Your data stays yours. Early price, locked in.
       </div>

@@ -6,13 +6,12 @@
 import { useState } from 'react';
 import { InviteCard } from '@/components/referral/InviteCard';
 import { usePiAuth } from '@yasser172/tec-auth';
-import { TEC_COLORS } from '@yasser172/tec-ui';
+import { Icon, type IconName, TEC_COLORS } from '@yasser172/tec-ui';
 import { useGoals, useActivity, useSubscription, type Goal, type GoalStatus } from '@/lib-client/life/useLife';
 import { useMe } from '@/lib-client/hooks/useMe';
 import { LifePro } from './components/LifePro';
 import { LifeInsights } from './components/LifeInsights';
 import { BottomNav, type LifeTab } from './components/BottomNav';
-import { Icon, type LifeIconName } from './components/Icon';
 import { SettingsView } from './components/SettingsView';
 import { useTranslation } from '@/lib/i18n';
 
@@ -49,10 +48,13 @@ const isProPlan = (plan?: string | null) => {
   return p === 'PRO' || p === 'ENTERPRISE';
 };
 
-function SectionTitle({ emoji, title, hint }: { emoji: string; title: string; hint?: string }) {
+// Takes a glyph NAME, not a character. The emoji it used to take rendered as a
+// glossy 3D object on one phone and flat grey line art on the next — see
+// @yasser172/tec-ui 2.3.0.
+function SectionTitle({ icon, title, hint }: { icon: IconName; title: string; hint?: string }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 12 }}>
-      <span style={{ fontSize: 20 }}>{emoji}</span>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+      <Icon name={icon} size={20} color={TEC_COLORS.gold} strokeWidth={1.9} />
       <h2 style={{ fontSize: 18, fontWeight: 800, color: TEC_COLORS.text, margin: 0 }}>{title}</h2>
       {hint && <span style={{ fontSize: 12, color: TEC_COLORS.subtext }}>{hint}</span>}
     </div>
@@ -192,7 +194,7 @@ function Goals({ isPro }: { isPro: boolean }) {
 
   return (
     <section style={{ marginTop: 24 }}>
-      <SectionTitle emoji="🎯" title={t.life.goals.title} hint={t.life.goals.hint} />
+      <SectionTitle icon="target" title={t.life.goals.title} hint={t.life.goals.hint} />
 
       {!loading && goals.length > 0 && <Overview goals={goals} />}
 
@@ -273,7 +275,7 @@ function Activity() {
 
   return (
     <section style={{ marginTop: 24 }}>
-      <SectionTitle emoji="📈" title={t.life.activity.title} hint={t.life.activity.hint} />
+      <SectionTitle icon="trending" title={t.life.activity.title} hint={t.life.activity.hint} />
       <div style={{ ...card }}>
         {loading ? (
           <p style={{ fontSize: 13, color: TEC_COLORS.subtext, margin: 0 }}>Loading…</p>
@@ -314,7 +316,7 @@ function Activity() {
 // Home tab — quick-launch cards into each section, so the shell feels navigable.
 function HomeQuickNav({ onGo }: { onGo: (t: LifeTab) => void }) {
   const { t } = useTranslation();
-  const items: { id: LifeTab; icon: LifeIconName; title: string; hint: string }[] = [
+  const items: { id: LifeTab; icon: IconName; title: string; hint: string }[] = [
     { id: 'goals',    icon: 'trophy',   title: t.life.cards.goals.title,    hint: t.life.cards.goals.hint },
     { id: 'activity', icon: 'chart',    title: t.life.cards.activity.title, hint: t.life.cards.activity.hint },
     { id: 'settings', icon: 'settings', title: t.life.cards.prefs.title,    hint: t.life.cards.prefs.hint },
