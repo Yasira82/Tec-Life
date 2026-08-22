@@ -3,12 +3,11 @@
 import { useEffect }               from 'react';
 import { useRouter }               from 'next/navigation';
 import { usePiAuth, ssoRedirect }  from '@yasser172/tec-auth';
-import { TEC_COLORS }              from '@yasser172/tec-ui';
+import { Icon, TEC_COLORS }        from '@yasser172/tec-ui';
 
 const HUB_URL     = process.env.NEXT_PUBLIC_HUB_URL   ?? 'https://hub.tecosystem.app';
 const APP_URL     = process.env.NEXT_PUBLIC_APP_URL   ?? 'https://life.tecosystem.app';
 const APP_NAME    = process.env.NEXT_PUBLIC_APP_NAME  ?? 'TEC Life';
-const APP_EMOJI   = process.env.NEXT_PUBLIC_APP_EMOJI ?? '🌱';
 const APP_TAGLINE = 'What matters to you';
 
 export default function HomePage() {
@@ -34,7 +33,9 @@ export default function HomePage() {
       justifyContent: 'center',
     }}>
       <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>{APP_EMOJI}</div>
+        <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'center' }}>
+          <Icon name="sprout" size={48} color={TEC_COLORS.gold} strokeWidth={1.5} />
+        </div>
         <div style={{ fontSize: 24, fontWeight: 900, color: TEC_COLORS.gold, marginBottom: 8 }}>
           {APP_NAME}
         </div>

@@ -7,7 +7,7 @@
 // only a per-app surface over the shared `/api/referral` proxy. Real data only
 // (C-135 §4): the code is fetched live; with no session it shows an honest prompt.
 import { useEffect, useState } from 'react';
-import { TEC_COLORS } from '@yasser172/tec-ui';
+import { Icon, TEC_COLORS } from '@yasser172/tec-ui';
 
 export function InviteCard() {
   const [code, setCode]   = useState<string | null>(null);
@@ -48,7 +48,7 @@ export function InviteCard() {
   return (
     <section style={card}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 18 }}>🎁</span>
+        <Icon name="gift" size={18} color={TEC_COLORS.gold} strokeWidth={1.9} />
         <span style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.text }}>Invite &amp; earn</span>
       </div>
 
