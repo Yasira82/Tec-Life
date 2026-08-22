@@ -13,7 +13,10 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "baseUrl": ".",
+    // No "baseUrl": TypeScript 7 removed it. Every mapping below is already
+    // written relative to this file ("./src/*"), which is how `paths` resolves
+    // without a baseUrl since TS 4.1 — so this is the same behaviour on the
+    // TypeScript we ship today AND on 7.
     "paths": {
       "@/*": ["./src/*"]
     },
