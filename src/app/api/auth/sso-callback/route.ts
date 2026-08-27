@@ -96,7 +96,7 @@ export async function GET(req: NextRequest) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <noscript><meta http-equiv="refresh" content="0;url=${redirect.replace(/"/g, '')}"></noscript>
 </head>
-<body style="margin:0;background:#020205;color:#d4af37;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh">
+<body style="margin:0;background:#050816;color:#FBB44A;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh">
 <div style="text-align:center"><div style="font-size:28px;font-weight:900">🌱 TEC Life</div>
 <div style="font-size:13px;color:#6b6b7a;margin-top:8px">Signing you in…</div></div>
 <script>

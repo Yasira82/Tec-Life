@@ -329,7 +329,7 @@ function HomeQuickNav({ onGo }: { onGo: (t: LifeTab) => void }) {
           <span style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-            background: 'rgba(251,191,36,0.10)', border: '1px solid rgba(251,191,36,0.18)',
+            background: 'rgba(251,180,74,0.10)', border: '1px solid rgba(251,180,74,0.18)',
           }}>
             <Icon name={it.icon} size={20} color={TEC_COLORS.gold} strokeWidth={2} />
           </span>
