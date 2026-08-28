@@ -5,35 +5,26 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
-    groups:
-      dev-dependencies:
-        dependency-type: "development"
     commit-message:
       prefix: "chore(deps)"
-    # Held back until this app moves to Next 16 — not preference, they cannot
-    # work on Next 15:
-    #
-    #   typescript 7        Next 15 does not recognise TS 7 as a TypeScript
-    #                       install at all ("It looks like you're trying to use
-    #                       TypeScript but do not have the required package(s)
-    #                       installed"), so Typecheck and the E2E build both
-    #                       fail before reading a line of source. No tsconfig
-    #                       change reaches it.
-    #   eslint-config-next  Its major tracks the Next major. 16 against Next 15
-    #                       is a version mismatch by construction.
-    #
-    # Without these, Dependabot rebuilds the group PR after every merge here and
-    # its Vercel preview fails every time — a red build that says nothing, on a
-    # branch nobody can merge. Remove BOTH entries in the same change that
-    # upgrades Next; leaving them behind silently freezes two real toolchains.
+    # Major version bumps are coordinated MANUALLY across the platform — it pins
+    # Next 15, React 18, and @sentry/nextjs v8 (KB: v10 rejected). Letting
+    # Dependabot open next→16 / react→19 / sentry→10 / zod→4 just breaks CI on
+    # every new skeleton. Ignore ALL majors; propose only minor/patch.
     ignore:
-      - dependency-name: "typescript"
+      - dependency-name: "*"
         update-types: ["version-update:semver-major"]
-      - dependency-name: "eslint-config-next"
-        update-types: ["version-update:semver-major"]
+    # One grouped PR for all minor+patch (prod + dev) instead of a swarm.
+    groups:
+      all-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
     commit-message:
       prefix: "chore(ci)"
+    groups:
+      github-actions:
+        patterns: ["*"]
