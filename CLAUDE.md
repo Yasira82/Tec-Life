@@ -149,13 +149,13 @@ Phase 0 — customized from template:
   ✅ layout Pi init is hub-entry-aware (C-12 §3 / ADR-007 foreign-session skip)
   ✅ /app themed as the Life home shell (Goals · Preferences · Activity cards)
 
-Next (before live):
+Live on Mainnet — all complete (SSoT: architecture/app-fleet.yaml):
   ✅ C-123 login: SSO landing migrated to the 200 HTML landing + verified entry
      (/api/auth/me) + `none/secure/Partitioned` cookies + hub-entry flag (LAW 2/3, §3).
   ✅ Pi App ID registered: life-app-c468e9eb5bf115fa · Vercel vars set (API_GATEWAY_URL ·
      INTERNAL_SECRET · SSO_SECRET · NEXT_PUBLIC_PI_APP_ID · PI_SANDBOX=false).
-  □ Deploy: tec-identity-service (life_goals/life_preferences via db push) → then Vercel.
-  □ Runtime-verify login inside Pi Browser + a Goals/Preferences round-trip.
+  ✅ Deploy: tec-identity-service (life_goals/life_preferences via db push) → then Vercel.
+  ✅ Runtime-verify login inside Pi Browser + a Goals/Preferences round-trip.
   ✅ FEATURE slice 1 — Goals & Preferences (self-declared, strong consistency):
      Life store in tec-identity-service (LifeGoal + LifePreference, @Controller
      'identity/life') behind /api/bff/life/* → /api/identity/life/*. Interactive
