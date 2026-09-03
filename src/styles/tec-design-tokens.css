@@ -84,7 +84,10 @@ html, body {
   --tec-topbar-gold:   #FBB44A;
   --tec-topbar-fill:   rgba(255,255,255,0.07);
   --tec-topbar-border: rgba(255,255,255,0.12);
-  --tec-topbar-radius: 22px;
+  /* 16, not 22. At 22 the curve read as the loudest thing on the screen —
+     a short band makes the same radius look bigger, and the band is chrome.
+     Keep this in step with the Hub: it is a fleet frame, not a per-app taste. */
+  --tec-topbar-radius: 16px;
 
   --tec-on-gold:     #0a0800;
   /* Channels for the ink ON gold. An own-message bubble is amber in both

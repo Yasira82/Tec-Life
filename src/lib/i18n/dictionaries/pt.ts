@@ -1,5 +1,7 @@
 export const pt = {
   common: {
+    today:     'Hoje',
+    yesterday: 'Ontem',
     appName:  'TEC',
     tagline:  'O Consórcio de Elite',
     login:    'Entrar com Pi',

@@ -1,5 +1,7 @@
 export const id = {
   common: {
+    today:     'Hari ini',
+    yesterday: 'Kemarin',
     appName:  'TEC',
     tagline:  'Konsorsium Elite',
     login:    'Masuk dengan Pi',

@@ -1,5 +1,7 @@
 export const vi = {
   common: {
+    today:     'Hôm nay',
+    yesterday: 'Hôm qua',
     appName:  'TEC',
     tagline:  'Liên minh Tinh hoa',
     login:    'Đăng nhập bằng Pi',

@@ -1,5 +1,7 @@
 export const tr = {
   common: {
+    today:     'Bugün',
+    yesterday: 'Dün',
     appName:  'TEC',
     tagline:  'Seçkin Konsorsiyum',
     login:    'Pi ile giriş yap',

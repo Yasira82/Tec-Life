@@ -1,5 +1,7 @@
 export const ko = {
   common: {
+    today:     '오늘',
+    yesterday: '어제',
     appName:  'TEC',
     tagline:  '엘리트 컨소시엄',
     login:    'Pi로 로그인',
