@@ -51,6 +51,7 @@ export const en = {
       remaining: 'π to go',
     },
     goals: {
+      reached: 'Target reached', markDone: 'Mark done',
       title: 'Goals', hint: 'set a target · track your progress',
       active: 'Active', completed: 'Completed', tracked: 'π tracked',
       insights: 'Goal insights',

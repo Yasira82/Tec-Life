@@ -44,6 +44,7 @@ export const ru = {
       remaining: 'π осталось',
     },
     goals: {
+      reached: 'Цель достигнута', markDone: 'Отметить готово',
       title: 'Цели', hint: 'поставьте цель · следите за прогрессом',
       active: 'Активные', completed: 'Достигнутые', tracked: 'π отслежено',
       insights: 'Анализ целей',

@@ -44,6 +44,7 @@ export const vi = {
       remaining: 'π còn lại',
     },
     goals: {
+      reached: 'Đã đạt mục tiêu', markDone: 'Đánh dấu xong',
       title: 'Mục tiêu', hint: 'đặt mục tiêu · theo dõi tiến độ',
       active: 'Đang thực hiện', completed: 'Hoàn thành', tracked: 'π đã theo dõi',
       insights: 'Phân tích mục tiêu',

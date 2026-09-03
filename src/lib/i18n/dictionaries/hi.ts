@@ -44,6 +44,7 @@ export const hi = {
       remaining: 'π बाकी',
     },
     goals: {
+      reached: 'लक्ष्य पूरा', markDone: 'पूरा चिह्नित करें',
       title: 'लक्ष्य', hint: 'लक्ष्य तय करें · प्रगति देखें',
       active: 'सक्रिय', completed: 'पूर्ण', tracked: 'π ट्रैक किया',
       insights: 'लक्ष्य विश्लेषण',

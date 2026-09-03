@@ -44,6 +44,7 @@ export const zh = {
       remaining: 'π 待完成',
     },
     goals: {
+      reached: '已达成目标', markDone: '标记完成',
       title: '目标', hint: '设定目标 · 跟踪进度',
       active: '进行中', completed: '已完成', tracked: 'π 已跟踪',
       insights: '目标分析',

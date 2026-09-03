@@ -44,6 +44,7 @@ export const id = {
       remaining: 'π lagi',
     },
     goals: {
+      reached: 'Target tercapai', markDone: 'Tandai selesai',
       title: 'Tujuan', hint: 'tetapkan target · pantau kemajuan',
       active: 'Aktif', completed: 'Selesai', tracked: 'π terlacak',
       insights: 'Analisis tujuan',

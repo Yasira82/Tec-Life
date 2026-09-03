@@ -44,6 +44,7 @@ export const ko = {
       remaining: 'π 남음',
     },
     goals: {
+      reached: '목표 달성', markDone: '완료로 표시',
       title: '목표', hint: '목표 설정 · 진행 상황 추적',
       active: '진행 중', completed: '완료', tracked: 'π 추적됨',
       insights: '목표 분석',
