@@ -4,22 +4,25 @@
 // with a Profile card, an EN/AR language toggle that drives i18n, preferences, an
 // About block, invite, and logout. Fully translated (RTL-aware via the provider).
 import { usePiAuth } from '@yasser172/tec-auth';
-import { TEC_COLORS } from '@yasser172/tec-ui';
+import { useEffect, useState } from 'react';
+import { C, errorA, goldA, successA } from '@/lib-client/palette';
+import { THEME_ORDER, readTheme, saveTheme, type ThemeChoice } from '@/lib-client/theme';
 import { usePreferences } from '@/lib-client/life/useLife';
 import { useMe } from '@/lib-client/hooks/useMe';
 import { useTranslation } from '@/lib/i18n';
+import { LOCALES } from '@/lib/i18n/locales';
 import { InviteCard } from '@/components/referral/InviteCard';
 
 const FOCUS_OPTIONS = ['Saving', 'Earning', 'Learning', 'Building', 'Trading'];
 
 const cardStyle = {
-  background: TEC_COLORS.surface, border: `1px solid ${TEC_COLORS.border}`, borderRadius: 16,
+  background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16,
 } as const;
 
 function Section({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
   return (
     <section style={{ marginTop: 20 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 4px 8px', color: TEC_COLORS.subtext }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 4px 8px', color: C.subtext }}>
         <span style={{ fontSize: 15 }}>{icon}</span>
         <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase' }}>{title}</span>
       </div>
@@ -32,11 +35,11 @@ function Row({ label, desc, children, first }: { label: string; desc?: string; c
   return (
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
-      padding: '14px 16px', borderTop: first ? 'none' : `1px solid ${TEC_COLORS.border}`,
+      padding: '14px 16px', borderTop: first ? 'none' : `1px solid ${C.border}`,
     }}>
       <div style={{ minWidth: 0 }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: TEC_COLORS.text }}>{label}</div>
-        {desc && <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 2 }}>{desc}</div>}
+        <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>{label}</div>
+        {desc && <div style={{ fontSize: 12, color: C.subtext, marginTop: 2 }}>{desc}</div>}
       </div>
       {children != null && <div style={{ flexShrink: 0 }}>{children}</div>}
     </div>
@@ -52,9 +55,9 @@ function Pills<T extends string>({ value, options, onChange }: { value: T; optio
           <button key={o.value} onClick={() => onChange(o.value)}
             style={{
               padding: '7px 14px', borderRadius: 999, cursor: 'pointer', fontSize: 13, fontWeight: 700,
-              border: `1px solid ${active ? TEC_COLORS.gold : TEC_COLORS.border}`,
-              background: active ? 'rgba(251,180,74,0.12)' : 'transparent',
-              color: active ? TEC_COLORS.gold : TEC_COLORS.subtext,
+              border: `1px solid ${active ? C.gold : C.border}`,
+              background: active ? goldA(0.12) : 'transparent',
+              color: active ? C.gold : C.subtext,
             }}>
             {o.label}
           </button>
@@ -66,6 +69,12 @@ function Pills<T extends string>({ value, options, onChange }: { value: T; optio
 
 export function SettingsView({ isPro }: { isPro: boolean }) {
   const { t, locale, setLocale } = useTranslation();
+  // Read AFTER mount, never during render: the server has no localStorage, so
+  // reading it in the initial state makes the markup depend on a value only the
+  // browser has. The boot script already stamped the document, so the only thing
+  // this catches up is the control's own highlight.
+  const [theme, setTheme] = useState<ThemeChoice>('system');
+  useEffect(() => { setTheme(readTheme()); }, []);
   const { user, isAuthenticated, logout } = usePiAuth();
   const me = useMe();
   const { prefs, loading, saving, save } = usePreferences();
@@ -79,7 +88,7 @@ export function SettingsView({ isPro }: { isPro: boolean }) {
   const signedIn = me.authenticated || isAuthenticated || isPro || !!username;
 
   const selectStyle = {
-    background: TEC_COLORS.bg, color: TEC_COLORS.text, border: `1px solid ${TEC_COLORS.border}`,
+    background: C.bg, color: C.text, border: `1px solid ${C.border}`,
     borderRadius: 10, padding: '8px 12px', fontSize: 14, minWidth: 140,
   } as const;
 
@@ -90,34 +99,64 @@ export function SettingsView({ isPro }: { isPro: boolean }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: 16 }}>
           <div style={{
             width: 56, height: 56, borderRadius: '50%', flexShrink: 0,
-            background: `linear-gradient(135deg, ${TEC_COLORS.gold}, ${TEC_COLORS.goldDark})`,
+            background: `linear-gradient(135deg, ${C.gold}, ${C.goldDark})`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 24, fontWeight: 900, color: '#0a0800',
+            fontSize: 24, fontWeight: 900, color: C.onGold,
           }}>{(username ?? 'Y').charAt(0).toUpperCase()}</div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 18, fontWeight: 800, color: TEC_COLORS.text }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: C.text }}>
               {username ? `@${username}` : signedIn ? s.member : s.notSignedIn}
             </div>
-            <div style={{ fontSize: 13, color: TEC_COLORS.subtext, marginTop: 2 }}>{isPro ? s.planPro : s.planFree}</div>
+            <div style={{ fontSize: 13, color: C.subtext, marginTop: 2 }}>{isPro ? s.planPro : s.planFree}</div>
             {signedIn && (
               <span style={{
                 display: 'inline-block', marginTop: 8, fontSize: 12, fontWeight: 700,
-                color: TEC_COLORS.success, background: 'rgba(34,197,94,0.10)',
-                border: '1px solid rgba(34,197,94,0.25)', borderRadius: 999, padding: '3px 10px',
+                color: C.success, background: successA(0.1),
+                border: `1px solid ${successA(0.25)}`, borderRadius: 999, padding: '3px 10px',
               }}>● {s.connectedPi}</span>
             )}
           </div>
         </div>
       </Section>
 
-      {/* Appearance — language toggle drives the whole app (i18n + RTL) */}
+      {/* Appearance — theme and language, both driving the whole app.
+          The theme row is new: this section was called "Appearance" and offered
+          only a language, because nothing here could change a colour. Every
+          component painted from hex literals baked into inline styles, so the
+          `[data-theme]` blocks in the stylesheet had no reader. */}
       <Section title={s.appearance} icon="🎨">
-        <Row label={t.life.prefs.language} desc={s.languageDesc} first>
+        <Row label={s.theme} desc={s.themeDesc} first>
           <Pills
-            value={locale}
-            options={[{ value: 'en', label: '🇺🇸 EN' }, { value: 'ar', label: '🇸🇦 AR' }]}
-            onChange={(v) => { setLocale(v); save({ language: v }); }}
+            value={theme}
+            options={THEME_ORDER.map((v) => ({
+              value: v,
+              label: v === 'system' ? s.themeSystem : v === 'light' ? s.themeLight : s.themeDark,
+            }))}
+            onChange={(v) => { setTheme(v); saveTheme(v); }}
           />
+        </Row>
+        <Row label={t.life.prefs.language} desc={s.languageDesc}>
+          {/* A select, not pills: twelve options do not fit in a row, and a
+              horizontally-scrolling strip hides the ones that happen to sit
+              off-screen — including, for some readers, their own.
+
+              Each is written in ITS OWN SCRIPT. Someone who cannot read the
+              current interface language cannot read "Vietnamese" either, but
+              they can always read "Tiếng Việt". */}
+          <select
+            value={locale}
+            onChange={(e) => { const v = e.target.value as typeof locale; setLocale(v); save({ language: v }); }}
+            aria-label={t.life.prefs.language}
+            style={{
+              background: C.bg, color: C.text, fontSize: 14,
+              border: `1px solid ${goldA(0.2)}`, borderRadius: 8,
+              padding: '8px 10px', outline: 'none', maxWidth: 200,
+            }}
+          >
+            {LOCALES.map((l) => (
+              <option key={l.code} value={l.code} lang={l.code}>{l.native}</option>
+            ))}
+          </select>
         </Row>
       </Section>
 
@@ -134,10 +173,10 @@ export function SettingsView({ isPro }: { isPro: boolean }) {
 
       {/* About */}
       <Section title={s.about} icon="ℹ️">
-        <Row label={s.version} first><span style={{ color: TEC_COLORS.subtext, fontSize: 14 }}>1.0.0</span></Row>
-        <Row label={s.domain}><span style={{ color: TEC_COLORS.subtext, fontSize: 14 }}>life.pi</span></Row>
-        <Row label={s.ecosystem}><span style={{ color: TEC_COLORS.gold, fontSize: 14, fontWeight: 700 }}>TEC · 24</span></Row>
-        <Row label={s.builtOn}><span style={{ color: TEC_COLORS.subtext, fontSize: 14 }}>{s.builtOnPi}</span></Row>
+        <Row label={s.version} first><span style={{ color: C.subtext, fontSize: 14 }}>1.0.0</span></Row>
+        <Row label={s.domain}><span style={{ color: C.subtext, fontSize: 14 }}>life.pi</span></Row>
+        <Row label={s.ecosystem}><span style={{ color: C.gold, fontSize: 14, fontWeight: 700 }}>TEC · 24</span></Row>
+        <Row label={s.builtOn}><span style={{ color: C.subtext, fontSize: 14 }}>{s.builtOnPi}</span></Row>
       </Section>
 
       <div style={{ marginTop: 20 }}><InviteCard /></div>
@@ -147,8 +186,8 @@ export function SettingsView({ isPro }: { isPro: boolean }) {
           onClick={() => { void logout(); }}
           style={{
             width: '100%', marginTop: 16, padding: '14px', cursor: 'pointer',
-            background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.28)',
-            borderRadius: 14, color: '#ef4444', fontSize: 15, fontWeight: 800,
+            background: errorA(0.06), border: `1px solid ${errorA(0.28)}`,
+            borderRadius: 14, color: C.error, fontSize: 15, fontWeight: 800,
           }}>
           {s.logout}
         </button>

@@ -6,7 +6,8 @@
 // dual-mode: Hub navigation → Mode 1 (Hub modal); standalone in Pi Browser →
 // Mode 2 (direct createU2APayment).
 import { useEffect, useState } from 'react';
-import { Icon, TEC_COLORS } from '@yasser172/tec-ui';
+import {Icon} from '@yasser172/tec-ui';
+import { C, goldA, successA } from '@/lib-client/palette';
 import {
   isHubNavigation,
   redirectToHubPayment,
@@ -95,8 +96,8 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
   };
 
   const card: React.CSSProperties = {
-    background:   TEC_COLORS.surface,
-    border:       `1px solid ${TEC_COLORS.gold}55`,
+    background:   C.surface,
+    border:       `1px solid ${goldA(0.333)}`,
     borderRadius: 16,
     padding:      20,
     marginTop:    24,
@@ -109,13 +110,13 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
     // nudge a re-subscribe as the period runs down. Amber inside the last week.
     const soon = typeof daysRemaining === 'number' && daysRemaining <= 7;
     return (
-      <div style={{ ...card, borderColor: `${TEC_COLORS.success}66` }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.success, display: 'flex', alignItems: 'center', gap: 7 }}><Icon name="sprout" size={17} color={TEC_COLORS.success} strokeWidth={1.9} />You’re on Life Pro</div>
-        <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 6 }}>
+      <div style={{ ...card, borderColor: `${successA(0.4)}` }}>
+        <div style={{ fontSize: 15, fontWeight: 800, color: C.success, display: 'flex', alignItems: 'center', gap: 7 }}><Icon name="sprout" size={17} color={C.success} strokeWidth={1.9} />You’re on Life Pro</div>
+        <div style={{ fontSize: 12, color: C.subtext, marginTop: 6 }}>
           Unlimited goals, goal reminders, and personal economic reports are unlocked. Thanks for supporting TEC Life.
         </div>
         {typeof daysRemaining === 'number' && (
-          <div style={{ fontSize: 12, fontWeight: soon ? 700 : 600, color: soon ? TEC_COLORS.gold : TEC_COLORS.subtext, marginTop: 8 }}>
+          <div style={{ fontSize: 12, fontWeight: soon ? 700 : 600, color: soon ? C.gold : C.subtext, marginTop: 8 }}>
             {soon ? '⏳ ' : ''}Expires in {daysRemaining} day{daysRemaining === 1 ? '' : 's'}
             {soon ? ' — re-subscribe to keep Pro (one-time monthly payment, no auto-renewal).' : '.'}
           </div>
@@ -126,9 +127,9 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
 
   if (status === 'success') {
     return (
-      <div style={{ ...card, borderColor: `${TEC_COLORS.success}66` }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.success, display: 'flex', alignItems: 'center', gap: 7 }}><Icon name="check" size={17} color={TEC_COLORS.success} strokeWidth={2} />Payment received</div>
-        <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 6 }}>
+      <div style={{ ...card, borderColor: `${successA(0.4)}` }}>
+        <div style={{ fontSize: 15, fontWeight: 800, color: C.success, display: 'flex', alignItems: 'center', gap: 7 }}><Icon name="check" size={17} color={C.success} strokeWidth={2} />Payment received</div>
+        <div style={{ fontSize: 12, color: C.subtext, marginTop: 6 }}>
           Activating Life Pro… this can take a few seconds. Reopen the app if the ★ PRO badge isn’t showing yet.
         </div>
       </div>
@@ -140,14 +141,14 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
   return (
     <div style={card}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12 }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.gold, display: 'flex', alignItems: 'center', gap: 7 }}><Icon name="sprout" size={17} color={TEC_COLORS.gold} strokeWidth={1.9} />Life Pro</div>
-        <div style={{ fontSize: 20, fontWeight: 900, color: TEC_COLORS.text }}>
-          {PRICE}π<span style={{ fontSize: 12, color: TEC_COLORS.subtext, fontWeight: 600 }}> / month</span>
+        <div style={{ fontSize: 15, fontWeight: 800, color: C.gold, display: 'flex', alignItems: 'center', gap: 7 }}><Icon name="sprout" size={17} color={C.gold} strokeWidth={1.9} />Life Pro</div>
+        <div style={{ fontSize: 20, fontWeight: 900, color: C.text }}>
+          {PRICE}π<span style={{ fontSize: 12, color: C.subtext, fontWeight: 600 }}> / month</span>
         </div>
       </div>
-      <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 8, lineHeight: 1.5 }}>
-        Premium planning for your Pi life — <strong style={{ color: TEC_COLORS.text }}>unlimited goals</strong> plus
-        a <strong style={{ color: TEC_COLORS.text }}>Goal Insights</strong> dashboard (completion rate, funding
+      <div style={{ fontSize: 12, color: C.subtext, marginTop: 8, lineHeight: 1.5 }}>
+        Premium planning for your Pi life — <strong style={{ color: C.text }}>unlimited goals</strong> plus
+        a <strong style={{ color: C.text }}>Goal Insights</strong> dashboard (completion rate, funding
         progress toward your π targets, goals reached) — a deeper read of your own data.
         Your data stays yours. Early price, locked in.
       </div>
@@ -157,8 +158,8 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
         disabled={busy}
         style={{
           marginTop: 14, width: '100%', padding: '12px 16px', borderRadius: 12,
-          background: busy ? '#333' : `linear-gradient(135deg, ${TEC_COLORS.gold}, ${TEC_COLORS.goldDark})`,
-          color: busy ? '#888' : '#0a0800',
+          background: busy ? C.surface3 : `linear-gradient(135deg, ${C.gold}, ${C.goldDark})`,
+          color: busy ? C.faint : C.onGold,
           border: 'none', fontSize: 14, fontWeight: 800,
           cursor: busy ? 'not-allowed' : 'pointer',
         }}
@@ -169,7 +170,7 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
       </button>
 
       {status === 'error' && (
-        <div style={{ fontSize: 12, color: TEC_COLORS.error, marginTop: 10 }}>{message}</div>
+        <div style={{ fontSize: 12, color: C.error, marginTop: 10 }}>{message}</div>
       )}
     </div>
   );

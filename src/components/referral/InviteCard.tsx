@@ -7,7 +7,8 @@
 // only a per-app surface over the shared `/api/referral` proxy. Real data only
 // (C-135 §4): the code is fetched live; with no session it shows an honest prompt.
 import { useEffect, useState } from 'react';
-import { Icon, TEC_COLORS } from '@yasser172/tec-ui';
+import {Icon} from '@yasser172/tec-ui';
+import { C, goldA } from '@/lib-client/palette';
 
 export function InviteCard() {
   const [code, setCode]   = useState<string | null>(null);
@@ -39,7 +40,7 @@ export function InviteCard() {
   };
 
   const card: React.CSSProperties = {
-    background: TEC_COLORS.surface, border: `1px solid ${TEC_COLORS.gold}33`,
+    background: C.surface, border: `1px solid ${goldA(0.2)}`,
     borderRadius: 12, padding: 16, marginTop: 20,
   };
 
@@ -48,26 +49,26 @@ export function InviteCard() {
   return (
     <section style={card}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <Icon name="gift" size={18} color={TEC_COLORS.gold} strokeWidth={1.9} />
-        <span style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.text }}>Invite &amp; earn</span>
+        <Icon name="gift" size={18} color={C.gold} strokeWidth={1.9} />
+        <span style={{ fontSize: 15, fontWeight: 800, color: C.text }}>Invite &amp; earn</span>
       </div>
 
       {state === 'anon' ? (
-        <p style={{ fontSize: 13, color: TEC_COLORS.subtext, margin: '8px 0 0', lineHeight: 1.6 }}>
+        <p style={{ fontSize: 13, color: C.subtext, margin: '8px 0 0', lineHeight: 1.6 }}>
           Sign in with Pi to get your invite link — share it and earn a reward when a friend joins.
         </p>
       ) : (
         <>
-          <p style={{ fontSize: 13, color: TEC_COLORS.subtext, margin: '8px 0 12px', lineHeight: 1.6 }}>
+          <p style={{ fontSize: 13, color: C.subtext, margin: '8px 0 12px', lineHeight: 1.6 }}>
             Share your link — you both earn when a friend joins TEC through it.
           </p>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-            <code style={{ flex: 1, minWidth: 200, fontSize: 12, color: TEC_COLORS.gold, background: '#00000030', border: `1px solid ${TEC_COLORS.gold}22`, borderRadius: 8, padding: '9px 12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <code style={{ flex: 1, minWidth: 200, fontSize: 12, color: C.gold, background: '#00000030', border: `1px solid ${goldA(0.133)}`, borderRadius: 8, padding: '9px 12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {link}
             </code>
             <button
               onClick={copy}
-              style={{ fontSize: 13, fontWeight: 800, color: '#0a0800', background: `linear-gradient(135deg, ${TEC_COLORS.gold}, ${TEC_COLORS.goldDark})`, border: 'none', borderRadius: 8, padding: '9px 16px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+              style={{ fontSize: 13, fontWeight: 800, color: C.onGold, background: `linear-gradient(135deg, ${C.gold}, ${C.goldDark})`, border: 'none', borderRadius: 8, padding: '9px 16px', cursor: 'pointer', whiteSpace: 'nowrap' }}
             >
               {copied ? '✓ Copied' : 'Copy link'}
             </button>
