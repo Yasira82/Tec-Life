@@ -1,5 +1,7 @@
 export const ar = {
   common: {
+    today:     'النهاردة',
+    yesterday: 'امبارح',
     appName:  'TEC',
     tagline:  'تحالف النخبة',
     login:    'تسجيل الدخول بـ Pi',

@@ -1,5 +1,7 @@
 export const zh = {
   common: {
+    today:     '今天',
+    yesterday: '昨天',
     appName:  'TEC',
     tagline:  '精英联盟',
     login:    '用 Pi 登录',

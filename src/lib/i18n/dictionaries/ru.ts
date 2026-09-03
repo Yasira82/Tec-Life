@@ -1,5 +1,7 @@
 export const ru = {
   common: {
+    today:     'Сегодня',
+    yesterday: 'Вчера',
     appName:  'TEC',
     tagline:  'Элитный консорциум',
     login:    'Войти через Pi',

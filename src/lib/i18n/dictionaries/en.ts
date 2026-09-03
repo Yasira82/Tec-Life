@@ -7,6 +7,8 @@
 // their own words. All twelve are generated from one table so they cannot drift.
 export const en = {
   common: {
+    today:     'Today',
+    yesterday: 'Yesterday',
     appName:  'TEC',
     tagline:  'The Elite Consortium',
     login:    'Sign in with Pi',

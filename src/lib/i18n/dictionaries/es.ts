@@ -1,5 +1,7 @@
 export const es = {
   common: {
+    today:     'Hoy',
+    yesterday: 'Ayer',
     appName:  'TEC',
     tagline:  'El Consorcio de Élite',
     login:    'Iniciar sesión con Pi',

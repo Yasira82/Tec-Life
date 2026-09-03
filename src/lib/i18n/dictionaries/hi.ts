@@ -1,5 +1,7 @@
 export const hi = {
   common: {
+    today:     'आज',
+    yesterday: 'कल',
     appName:  'TEC',
     tagline:  'द एलीट कंसोर्टियम',
     login:    'Pi से साइन इन करें',

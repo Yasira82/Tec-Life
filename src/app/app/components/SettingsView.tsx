@@ -4,8 +4,9 @@
 // with a Profile card, an EN/AR language toggle that drives i18n, preferences, an
 // About block, invite, and logout. Fully translated (RTL-aware via the provider).
 import { usePiAuth } from '@yasser172/tec-auth';
+import { Icon, type IconName } from '@yasser172/tec-ui';
 import { useEffect, useState } from 'react';
-import { C, errorA, goldA, successA } from '@/lib-client/palette';
+import { C, errorA, goldA, inkA, successA } from '@/lib-client/palette';
 import { THEME_ORDER, readTheme, saveTheme, type ThemeChoice } from '@/lib-client/theme';
 import {
   usePreferences, useConsent, useIntent, purgeLifeData,
@@ -21,12 +22,16 @@ const cardStyle = {
   background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16,
 } as const;
 
-function Section({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
+function Section({ title, icon, children }: { title: string; icon: IconName; children: React.ReactNode }) {
   return (
     <section style={{ marginTop: 20 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 4px 8px', color: C.subtext }}>
-        <span style={{ fontSize: 15 }}>{icon}</span>
-        <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase' }}>{title}</span>
+      {/* A glyph NAME, not an emoji character. The same emoji is a glossy 3D
+          object on one phone and flat grey line art on the next, and it never
+          takes the section's colour — one line-icon set at one weight is what
+          a settings screen looks like when someone designed it. */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 4px 10px', color: C.faint }}>
+        <Icon name={icon} size={14} color={C.faint} strokeWidth={2} />
+        <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.4, textTransform: 'uppercase' }}>{title}</span>
       </div>
       <div style={{ ...cardStyle, overflow: 'hidden' }}>{children}</div>
     </section>
@@ -80,16 +85,17 @@ function Toggle({ on, disabled, label, onChange }: {
       role="switch" aria-checked={on} aria-label={label} disabled={disabled}
       onClick={() => onChange(!on)}
       style={{
-        width: 46, height: 27, borderRadius: 999, position: 'relative', flexShrink: 0,
+        width: 44, height: 26, borderRadius: 999, position: 'relative', flexShrink: 0,
         cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1,
-        background: on ? C.gold : C.bg,
+        background: on ? C.gold : inkA(0.1),
         border: `1px solid ${on ? 'transparent' : C.border}`,
         transition: 'background .18s',
       }}>
       <span style={{
-        position: 'absolute', top: 2, insetInlineStart: on ? 21 : 2,
-        width: 21, height: 21, borderRadius: '50%',
-        background: on ? C.onGold : C.subtext, transition: 'inset-inline-start .18s',
+        position: 'absolute', top: 3, insetInlineStart: on ? 21 : 3,
+        width: 18, height: 18, borderRadius: '50%',
+        background: on ? C.onGold : C.faint,
+        transition: 'inset-inline-start .18s, background .18s',
       }} />
     </button>
   );
@@ -154,7 +160,7 @@ function Privacy() {
   };
 
   return (
-    <Section title={p.title} icon="🔒">
+    <Section title={p.title} icon="lock">
       <div style={{ padding: '14px 16px' }}>
         <div style={{ fontSize: 14, fontWeight: 700, color: C.text }}>{p.shareTitle}</div>
         <p style={{ fontSize: 12, color: C.subtext, margin: '6px 0 0', lineHeight: 1.6 }}>{p.shareNote}</p>
@@ -245,7 +251,7 @@ export function SettingsView({ isPro }: { isPro: boolean }) {
   return (
     <div>
       {/* Profile */}
-      <Section title={s.profile} icon="👤">
+      <Section title={s.profile} icon="user">
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: 16 }}>
           <div style={{
             width: 56, height: 56, borderRadius: '50%', flexShrink: 0,
@@ -274,7 +280,7 @@ export function SettingsView({ isPro }: { isPro: boolean }) {
           only a language, because nothing here could change a colour. Every
           component painted from hex literals baked into inline styles, so the
           `[data-theme]` blocks in the stylesheet had no reader. */}
-      <Section title={s.appearance} icon="🎨">
+      <Section title={s.appearance} icon="palette">
         <Row label={s.theme} desc={s.themeDesc} first>
           <Pills
             value={theme}
@@ -311,7 +317,7 @@ export function SettingsView({ isPro }: { isPro: boolean }) {
       </Section>
 
       {/* Preferences */}
-      <Section title={t.life.prefs.title} icon="⚙️">
+      <Section title={t.life.prefs.title} icon="settings">
         <Row label={t.life.prefs.primaryFocus} first>
           <select style={selectStyle} value={prefs.focus ?? ''} disabled={loading || saving}
             onChange={(e) => save({ focus: e.target.value })}>
@@ -325,7 +331,7 @@ export function SettingsView({ isPro }: { isPro: boolean }) {
       <Privacy />
 
       {/* About */}
-      <Section title={s.about} icon="ℹ️">
+      <Section title={s.about} icon="info">
         <Row label={s.version} first><span style={{ color: C.subtext, fontSize: 14 }}>1.0.0</span></Row>
         <Row label={s.domain}><span style={{ color: C.subtext, fontSize: 14 }}>life.pi</span></Row>
         <Row label={s.ecosystem}><span style={{ color: C.gold, fontSize: 14, fontWeight: 700 }}>TEC · 24</span></Row>
