@@ -14,9 +14,15 @@ personalization signal (C-106).
 Built from `tec-template-base` (Next.js 15 frontend). Personal data is **sovereign** —
 self-declared, private, and never consumed by another app without explicit consent.
 
-**Current Phase: Phase 0 — customized from template.** Identity/domain/slug/legal +
-themed home shell done. Login (C-123 landing) + the first feature slice (Goals &
-Preferences) are the next steps. Deployed (Mainnet) · Pi App ID registered · env set · payment live · referral growth loop wired (C-133).
+**Current Phase: charter complete — all SIX C-106 §4 capabilities built** (goals ·
+preferences · activity · skills · trajectory · intent) plus both privacy P0s (consent,
+right to delete). Deployed (Mainnet) · Pi App ID registered · env set · payment live ·
+referral growth loop wired (C-133). Reference: **C-106 §11b**.
+
+> **Nothing reads Life data across the boundary yet.** The consent grants are what the
+> FIRST reader (TEC AI, C-104) must consult, and the Privacy screen says exactly that.
+> The outbound personal-context API is the next step — and it is now unblocked rather
+> than begun, because the gate it must pass through exists.
 
 ---
 
@@ -171,6 +177,28 @@ Live on Mainnet — all complete (SSoT: architecture/app-fleet.yaml):
      server clamps to [0, target] + auto-completes on reaching it (owner-scoped, P6).
      /app: an Overview strip (active · completed · π tracked) + per-goal progress bars
      + a "Log π" control. Turns Goals from a checklist into a tracker.
+  ✅ FEATURE slice 4 — Skills inventory (C-106 §4, capability 4): LifeSkill + a LADDER
+     (LEARNING → PRACTISING → PROFICIENT → EXPERT), never a score out of ten — a number
+     invites a precision nobody has about their own ability. `source` on every row so an
+     ACTIVITY_INFERRED skill has an honest place to land; that half is deliberately
+     UNBUILT (inferring one means reading activity Analytics owns). Private: C-106 §6
+     gives other users no access, so there is no "by username" read.
+  ✅ FEATURE slice 5 — Trajectory (capability 5): LifeGoalProgress is APPEND-ONLY and the
+     goal's total is a projection OF it (one transaction, so the two cannot disagree).
+     GET /identity/life/trajectory → pace/week, active days, per-goal ETAs. It REFUSES
+     unless there are ≥2 entries on ≥2 calendar days: a projection from too little data
+     is a confident sentence with a date in it, and the date is what a person acts on.
+  ✅ FEATURE slice 6 — Intent signals (capability 6): Redis, 30-min TTL, recorded from
+     Life's OWN writes. The TTL is a PRIVACY GUARANTEE, not a cache — there is no durable
+     copy, and losing Redis loses the signals, which is correct when the alternative is a
+     permanent record of every move. No "report my intent" endpoint (a client-fed signal
+     is a client-controlled claim about a person); the kind is a CLOSED set.
+  ✅ PRIVACY — both P0s (C-106 §5 · §11 P0-1): LifeConsent, category-level + timestamped,
+     where ABSENCE IS A NO (no row = denied, so a new category is denied for everyone with
+     no backfill — INTENT proved it). DELETE /identity/life/data purges goals + skills +
+     preferences + the grants + the Redis intent window in one transaction; the User row
+     and payment records stay (Life does not own them). Consent changes and purges write
+     an AuditLog row; the purge audit survives the purge.
 ```
 
 > Payment scaffold (`src/lib/pi-payment.ts`, ADR-007 guard) is kept for compliance +
@@ -187,6 +215,17 @@ Live on Mainnet — all complete (SSoT: architecture/app-fleet.yaml):
 - Do NOT store tokens in localStorage; do NOT derive identity from the body
 - Do NOT add `NEXT_PUBLIC_*` for internal service URLs or `INTERNAL_SECRET`
 - Do NOT use an open `redirect` param without the same-origin guard (open redirect)
+- Do NOT default a missing identity claim — a missing claim is a 401 (P6). `?? 'unknown'`
+  once made every Pi-less caller share ONE user row (Invariant #3); the guard in
+  `findOrCreateUser` now rejects placeholders, and the call sites must not re-add one
+- Do NOT write `granted: false` consent rows anywhere — absence IS the denial, and a
+  pre-written row set fails OPEN the day a category is added without a backfill
+- Do NOT persist intent signals. The 30-minute Redis TTL is the privacy guarantee; a
+  durable copy would turn "what you are doing now" into a permanent record
+- Do NOT show a projection the backend marked unprojectable, and do NOT fill the gap with
+  a number — the screen says why instead
+- Do NOT add a section heading that repeats the band's title and hint (it already carries
+  both), and do NOT rebuild the tab bar as a list of cards on Home
 
 ---
 

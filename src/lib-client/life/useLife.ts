@@ -259,6 +259,115 @@ export function usePreferences() {
   return { prefs, loading, saving, error, save };
 }
 
+// ── Consent + right to delete (C-106 §5 · §11 P0-1) ──────────
+//
+// The two halves of the sentence on Life's own home screen: "your data is
+// yours — private, and never used without your consent."
+
+// Kept in step with the Prisma enum. INTENT joined the set after the first
+// five and needed no backfill: with "absence is a NO", a category nobody has a
+// row for is denied for everybody, automatically.
+export const LIFE_DATA_CATEGORIES = [
+  'GOALS', 'SKILLS', 'PREFERENCES', 'ACTIVITY', 'TRAJECTORY', 'INTENT',
+] as const;
+export type LifeDataCategory = (typeof LIFE_DATA_CATEGORIES)[number];
+
+export interface ConsentEntry {
+  category:   LifeDataCategory;
+  granted:    boolean;
+  updated_at: string | null; // null = never answered, which is a NO
+}
+
+export function useConsent() {
+  const [consent, setConsent] = useState<ConsentEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving,  setSaving]  = useState(false);
+  const [error,   setError]   = useState<string | null>(null);
+
+  const reload = useCallback(() => {
+    setLoading(true);
+    fetch('/api/bff/life/consent', { credentials: 'include', cache: 'no-store' })
+      .then(readJson)
+      .then((d) => setConsent((d.consent as ConsentEntry[]) ?? []))
+      // Fail closed to an empty list: the screen then shows nothing to toggle
+      // rather than a row of switches whose state it could not read. A switch
+      // drawn OFF because a fetch failed is a lie about a permission.
+      .catch((e: unknown) => { setConsent([]); setError(e instanceof Error ? e.message : 'Failed to load'); })
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => reload(), [reload]);
+
+  const grant = useCallback(async (category: LifeDataCategory, granted: boolean) => {
+    setSaving(true);
+    setError(null);
+    // Optimistic, then reconciled with the server's answer — the toggle must
+    // move under a thumb, but what it settles on is what was actually stored.
+    setConsent((prev) => prev.map((c) => (c.category === category ? { ...c, granted } : c)));
+    try {
+      const res = await fetch('/api/bff/life/consent', {
+        method: 'PUT', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ consent: { [category]: granted } }),
+      });
+      const data = await readJson(res);
+      setConsent((data.consent as ConsentEntry[]) ?? []);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to save');
+      reload(); // roll back to server truth
+    } finally {
+      setSaving(false);
+    }
+  }, [reload]);
+
+  return { consent, loading, saving, error, grant, reload };
+}
+
+// ── Intent (C-106 §4 — "what the user is trying to do now") ──
+//
+// Shown on the Privacy screen rather than the home screen, and that placement
+// is the design: the value of showing someone their own intent window is not
+// news (they just did those things) — it is TRANSPARENCY. This is the thing
+// Life would tell another runtime about them, sitting directly under the
+// switch that decides whether it may.
+
+export interface IntentSignal { kind: string; at: string }
+
+export interface Intent {
+  signals:    IntentSignal[];
+  intent:     string | null;
+  expires_in: number | null; // seconds left in the window
+}
+
+export function useIntent() {
+  const [intent, setIntent] = useState<Intent | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/bff/life/intent', { credentials: 'include', cache: 'no-store' })
+      .then(readJson)
+      .then((d) => { if (alive) setIntent((d.intent as Intent) ?? null); })
+      // Null, never an empty-looking window: "we could not ask" and "there is
+      // nothing there" are different, and only one of them should be shown as
+      // an answer.
+      .catch(() => { if (alive) setIntent(null); });
+    return () => { alive = false; };
+  }, []);
+
+  return intent;
+}
+
+export interface PurgeResult {
+  goals: number; skills: number; preferences: number; consents: number;
+}
+
+/** Purge the caller's Life data. Irreversible; the caller confirms first. */
+export async function purgeLifeData(): Promise<PurgeResult> {
+  const res  = await fetch('/api/bff/life/data', { method: 'DELETE', credentials: 'include' });
+  const data = await readJson(res);
+  return (data.deleted as PurgeResult) ?? { goals: 0, skills: 0, preferences: 0, consents: 0 };
+}
+
 // ── Subscription (Pro entitlement — read from commerce, the Subscription owner) ──
 export function useSubscription() {
   const [plan,          setPlan]          = useState<string | null>(null);

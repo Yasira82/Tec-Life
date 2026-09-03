@@ -7,7 +7,9 @@ import { usePiAuth } from '@yasser172/tec-auth';
 import { useEffect, useState } from 'react';
 import { C, errorA, goldA, successA } from '@/lib-client/palette';
 import { THEME_ORDER, readTheme, saveTheme, type ThemeChoice } from '@/lib-client/theme';
-import { usePreferences } from '@/lib-client/life/useLife';
+import {
+  usePreferences, useConsent, useIntent, purgeLifeData,
+} from '@/lib-client/life/useLife';
 import { useMe } from '@/lib-client/hooks/useMe';
 import { useTranslation } from '@/lib/i18n';
 import { LOCALES } from '@/lib/i18n/locales';
@@ -64,6 +66,154 @@ function Pills<T extends string>({ value, options, onChange }: { value: T; optio
         );
       })}
     </div>
+  );
+}
+
+// A switch, not a checkbox. It carries the state in its shape as well as its
+// colour, so a person who cannot separate the amber from the grey still sees
+// which way it is thrown.
+function Toggle({ on, disabled, label, onChange }: {
+  on: boolean; disabled?: boolean; label: string; onChange: (v: boolean) => void;
+}) {
+  return (
+    <button
+      role="switch" aria-checked={on} aria-label={label} disabled={disabled}
+      onClick={() => onChange(!on)}
+      style={{
+        width: 46, height: 27, borderRadius: 999, position: 'relative', flexShrink: 0,
+        cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1,
+        background: on ? C.gold : C.bg,
+        border: `1px solid ${on ? 'transparent' : C.border}`,
+        transition: 'background .18s',
+      }}>
+      <span style={{
+        position: 'absolute', top: 2, insetInlineStart: on ? 21 : 2,
+        width: 21, height: 21, borderRadius: '50%',
+        background: on ? C.onGold : C.subtext, transition: 'inset-inline-start .18s',
+      }} />
+    </button>
+  );
+}
+
+// ── Privacy (C-106 §5 · §11 P0-1) ────────────────────────────────────────────
+//
+// Life's home screen promises "private, and never used without your consent".
+// This is where that promise becomes something a person can operate: one
+// grant per data category, and a way to remove everything.
+//
+// The note above the switches is deliberately literal. Nothing reads Life data
+// across the boundary today, and a screen implying an active protection would
+// be claiming more than the system does. Saying "nothing reads this yet, and
+// these decide what will be allowed when something does" is both true now and
+// still true afterwards.
+function Privacy() {
+  const { t } = useTranslation();
+  const p = t.life.privacy;
+  const { consent, loading, saving, grant } = useConsent();
+  const intent = useIntent();
+  const [armed,   setArmed]   = useState(false);
+  const [state,   setState]   = useState<'idle' | 'busy' | 'done' | 'failed'>('idle');
+
+  const LABEL: Record<string, string> = {
+    GOALS: p.goals, SKILLS: p.skills, PREFERENCES: p.preferences,
+    ACTIVITY: p.activity, TRAJECTORY: p.trajectory, INTENT: p.intentTitle,
+  };
+
+  // A signal kind reads as a verb, not a constant: "Logging progress", never
+  // PROGRESS_LOGGED. An unknown kind falls through to its raw name rather than
+  // being hidden — a category the screen cannot name is exactly the one a
+  // person should still be told about.
+  const INTENT_LABEL: Record<string, string> = {
+    GOAL_CREATED: p.kGoal, PROGRESS_LOGGED: p.kProgress, GOAL_COMPLETED: p.kDone,
+    SKILL_ADDED: p.kSkill, SKILL_LEVELED: p.kLevel, PREFERENCE_SET: p.kPref,
+  };
+
+  // Two taps, not a modal. The second tap is the confirmation, and it disarms
+  // itself after a few seconds so a stray thumb cannot land on an armed button
+  // minutes later.
+  useEffect(() => {
+    if (!armed) return;
+    const id = setTimeout(() => setArmed(false), 6000);
+    return () => clearTimeout(id);
+  }, [armed]);
+
+  const remove = async () => {
+    if (!armed) { setArmed(true); return; }
+    setArmed(false);
+    setState('busy');
+    try {
+      await purgeLifeData();
+      setState('done');
+      // A purge changes what every other screen holds. Reloading is blunt and
+      // correct: showing a stale goal list after "Deleted." would be the app
+      // contradicting itself about the one thing it just promised.
+      setTimeout(() => window.location.reload(), 900);
+    } catch {
+      setState('failed');
+    }
+  };
+
+  return (
+    <Section title={p.title} icon="🔒">
+      <div style={{ padding: '14px 16px' }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: C.text }}>{p.shareTitle}</div>
+        <p style={{ fontSize: 12, color: C.subtext, margin: '6px 0 0', lineHeight: 1.6 }}>{p.shareNote}</p>
+      </div>
+
+      {/* The live window, directly under the sentence about it and directly
+          above the switch that governs it. Showing someone what they just did
+          is not news; showing them WHAT LIFE WOULD SAY ABOUT THEM, next to the
+          control that decides whether it may, is the whole point. */}
+      {intent && (
+        <div style={{ padding: '0 16px 14px' }}>
+          <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 0.6, textTransform: 'uppercase', color: C.gold }}>
+            {p.intentTitle}
+          </div>
+          <div style={{ fontSize: 13.5, color: C.text, marginTop: 6 }}>
+            {intent.intent ? (INTENT_LABEL[intent.intent] ?? intent.intent) : p.intentNone}
+          </div>
+          {intent.intent && intent.expires_in != null && (
+            <div style={{ fontSize: 11, color: C.faint, marginTop: 4 }}>
+              {p.intentExpires.replace('{n}', String(Math.max(1, Math.round(intent.expires_in / 60))))}
+            </div>
+          )}
+          <p style={{ fontSize: 11.5, color: C.subtext, margin: '8px 0 0', lineHeight: 1.6 }}>{p.intentNote}</p>
+        </div>
+      )}
+
+      {(loading ? [] : consent).map((c) => (
+        <Row key={c.category} label={LABEL[c.category] ?? c.category}>
+          <Toggle
+            on={c.granted}
+            disabled={saving}
+            label={LABEL[c.category] ?? c.category}
+            onChange={(v) => void grant(c.category, v)}
+          />
+        </Row>
+      ))}
+
+      <div style={{ padding: '14px 16px', borderTop: `1px solid ${C.border}` }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: C.error }}>{p.deleteTitle}</div>
+        <p style={{ fontSize: 12, color: C.subtext, margin: '6px 0 12px', lineHeight: 1.6 }}>{p.deleteDesc}</p>
+        <button
+          onClick={() => void remove()}
+          disabled={state === 'busy' || state === 'done'}
+          style={{
+            width: '100%', padding: '12px', borderRadius: 12, cursor: 'pointer',
+            fontSize: 14, fontWeight: 800, color: C.error,
+            background: armed ? errorA(0.16) : errorA(0.06),
+            border: `1px solid ${errorA(armed ? 0.55 : 0.28)}`,
+          }}>
+          {state === 'busy' ? p.deleting
+            : state === 'done' ? p.deleted
+            : armed ? p.confirm
+            : p.delete}
+        </button>
+        {state === 'failed' && (
+          <p style={{ fontSize: 12, color: C.error, margin: '10px 0 0' }}>{p.failed}</p>
+        )}
+      </div>
+    </Section>
   );
 }
 
@@ -170,6 +320,9 @@ export function SettingsView({ isPro }: { isPro: boolean }) {
           </select>
         </Row>
       </Section>
+
+      {/* Privacy — the promise on the home screen, made operable. */}
+      <Privacy />
 
       {/* About */}
       <Section title={s.about} icon="ℹ️">
