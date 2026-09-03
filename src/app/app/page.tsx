@@ -6,7 +6,8 @@
 import { useState } from 'react';
 import { InviteCard } from '@/components/referral/InviteCard';
 import { usePiAuth } from '@yasser172/tec-auth';
-import { Icon, type IconName, TEC_COLORS } from '@yasser172/tec-ui';
+import {Icon, type IconName} from '@yasser172/tec-ui';
+import { C, goldA } from '@/lib-client/palette';
 import { useGoals, useActivity, useSubscription, type Goal, type GoalStatus } from '@/lib-client/life/useLife';
 import { useMe } from '@/lib-client/hooks/useMe';
 import { LifePro } from './components/LifePro';
@@ -16,27 +17,27 @@ import { SettingsView } from './components/SettingsView';
 import { useTranslation } from '@/lib/i18n';
 
 const card = {
-  background:   TEC_COLORS.surface,
-  border:       `1px solid ${TEC_COLORS.border}`,
+  background:   C.surface,
+  border:       `1px solid ${C.border}`,
   borderRadius: 16,
   padding:      '20px 22px',
 } as const;
 
 const inputStyle = {
-  flex: 1, minWidth: 0, background: TEC_COLORS.bg, color: TEC_COLORS.text,
-  border: `1px solid ${TEC_COLORS.border}`, borderRadius: 10, padding: '10px 12px', fontSize: 14,
+  flex: 1, minWidth: 0, background: C.bg, color: C.text,
+  border: `1px solid ${C.border}`, borderRadius: 10, padding: '10px 12px', fontSize: 14,
 } as const;
 
 const goldBtn = {
-  background: `linear-gradient(135deg, ${TEC_COLORS.gold}, ${TEC_COLORS.goldDark})`,
-  color: '#0a0800', border: 'none', borderRadius: 10, padding: '10px 16px',
+  background: `linear-gradient(135deg, ${C.gold}, ${C.goldDark})`,
+  color: C.onGold, border: 'none', borderRadius: 10, padding: '10px 16px',
   fontSize: 14, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
 } as const;
 
 const STATUS_COLOR: Record<GoalStatus, string> = {
-  ACTIVE:   TEC_COLORS.gold,
-  DONE:     TEC_COLORS.success,
-  ARCHIVED: TEC_COLORS.subtext,
+  ACTIVE:   C.gold,
+  DONE:     C.success,
+  ARCHIVED: C.subtext,
 };
 
 // Pro entitlement (source of truth = the subscription on the session user, activated
@@ -54,9 +55,9 @@ const isProPlan = (plan?: string | null) => {
 function SectionTitle({ icon, title, hint }: { icon: IconName; title: string; hint?: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-      <Icon name={icon} size={20} color={TEC_COLORS.gold} strokeWidth={1.9} />
-      <h2 style={{ fontSize: 18, fontWeight: 800, color: TEC_COLORS.text, margin: 0 }}>{title}</h2>
-      {hint && <span style={{ fontSize: 12, color: TEC_COLORS.subtext }}>{hint}</span>}
+      <Icon name={icon} size={20} color={C.gold} strokeWidth={1.9} />
+      <h2 style={{ fontSize: 18, fontWeight: 800, color: C.text, margin: 0 }}>{title}</h2>
+      {hint && <span style={{ fontSize: 12, color: C.subtext }}>{hint}</span>}
     </div>
   );
 }
@@ -74,19 +75,19 @@ function Overview({ goals }: { goals: Goal[] }) {
   const done   = goals.filter((g) => g.status === 'DONE').length;
   const tracked = goals.reduce((sum, g) => sum + (g.target_amount ? (g.progress ?? 0) : 0), 0);
 
-  const stat = (label: string, value: string, accent: string = TEC_COLORS.text) => (
+  const stat = (label: string, value: string, accent: string = C.text) => (
     <div style={{ flex: 1, textAlign: 'center' }}>
       <div style={{ fontSize: 24, fontWeight: 900, color: accent, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
-      <div style={{ fontSize: 11, color: TEC_COLORS.subtext, marginTop: 2 }}>{label}</div>
+      <div style={{ fontSize: 11, color: C.subtext, marginTop: 2 }}>{label}</div>
     </div>
   );
 
   return (
     <div style={{ ...card, display: 'flex', gap: 8, marginBottom: 12 }}>
-      {stat(t.life.goals.active, String(active), TEC_COLORS.gold)}
-      <div style={{ width: 1, background: TEC_COLORS.border }} />
-      {stat(t.life.goals.completed, String(done), TEC_COLORS.success)}
-      <div style={{ width: 1, background: TEC_COLORS.border }} />
+      {stat(t.life.goals.active, String(active), C.gold)}
+      <div style={{ width: 1, background: C.border }} />
+      {stat(t.life.goals.completed, String(done), C.success)}
+      <div style={{ width: 1, background: C.border }} />
       {stat(t.life.goals.tracked, `π ${fmtPi(tracked)}`)}
     </div>
   );
@@ -112,36 +113,36 @@ function GoalItem({
   };
 
   return (
-    <div style={{ padding: '12px 0', borderTop: first ? 'none' : `1px solid ${TEC_COLORS.border}` }}>
+    <div style={{ padding: '12px 0', borderTop: first ? 'none' : `1px solid ${C.border}` }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <button
           title={goal.status === 'DONE' ? 'Mark active' : 'Mark done'}
           onClick={onToggle}
           style={{ width: 20, height: 20, borderRadius: 6, cursor: 'pointer', flexShrink: 0,
                    border: `2px solid ${STATUS_COLOR[goal.status]}`,
-                   background: goal.status === 'DONE' ? TEC_COLORS.success : 'transparent', color: '#0a0800', fontSize: 12, lineHeight: '16px' }}>
+                   background: goal.status === 'DONE' ? C.success : 'transparent', color: C.onGold, fontSize: 12, lineHeight: '16px' }}>
           {goal.status === 'DONE' ? '✓' : ''}
         </button>
-        <span style={{ flex: 1, minWidth: 0, fontSize: 14, color: TEC_COLORS.text,
+        <span style={{ flex: 1, minWidth: 0, fontSize: 14, color: C.text,
                        textDecoration: goal.status === 'DONE' ? 'line-through' : 'none',
                        opacity: goal.status === 'DONE' ? 0.6 : 1,
                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {goal.title}
         </span>
         {hasTarget && (
-          <span style={{ fontSize: 12, fontWeight: 700, color: TEC_COLORS.gold, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: C.gold, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
             π {fmtPi(goal.progress ?? 0)} / {fmtPi(goal.target_amount as number)}
           </span>
         )}
         <button onClick={onDelete} title="Delete"
-          style={{ background: 'none', border: 'none', color: TEC_COLORS.subtext, cursor: 'pointer', fontSize: 16, flexShrink: 0 }}>×</button>
+          style={{ background: 'none', border: 'none', color: C.subtext, cursor: 'pointer', fontSize: 16, flexShrink: 0 }}>×</button>
       </div>
 
       {hasTarget && (
         <div style={{ marginTop: 8, marginLeft: 30 }}>
-          <div style={{ height: 6, borderRadius: 999, background: TEC_COLORS.bg, overflow: 'hidden' }}>
+          <div style={{ height: 6, borderRadius: 999, background: C.bg, overflow: 'hidden' }}>
             <div style={{ width: `${pct}%`, height: '100%', borderRadius: 999,
-                          background: `linear-gradient(90deg, ${TEC_COLORS.gold}, ${TEC_COLORS.goldDark})`, transition: 'width .3s' }} />
+                          background: `linear-gradient(90deg, ${C.gold}, ${C.goldDark})`, transition: 'width .3s' }} />
           </div>
           {goal.status !== 'DONE' && (
             <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
@@ -156,7 +157,7 @@ function GoalItem({
               <button
                 onClick={log}
                 disabled={busy}
-                style={{ background: 'transparent', color: TEC_COLORS.gold, border: `1px solid ${TEC_COLORS.gold}55`,
+                style={{ background: 'transparent', color: C.gold, border: `1px solid ${goldA(0.333)}`,
                          borderRadius: 10, padding: '7px 14px', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: busy ? 0.6 : 1 }}>
                 Log
               </button>
@@ -222,19 +223,19 @@ function Goals({ isPro }: { isPro: boolean }) {
           <button style={{ ...goldBtn, opacity: busy ? 0.6 : 1 }} onClick={submit} disabled={busy}>{t.life.goals.add}</button>
         </div>
 
-        {error && <p style={{ color: TEC_COLORS.error, fontSize: 13, marginTop: 10 }}>{error}</p>}
-        {gate  && <p style={{ color: TEC_COLORS.gold,  fontSize: 12, marginTop: 10 }}>🔒 {gate}</p>}
+        {error && <p style={{ color: C.error, fontSize: 13, marginTop: 10 }}>{error}</p>}
+        {gate  && <p style={{ color: C.gold,  fontSize: 12, marginTop: 10 }}>🔒 {gate}</p>}
         {!isPro && !gate && activeCount >= FREE_ACTIVE_GOAL_CAP - 1 && activeCount < FREE_ACTIVE_GOAL_CAP && (
-          <p style={{ color: TEC_COLORS.subtext, fontSize: 11, marginTop: 10 }}>
+          <p style={{ color: C.subtext, fontSize: 11, marginTop: 10 }}>
             Free plan: {activeCount}/{FREE_ACTIVE_GOAL_CAP} active goals. Life Pro = unlimited.
           </p>
         )}
 
         <div style={{ marginTop: 6 }}>
           {loading ? (
-            <p style={{ color: TEC_COLORS.subtext, fontSize: 13 }}>Loading…</p>
+            <p style={{ color: C.subtext, fontSize: 13 }}>Loading…</p>
           ) : goals.length === 0 ? (
-            <p style={{ color: TEC_COLORS.subtext, fontSize: 13 }}>{t.life.goals.empty}</p>
+            <p style={{ color: C.subtext, fontSize: 13 }}>{t.life.goals.empty}</p>
           ) : (
             goals.map((g, i) => (
               <GoalItem
@@ -278,13 +279,13 @@ function Activity() {
       <SectionTitle icon="trending" title={t.life.activity.title} hint={t.life.activity.hint} />
       <div style={{ ...card }}>
         {loading ? (
-          <p style={{ fontSize: 13, color: TEC_COLORS.subtext, margin: 0 }}>Loading…</p>
+          <p style={{ fontSize: 13, color: C.subtext, margin: 0 }}>Loading…</p>
         ) : error ? (
-          <p style={{ fontSize: 13, color: TEC_COLORS.subtext, margin: 0 }}>
+          <p style={{ fontSize: 13, color: C.subtext, margin: 0 }}>
             No activity to show yet. It appears here as you use the ecosystem.
           </p>
         ) : events.length === 0 ? (
-          <p style={{ fontSize: 13, color: TEC_COLORS.subtext, margin: 0 }}>
+          <p style={{ fontSize: 13, color: C.subtext, margin: 0 }}>
             No activity yet. As you pay, trade and create across TEC, it appears here.
           </p>
         ) : (
@@ -293,17 +294,17 @@ function Activity() {
               const amt = piAmount(ev.payload);
               return (
                 <div key={ev.id ?? i}
-                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderTop: i === 0 ? 'none' : `1px solid ${TEC_COLORS.border}` }}>
-                  <span style={{ width: 8, height: 8, borderRadius: 999, background: TEC_COLORS.gold, flexShrink: 0 }} />
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderTop: i === 0 ? 'none' : `1px solid ${C.border}` }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 999, background: C.gold, flexShrink: 0 }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, color: TEC_COLORS.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prettyType(ev.type)}</div>
-                    <div style={{ fontSize: 11, color: TEC_COLORS.subtext }}>{fmtWhen(ev.created_at)}</div>
+                    <div style={{ fontSize: 14, color: C.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prettyType(ev.type)}</div>
+                    <div style={{ fontSize: 11, color: C.subtext }}>{fmtWhen(ev.created_at)}</div>
                   </div>
-                  {amt && <div style={{ fontSize: 14, fontWeight: 800, color: TEC_COLORS.gold, whiteSpace: 'nowrap' }}>{amt}</div>}
+                  {amt && <div style={{ fontSize: 14, fontWeight: 800, color: C.gold, whiteSpace: 'nowrap' }}>{amt}</div>}
                 </div>
               );
             })}
-            <p style={{ fontSize: 11, color: TEC_COLORS.subtext, margin: '12px 0 0', lineHeight: 1.5 }}>
+            <p style={{ fontSize: 11, color: C.subtext, margin: '12px 0 0', lineHeight: 1.5 }}>
               A summary of your recent activity. Figures update periodically.
             </p>
           </>
@@ -329,15 +330,15 @@ function HomeQuickNav({ onGo }: { onGo: (t: LifeTab) => void }) {
           <span style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-            background: 'rgba(251,180,74,0.10)', border: '1px solid rgba(251,180,74,0.18)',
+            background: goldA(0.1), border: `1px solid ${goldA(0.18)}`,
           }}>
-            <Icon name={it.icon} size={20} color={TEC_COLORS.gold} strokeWidth={2} />
+            <Icon name={it.icon} size={20} color={C.gold} strokeWidth={2} />
           </span>
           <span style={{ flex: 1 }}>
-            <span style={{ display: 'block', fontSize: 15, fontWeight: 800, color: TEC_COLORS.text }}>{it.title}</span>
-            <span style={{ display: 'block', fontSize: 12, color: TEC_COLORS.subtext, marginTop: 2 }}>{it.hint}</span>
+            <span style={{ display: 'block', fontSize: 15, fontWeight: 800, color: C.text }}>{it.title}</span>
+            <span style={{ display: 'block', fontSize: 12, color: C.subtext, marginTop: 2 }}>{it.hint}</span>
           </span>
-          <Icon name="chevron-right" size={18} color={TEC_COLORS.subtext} strokeWidth={2} />
+          <Icon name="chevron-right" size={18} color={C.subtext} strokeWidth={2} />
         </button>
       ))}
     </div>
@@ -355,28 +356,59 @@ export default function LifeHome() {
   const { t } = useTranslation();
 
   return (
-    <main style={{ minHeight: '100vh', background: TEC_COLORS.bg, color: TEC_COLORS.text, fontFamily: 'system-ui, -apple-system, sans-serif', paddingBottom: 96 }}>
+    <main style={{ minHeight: '100vh', background: C.bg, color: C.text, fontFamily: 'system-ui, -apple-system, sans-serif', paddingBottom: 96 }}>
       <div style={{ maxWidth: 760, margin: '0 auto', padding: '28px 22px 0' }}>
-        {/* Compact persistent app header (chrome). Each section renders its own title. */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ fontSize: 12, letterSpacing: 1, color: TEC_COLORS.subtext, textTransform: 'uppercase' }}>{t.life.brand}</div>
-          {isPro && (
-            <span style={{
-              fontSize: 10, fontWeight: 900, letterSpacing: 0.5, color: '#0a0800',
-              background: `linear-gradient(135deg, ${TEC_COLORS.gold}, ${TEC_COLORS.goldDark})`,
-              borderRadius: 999, padding: '2px 9px',
-            }}>★ {t.life.pro}</span>
-          )}
-        </div>
+        {/* ── The band ───────────────────────────────────────────────────────
+            The Hub frames every inner page with a solid band that has rounded
+            BOTTOM corners. Life's header was a bare line of text on the same
+            flat ground as everything under it, so switching tabs felt like
+            nothing had happened. Same shape, same token, same radius as the
+            Hub — one frame across the fleet rather than a per-app flourish.
+
+            `tec-on-band` re-scopes the palette for this subtree: the band is
+            dark in BOTH themes, so on a light page the ink inside it has to
+            stay light. Anything dropped in here is correct without knowing it.
+
+            It bleeds to the edges — the band frames the SCREEN, not the column —
+            so it cancels the page gutter and restores it as its own padding.
+            The Hub's is `12px 20px 16px`; matching it matters because a curve on
+            a taller band reads as a BIGGER curve at the same radius. */}
+        <header className="tec-on-band" style={{
+          background: 'var(--tec-topbar)',
+          borderRadius: '0 0 var(--tec-topbar-radius) var(--tec-topbar-radius)',
+          margin: '-28px -22px 18px',
+          padding: 'calc(12px + env(safe-area-inset-top)) 22px 16px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ fontSize: 10, letterSpacing: 1.2, color: C.subtext, textTransform: 'uppercase', fontWeight: 700 }}>{t.life.brand}</div>
+            {isPro && (
+              <span style={{
+                fontSize: 10, fontWeight: 900, letterSpacing: 0.5, color: C.onGold,
+                background: `linear-gradient(135deg, ${C.gold}, ${C.goldDark})`,
+                borderRadius: 999, padding: '2px 9px',
+              }}>★ {t.life.pro}</span>
+            )}
+          </div>
+          {/* 22px — chrome, not a hero. It was 26, which put the page title
+              above the section headings under it and made the band taller than
+              the Hub's for no gain. */}
+          <h1 style={{ fontSize: 22, fontWeight: 900, color: C.gold, margin: '2px 0 0', letterSpacing: '-0.02em' }}>
+            <bdi>{tab === 'home'
+              ? (isLoading || !name ? t.life.welcome : t.life.welcomeName.replace('{name}', name))
+              : tab === 'goals' ? t.life.goals.title
+              : tab === 'activity' ? t.life.activity.title
+              : t.life.settings.profile}</bdi>
+          </h1>
+          <p style={{ fontSize: 12.5, color: C.subtext, margin: '3px 0 0', lineHeight: 1.45 }}>
+            {tab === 'home' ? t.life.subtitle
+              : tab === 'goals' ? t.life.goals.hint
+              : tab === 'activity' ? t.life.activity.hint
+              : t.life.prefs.hint}
+          </p>
+        </header>
 
         {tab === 'home' && (
           <>
-            <h1 style={{ fontSize: 26, fontWeight: 900, color: TEC_COLORS.gold, margin: '6px 0 0' }}>
-              {isLoading || !name ? t.life.welcome : t.life.welcomeName.replace('{name}', name)}
-            </h1>
-            <p style={{ fontSize: 14, color: TEC_COLORS.subtext, margin: '6px 0 0', lineHeight: 1.6 }}>
-              {t.life.subtitle}
-            </p>
             <LifePro isPro={isPro} daysRemaining={daysRemaining} />
             <HomeQuickNav onGo={setTab} />
             <InviteCard />

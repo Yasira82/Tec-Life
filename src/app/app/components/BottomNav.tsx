@@ -4,6 +4,7 @@
 // tec-ui (not emoji), glass backdrop, active scale + underline, light haptic.
 import { useTranslation } from '@/lib/i18n';
 import { Icon, type IconName } from '@yasser172/tec-ui';
+import { C, bgA } from '@/lib-client/palette';
 
 export type LifeTab = 'home' | 'goals' | 'activity' | 'settings';
 
@@ -18,8 +19,8 @@ export function BottomNav({ active, onSelect }: { active: LifeTab; onSelect: (t:
   return (
     <nav style={{
       position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 200,
-      background: 'rgba(5,8,22,0.92)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
-      borderTop: '1px solid rgba(255,255,255,0.06)',
+      background: bgA(0.92), backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+      borderTop: `1px solid ${C.border}`,
       display: 'flex', paddingBottom: 'env(safe-area-inset-bottom)',
     }}>
       {ITEMS.map((item) => {
@@ -38,13 +39,13 @@ export function BottomNav({ active, onSelect }: { active: LifeTab; onSelect: (t:
             }}
           >
             <div style={{ transform: isActive ? 'scale(1.08)' : 'scale(1)', transition: 'transform 0.2s' }}>
-              <Icon name={item.icon} size={21} color={isActive ? '#FBB44A' : '#3a3a4a'} strokeWidth={isActive ? 2.2 : 1.9} />
+              <Icon name={item.icon} size={21} color={isActive ? C.gold : C.faint} strokeWidth={isActive ? 2.2 : 1.9} />
             </div>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 0.5, color: isActive ? '#FBB44A' : '#3a3a4a', transition: 'color 0.2s' }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 0.5, color: isActive ? C.gold : C.faint, transition: 'color 0.2s' }}>
               {item.label}
             </div>
             {isActive && (
-              <div style={{ position: 'absolute', bottom: 0, width: 20, height: 2, borderRadius: 1, background: '#FBB44A' }} />
+              <div style={{ position: 'absolute', bottom: 0, width: 20, height: 2, borderRadius: 1, background: C.gold }} />
             )}
           </button>
         );

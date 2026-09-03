@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import '@/styles/tec-design-tokens.css';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { LocaleProvider } from '@/lib/i18n';
+import { THEME_BOOT_SCRIPT } from '@/lib-client/theme';
 
 export const metadata: Metadata = {
   title:       'TEC Life',
@@ -16,12 +17,33 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    // `suppressHydrationWarning` because the boot script STAMPS `data-theme`
+    // and `style.color-scheme` on this element before React hydrates. That is
+    // the point of the script — the alternative is a flash of the wrong theme
+    // on every load — so the mismatch it causes is expected and only here.
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+        {/* One theme-color per scheme, so the browser chrome above the page
+            matches the page. A single dark value leaves a black bar sitting on
+            top of a light app.
+
+            These stay HEX LITERALS by necessity: a `theme-color` meta is read
+            by the browser's own chrome, outside the document's style
+            resolution, so `var(--tec-bg)` there is simply ignored. */}
+        <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#101014" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f4f3f1" />
+        {/* Applies the stored theme BEFORE first paint. Inline and synchronous
+            on purpose: anything deferred renders the page dark and then snaps
+            to light on every load — a flash worse than not offering the choice. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         <style>{`
           *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-          html, body { height: 100%; width: 100%; background: #050816; }
+          /* The page ground is a TOKEN, not a hex. It was #050816 — the blue-black
+             C-83 §4 declared and the Hub does not use — hardcoded here, which
+             would have kept a light page sitting on a dark sheet no matter what
+             every component did. */
+          html, body { height: 100%; width: 100%; background: var(--tec-bg); }
           body { overscroll-behavior: none; -webkit-tap-highlight-color: transparent; }
         `}</style>
         <script
