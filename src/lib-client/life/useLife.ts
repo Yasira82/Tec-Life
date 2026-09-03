@@ -98,6 +98,77 @@ export function useGoals() {
   return { goals, loading, error, busy, reload, addGoal, addProgress, setStatus, removeGoal };
 }
 
+// ── Skills (C-106 §4) ────────────────────────────────────────
+//
+// A LADDER, not a score. `SOURCE` is on every row from day one so an
+// activity-inferred skill has an honest place to land — it is not populated
+// yet, because inferring one means reading activity Analytics owns.
+
+export const SKILL_LEVELS = ['LEARNING', 'PRACTISING', 'PROFICIENT', 'EXPERT'] as const;
+export type SkillLevel = (typeof SKILL_LEVELS)[number];
+
+export interface Skill {
+  id:         string;
+  name:       string;
+  level:      SkillLevel;
+  source:     'SELF_DECLARED' | 'ACTIVITY_INFERRED';
+  note:       string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export function useSkills() {
+  const [skills,  setSkills]  = useState<Skill[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState<string | null>(null);
+  const [busy,    setBusy]    = useState(false);
+
+  const reload = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    fetch('/api/bff/life/skills', { credentials: 'include', cache: 'no-store' })
+      .then(readJson)
+      .then((d) => setSkills((d.skills as Skill[]) ?? []))
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Failed to load skills'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => reload(), [reload]);
+
+  const mutate = useCallback(async (fn: () => Promise<Response>) => {
+    setBusy(true);
+    setError(null);
+    try {
+      await readJson(await fn());
+      reload();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Action failed');
+    } finally {
+      setBusy(false);
+    }
+  }, [reload]);
+
+  const addSkill = useCallback((name: string, level?: SkillLevel) =>
+    mutate(() => fetch('/api/bff/life/skills', {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, ...(level ? { level } : {}) }),
+    })), [mutate]);
+
+  const setLevel = useCallback((id: string, level: SkillLevel) =>
+    mutate(() => fetch(`/api/bff/life/skills/${id}`, {
+      method: 'PATCH', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ level }),
+    })), [mutate]);
+
+  const removeSkill = useCallback((id: string) =>
+    mutate(() => fetch(`/api/bff/life/skills/${id}`, { method: 'DELETE', credentials: 'include' })),
+    [mutate]);
+
+  return { skills, loading, error, busy, reload, addSkill, setLevel, removeSkill };
+}
+
 // ── Preferences ──────────────────────────────────────────────
 export function usePreferences() {
   const [prefs,   setPrefs]   = useState<Record<string, string>>({});

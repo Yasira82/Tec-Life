@@ -28,9 +28,10 @@ export const id = {
     welcome:     'Selamat datang',
     welcomeName: 'Selamat datang, {name}',
     subtitle:    'Konteks pribadi Anda di ekosistem TEC. Data Anda milik Anda — Anda yang menyatakannya, bersifat pribadi, dan tidak pernah dipakai tanpa izin Anda.',
-    nav: { home: 'Beranda', goals: 'Tujuan', activity: 'Aktivitas', settings: 'Pengaturan' },
+    nav: { home: 'Beranda', goals: 'Tujuan', skills: 'Keterampilan', activity: 'Aktivitas', settings: 'Pengaturan' },
     cards: {
       goals:    { title: 'Tujuan',    hint: 'Tetapkan target dan pantau kemajuan' },
+      skills:   { title: 'Keterampilan',   hint: 'apa yang Anda bisa' },
       activity: { title: 'Aktivitas', hint: 'Aktivitas terbaru Anda di TEC' },
       prefs:    { title: 'Preferensi',    hint: 'Sesuaikan pengalaman Anda' },
     },
@@ -41,6 +42,14 @@ export const id = {
       addPlaceholder: 'Tambah tujuan', targetPlaceholder: 'target π (opsional)', add: 'Tambah',
       logPlaceholder: '+ jumlah π', log: 'Catat',
       empty: 'Belum ada tujuan — tambahkan yang pertama di atas.',
+    },
+    skills: {
+      title: 'Keterampilan', hint: 'apa yang Anda bisa · sebuah tangga, bukan nilai',
+      addPlaceholder: 'Tambah keterampilan', add: 'Tambah',
+      empty: 'Belum ada keterampilan — tambahkan yang pertama di atas.',
+      inferred: 'Disimpulkan', remove: 'Hapus',
+      privacyNote: 'Hanya Anda yang melihatnya. Belum ada yang disimpulkan dari aktivitas Anda — setiap keterampilan di sini Anda yang menambahkan.',
+      levels: { learning: 'Belajar', practising: 'Berlatih', proficient: 'Mahir', expert: 'Ahli' },
     },
     prefs: {
       title: 'Preferensi', hint: 'bagaimana TEC menyesuaikan pengalaman Anda',

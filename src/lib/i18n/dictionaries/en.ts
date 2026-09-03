@@ -35,9 +35,10 @@ export const en = {
     welcome:     'Welcome',
     welcomeName: 'Welcome, {name}',
     subtitle:    'Your personal context in the TEC ecosystem. Your data is yours — self-declared, private, and never used without your consent.',
-    nav: { home: 'Home', goals: 'Goals', activity: 'Activity', settings: 'Settings' },
+    nav: { home: 'Home', goals: 'Goals', skills: 'Skills', activity: 'Activity', settings: 'Settings' },
     cards: {
       goals:    { title: 'Goals',    hint: 'Set targets and track your progress' },
+      skills:   { title: 'Skills',   hint: 'what you can do' },
       activity: { title: 'Activity', hint: 'Your recent activity across TEC' },
       prefs:    { title: 'Preferences',    hint: 'Tailor your experience' },
     },
@@ -48,6 +49,14 @@ export const en = {
       addPlaceholder: 'Add a goal', targetPlaceholder: 'π target (opt)', add: 'Add',
       logPlaceholder: '+ π amount', log: 'Log',
       empty: 'No goals yet — add your first above.',
+    },
+    skills: {
+      title: 'Skills', hint: 'what you can do · a ladder, not a score',
+      addPlaceholder: 'Add a skill', add: 'Add',
+      empty: 'No skills yet — add the first above.',
+      inferred: 'Inferred', remove: 'Remove',
+      privacyNote: 'Only you can see this. Nothing is inferred from your activity yet — every skill here is one you added.',
+      levels: { learning: 'Learning', practising: 'Practising', proficient: 'Proficient', expert: 'Expert' },
     },
     prefs: {
       title: 'Preferences', hint: 'how TEC tailors your experience',

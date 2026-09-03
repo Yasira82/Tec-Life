@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
+import { LOCALES } from '@/lib/i18n/locales';
+import { DICTIONARIES } from '@/lib/i18n/dictionaries';
 import { join } from 'node:path';
 
 // Light mode existed on paper for months: the token file carried a
@@ -552,5 +554,59 @@ describe('every language the picker offers has a dictionary', () => {
     const settings = strip(src('app/app/components/SettingsView.tsx'));
     expect(settings).toMatch(/LOCALES\.map[\s\S]{0,200}l\.native/);
     expect(settings).toMatch(/lang=\{l\.code\}/);
+  });
+});
+
+// ── Skills (C-106 §4) ──────────────────────────────────────────────────────
+//
+// One of the six capabilities the charter says Life OWNS, and the first of the
+// three that had no screen at all. The guards here are about the two things
+// that would quietly undo it: a fake inference, and a level that stops being a
+// ladder.
+describe('the skills inventory keeps its boundaries', () => {
+  const page = strip(src('app/app/page.tsx'));
+  const hook = strip(src('lib-client/life/useLife.ts'));
+
+  it('the ladder is a fixed list, in order, shared by the UI and the hook', () => {
+    // A string enum has no ordering of its own. The order in this array is the
+    // order on screen AND the order the backend ranks by — if they disagree, a
+    // re-add can silently demote someone.
+    expect(hook).toMatch(/SKILL_LEVELS = \['LEARNING', 'PRACTISING', 'PROFICIENT', 'EXPERT'\]/);
+    expect(page).toContain('SKILL_LEVELS.map');
+  });
+
+  it('the client never invents an inferred skill', () => {
+    // Life may not infer a skill: that means reading activity Analytics owns and
+    // applying a rule about what it implies. `source` exists so an inferred row
+    // has an honest place to land — the client only ever READS it.
+    expect(hook).not.toMatch(/source:\s*'ACTIVITY_INFERRED'/);
+    expect(page).toMatch(/source === 'ACTIVITY_INFERRED'/);
+  });
+
+  it('an inferred skill is marked and not editable', () => {
+    // It states what someone DID, not what they claim. Letting the subject
+    // rewrite it makes the distinction between the two sources worthless.
+    expect(page).toMatch(/disabled=\{busy \|\| inferred\}/);
+  });
+
+  it('says plainly that nothing is inferred yet, and nobody else can see it', () => {
+    // C-106 §6: other users get NO access. Saying so is better than letting
+    // someone guess in either direction.
+    expect(page).toContain('s.privacyNote');
+    for (const l of LOCALES) {
+      expect(DICTIONARIES[l.code].life.skills.privacyNote.length, l.code).toBeGreaterThan(20);
+    }
+  });
+
+  it('every language has the whole section, levels included', () => {
+    for (const l of LOCALES) {
+      const sk = DICTIONARIES[l.code].life.skills;
+      for (const k of ['title', 'hint', 'addPlaceholder', 'add', 'empty', 'inferred', 'remove'] as const) {
+        expect(sk[k], `${l.code}.${k}`).toBeTruthy();
+      }
+      for (const k of ['learning', 'practising', 'proficient', 'expert'] as const) {
+        expect(sk.levels[k], `${l.code}.levels.${k}`).toBeTruthy();
+      }
+    }
   });
 });

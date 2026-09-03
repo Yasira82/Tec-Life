@@ -28,9 +28,10 @@ export const fr = {
     welcome:     'Bienvenue',
     welcomeName: 'Bienvenue, {name}',
     subtitle:    'Votre contexte personnel dans l’écosystème TEC. Vos données vous appartiennent — déclarées par vous, privées, jamais utilisées sans votre consentement.',
-    nav: { home: 'Accueil', goals: 'Objectifs', activity: 'Activité', settings: 'Réglages' },
+    nav: { home: 'Accueil', goals: 'Objectifs', skills: 'Compétences', activity: 'Activité', settings: 'Réglages' },
     cards: {
       goals:    { title: 'Objectifs',    hint: 'Fixez des cibles et suivez vos progrès' },
+      skills:   { title: 'Compétences',   hint: 'ce que vous savez faire' },
       activity: { title: 'Activité', hint: 'Votre activité récente sur TEC' },
       prefs:    { title: 'Préférences',    hint: 'Adaptez votre expérience' },
     },
@@ -41,6 +42,14 @@ export const fr = {
       addPlaceholder: 'Ajouter un objectif', targetPlaceholder: 'cible π (opt.)', add: 'Ajouter',
       logPlaceholder: '+ montant π', log: 'Enregistrer',
       empty: 'Aucun objectif — ajoutez le premier ci-dessus.',
+    },
+    skills: {
+      title: 'Compétences', hint: 'ce que vous savez faire · une échelle, pas une note',
+      addPlaceholder: 'Ajouter une compétence', add: 'Ajouter',
+      empty: 'Aucune compétence — ajoutez la première ci-dessus.',
+      inferred: 'Déduite', remove: 'Retirer',
+      privacyNote: 'Vous seul les voyez. Rien n’est encore déduit de votre activité — chaque compétence ici, vous l’avez ajoutée.',
+      levels: { learning: 'Apprentissage', practising: 'Pratique', proficient: 'Confirmé', expert: 'Expert' },
     },
     prefs: {
       title: 'Préférences', hint: 'comment TEC adapte votre expérience',

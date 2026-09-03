@@ -28,9 +28,10 @@ export const hi = {
     welcome:     'स्वागत है',
     welcomeName: 'स्वागत है, {name}',
     subtitle:    'TEC इकोसिस्टम में आपका निजी संदर्भ। आपका डेटा आपका है — आपके द्वारा घोषित, निजी, और आपकी सहमति के बिना कभी उपयोग नहीं किया जाता।',
-    nav: { home: 'होम', goals: 'लक्ष्य', activity: 'गतिविधि', settings: 'सेटिंग्स' },
+    nav: { home: 'होम', goals: 'लक्ष्य', skills: 'कौशल', activity: 'गतिविधि', settings: 'सेटिंग्स' },
     cards: {
       goals:    { title: 'लक्ष्य',    hint: 'लक्ष्य तय करें और प्रगति देखें' },
+      skills:   { title: 'कौशल',   hint: 'आप क्या कर सकते हैं' },
       activity: { title: 'गतिविधि', hint: 'TEC पर आपकी हाल की गतिविधि' },
       prefs:    { title: 'प्राथमिकताएँ',    hint: 'अपना अनुभव अनुकूलित करें' },
     },
@@ -41,6 +42,14 @@ export const hi = {
       addPlaceholder: 'लक्ष्य जोड़ें', targetPlaceholder: 'π लक्ष्य (वैकल्पिक)', add: 'जोड़ें',
       logPlaceholder: '+ π राशि', log: 'दर्ज करें',
       empty: 'अभी कोई लक्ष्य नहीं — ऊपर पहला जोड़ें।',
+    },
+    skills: {
+      title: 'कौशल', hint: 'आप क्या कर सकते हैं · एक सीढ़ी, अंक नहीं',
+      addPlaceholder: 'कौशल जोड़ें', add: 'जोड़ें',
+      empty: 'अभी कोई कौशल नहीं — ऊपर पहला जोड़ें।',
+      inferred: 'अनुमानित', remove: 'हटाएँ',
+      privacyNote: 'इसे केवल आप देख सकते हैं। आपकी गतिविधि से अभी कुछ भी अनुमानित नहीं है — यहाँ हर कौशल आपने जोड़ा है।',
+      levels: { learning: 'सीख रहे हैं', practising: 'अभ्यास', proficient: 'दक्ष', expert: 'विशेषज्ञ' },
     },
     prefs: {
       title: 'प्राथमिकताएँ', hint: 'TEC आपका अनुभव कैसे अनुकूलित करता है',

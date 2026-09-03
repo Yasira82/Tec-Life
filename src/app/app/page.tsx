@@ -8,7 +8,10 @@ import { InviteCard } from '@/components/referral/InviteCard';
 import { usePiAuth } from '@yasser172/tec-auth';
 import {Icon, type IconName} from '@yasser172/tec-ui';
 import { C, goldA } from '@/lib-client/palette';
-import { useGoals, useActivity, useSubscription, type Goal, type GoalStatus } from '@/lib-client/life/useLife';
+import {
+  useGoals, useActivity, useSubscription, useSkills, SKILL_LEVELS,
+  type Goal, type GoalStatus, type Skill, type SkillLevel,
+} from '@/lib-client/life/useLife';
 import { useMe } from '@/lib-client/hooks/useMe';
 import { LifePro } from './components/LifePro';
 import { LifeInsights } from './components/LifeInsights';
@@ -261,6 +264,141 @@ const EVENT_LABEL: Record<string, string> = {
   'user.created':      'Joined TEC',
   'kyc.verified':      'Identity verified',
 };
+// ── Skills (C-106 §4) ────────────────────────────────────────────────────────
+//
+// What a person can DO, as opposed to what they say they want. Goals and
+// preferences were already here; this is the first of the three capabilities
+// the charter names that had no screen at all.
+//
+// The level is a LADDER — Learning → Practising → Proficient → Expert — not a
+// score out of ten. A number invites a precision nobody has about their own
+// ability, and invites comparison with other people, which a private inventory
+// is not for. Nobody else can see this list: C-106 §6 gives other users no
+// access to Life data.
+const SKILL_LEVEL_KEYS = {
+  LEARNING: 'learning', PRACTISING: 'practising',
+  PROFICIENT: 'proficient', EXPERT: 'expert',
+} as const;
+
+function SkillRow({ skill, busy, onLevel, onRemove }: {
+  skill: Skill;
+  busy: boolean;
+  onLevel: (level: SkillLevel) => void;
+  onRemove: () => void;
+}) {
+  const { t } = useTranslation();
+  const s = t.life.skills;
+  const inferred = skill.source === 'ACTIVITY_INFERRED';
+
+  return (
+    <div style={{ ...card, display: 'grid', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <span style={{ flex: 1, minWidth: 0, fontSize: 15, fontWeight: 700, color: C.text, overflowWrap: 'anywhere' }}>
+          {skill.name}
+        </span>
+        {/* An inferred skill is a statement about what someone DID. It is
+            marked, and it is not editable — letting the subject rewrite it
+            would make the distinction between the two sources worthless. */}
+        {inferred && (
+          <span style={{
+            fontSize: 10, fontWeight: 800, letterSpacing: 0.4, color: C.gold,
+            border: `1px solid ${goldA(0.35)}`, borderRadius: 999, padding: '2px 8px',
+          }}>{s.inferred}</span>
+        )}
+        {!inferred && (
+          <button onClick={onRemove} disabled={busy} aria-label={s.remove}
+            style={{ background: 'none', border: 'none', color: C.faint, cursor: 'pointer', fontSize: 16, flexShrink: 0 }}>
+            ×
+          </button>
+        )}
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        {SKILL_LEVELS.map((lvl) => {
+          const active = skill.level === lvl;
+          return (
+            <button key={lvl} disabled={busy || inferred} onClick={() => onLevel(lvl)}
+              aria-pressed={active}
+              style={{
+                fontSize: 11.5, fontWeight: 700, padding: '5px 11px', borderRadius: 999,
+                cursor: busy || inferred ? 'default' : 'pointer',
+                color: active ? C.onGold : C.subtext,
+                background: active ? C.gold : 'transparent',
+                border: `1px solid ${active ? 'transparent' : C.border}`,
+                opacity: inferred && !active ? 0.5 : 1,
+              }}>
+              {s.levels[SKILL_LEVEL_KEYS[lvl]]}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function Skills() {
+  const { t } = useTranslation();
+  const s = t.life.skills;
+  const { skills, loading, error, busy, addSkill, setLevel, removeSkill } = useSkills();
+  const [name, setName] = useState('');
+
+  const submit = () => {
+    const v = name.trim();
+    if (v.length < 2) return;
+    void addSkill(v);
+    setName('');
+  };
+
+  return (
+    <section style={{ marginTop: 24 }}>
+      <SectionTitle icon="sprout" title={s.title} hint={s.hint} />
+
+      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
+          placeholder={s.addPlaceholder}
+          maxLength={80}
+          style={{
+            flex: 1, minWidth: 0, background: C.surface, color: C.text,
+            border: `1px solid ${C.border}`, borderRadius: 12,
+            padding: '11px 13px', fontSize: 14, outline: 'none',
+          }}
+        />
+        <button onClick={submit} disabled={busy || name.trim().length < 2} style={goldBtn}>
+          {s.add}
+        </button>
+      </div>
+
+      {error && (
+        <p style={{ fontSize: 12.5, color: C.error, margin: '10px 0 0' }}>{error}</p>
+      )}
+
+      <div style={{ display: 'grid', gap: 10, marginTop: 14 }}>
+        {loading && <p style={{ fontSize: 13, color: C.subtext, margin: 0 }}>{t.common.loading}</p>}
+        {!loading && skills.length === 0 && (
+          <p style={{ fontSize: 13, color: C.subtext, margin: 0, lineHeight: 1.6 }}>{s.empty}</p>
+        )}
+        {skills.map((sk: Skill) => (
+          <SkillRow
+            key={sk.id}
+            skill={sk}
+            busy={busy}
+            onLevel={(lvl) => void setLevel(sk.id, lvl)}
+            onRemove={() => void removeSkill(sk.id)}
+          />
+        ))}
+      </div>
+
+      {/* The honest note. Nobody else can read this, and nothing infers from it
+          yet — saying so is better than letting someone guess either way. */}
+      <p style={{ fontSize: 11.5, color: C.faint, margin: '14px 0 0', lineHeight: 1.6 }}>
+        {s.privacyNote}
+      </p>
+    </section>
+  );
+}
+
 const prettyType = (t: string) => EVENT_LABEL[t] ?? t.replace(/\./g, ' · ');
 const fmtWhen = (iso: string) => { try { return new Date(iso).toLocaleString(); } catch { return iso; } };
 const piAmount = (payload: Record<string, unknown> | null): string | null => {
@@ -319,6 +457,7 @@ function HomeQuickNav({ onGo }: { onGo: (t: LifeTab) => void }) {
   const { t } = useTranslation();
   const items: { id: LifeTab; icon: IconName; title: string; hint: string }[] = [
     { id: 'goals',    icon: 'trophy',   title: t.life.cards.goals.title,    hint: t.life.cards.goals.hint },
+    { id: 'skills',   icon: 'sprout',   title: t.life.cards.skills.title,   hint: t.life.cards.skills.hint },
     { id: 'activity', icon: 'chart',    title: t.life.cards.activity.title, hint: t.life.cards.activity.hint },
     { id: 'settings', icon: 'settings', title: t.life.cards.prefs.title,    hint: t.life.cards.prefs.hint },
   ];
@@ -396,12 +535,14 @@ export default function LifeHome() {
             <bdi>{tab === 'home'
               ? (isLoading || !name ? t.life.welcome : t.life.welcomeName.replace('{name}', name))
               : tab === 'goals' ? t.life.goals.title
+              : tab === 'skills' ? t.life.skills.title
               : tab === 'activity' ? t.life.activity.title
               : t.life.settings.profile}</bdi>
           </h1>
           <p style={{ fontSize: 12.5, color: C.subtext, margin: '3px 0 0', lineHeight: 1.45 }}>
             {tab === 'home' ? t.life.subtitle
               : tab === 'goals' ? t.life.goals.hint
+              : tab === 'skills' ? t.life.skills.hint
               : tab === 'activity' ? t.life.activity.hint
               : t.life.prefs.hint}
           </p>
@@ -415,6 +556,7 @@ export default function LifeHome() {
           </>
         )}
         {tab === 'goals'    && <Goals isPro={isPro} />}
+        {tab === 'skills'   && <Skills />}
         {tab === 'activity' && <Activity />}
         {tab === 'settings' && <SettingsView isPro={isPro} />}
       </div>

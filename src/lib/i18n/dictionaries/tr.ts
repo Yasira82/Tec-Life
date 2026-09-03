@@ -28,9 +28,10 @@ export const tr = {
     welcome:     'Hoş geldin',
     welcomeName: 'Hoş geldin, {name}',
     subtitle:    'TEC ekosistemindeki kişisel bağlamın. Verilerin senindir — sen beyan edersin, özeldir ve onayın olmadan asla kullanılmaz.',
-    nav: { home: 'Ana sayfa', goals: 'Hedefler', activity: 'Etkinlik', settings: 'Ayarlar' },
+    nav: { home: 'Ana sayfa', goals: 'Hedefler', skills: 'Beceriler', activity: 'Etkinlik', settings: 'Ayarlar' },
     cards: {
       goals:    { title: 'Hedefler',    hint: 'Hedef koy ve ilerlemeni takip et' },
+      skills:   { title: 'Beceriler',   hint: 'yapabildiklerin' },
       activity: { title: 'Etkinlik', hint: 'TEC genelindeki son etkinliğin' },
       prefs:    { title: 'Tercihler',    hint: 'Deneyimini uyarla' },
     },
@@ -41,6 +42,14 @@ export const tr = {
       addPlaceholder: 'Hedef ekle', targetPlaceholder: 'π hedefi (ops.)', add: 'Ekle',
       logPlaceholder: '+ π tutarı', log: 'Kaydet',
       empty: 'Henüz hedef yok — ilkini yukarıdan ekle.',
+    },
+    skills: {
+      title: 'Beceriler', hint: 'yapabildiklerin · bir merdiven, not değil',
+      addPlaceholder: 'Beceri ekle', add: 'Ekle',
+      empty: 'Henüz beceri yok — ilkini yukarıdan ekle.',
+      inferred: 'Çıkarım', remove: 'Kaldır',
+      privacyNote: 'Yalnızca sen görürsün. Etkinliğinden henüz hiçbir şey çıkarılmıyor — buradaki her beceriyi sen ekledin.',
+      levels: { learning: 'Öğreniyor', practising: 'Uyguluyor', proficient: 'Yetkin', expert: 'Uzman' },
     },
     prefs: {
       title: 'Tercihler', hint: 'TEC deneyimini nasıl uyarlıyor',

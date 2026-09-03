@@ -28,9 +28,10 @@ export const vi = {
     welcome:     'Chào mừng',
     welcomeName: 'Chào mừng, {name}',
     subtitle:    'Bối cảnh cá nhân của bạn trong hệ sinh thái TEC. Dữ liệu là của bạn — do bạn khai báo, riêng tư, và không bao giờ dùng nếu bạn không đồng ý.',
-    nav: { home: 'Trang chủ', goals: 'Mục tiêu', activity: 'Hoạt động', settings: 'Cài đặt' },
+    nav: { home: 'Trang chủ', goals: 'Mục tiêu', skills: 'Kỹ năng', activity: 'Hoạt động', settings: 'Cài đặt' },
     cards: {
       goals:    { title: 'Mục tiêu',    hint: 'Đặt mục tiêu và theo dõi tiến độ' },
+      skills:   { title: 'Kỹ năng',   hint: 'những gì bạn làm được' },
       activity: { title: 'Hoạt động', hint: 'Hoạt động gần đây của bạn trên TEC' },
       prefs:    { title: 'Tùy chọn',    hint: 'Điều chỉnh trải nghiệm của bạn' },
     },
@@ -41,6 +42,14 @@ export const vi = {
       addPlaceholder: 'Thêm mục tiêu', targetPlaceholder: 'mục tiêu π (tùy chọn)', add: 'Thêm',
       logPlaceholder: '+ số π', log: 'Ghi nhận',
       empty: 'Chưa có mục tiêu — thêm mục tiêu đầu tiên ở trên.',
+    },
+    skills: {
+      title: 'Kỹ năng', hint: 'những gì bạn làm được · một bậc thang, không phải điểm số',
+      addPlaceholder: 'Thêm kỹ năng', add: 'Thêm',
+      empty: 'Chưa có kỹ năng — thêm kỹ năng đầu tiên ở trên.',
+      inferred: 'Suy ra', remove: 'Xóa',
+      privacyNote: 'Chỉ bạn thấy được. Chưa có gì được suy ra từ hoạt động của bạn — mọi kỹ năng ở đây đều do bạn thêm.',
+      levels: { learning: 'Đang học', practising: 'Đang luyện', proficient: 'Thành thạo', expert: 'Chuyên gia' },
     },
     prefs: {
       title: 'Tùy chọn', hint: 'cách TEC điều chỉnh trải nghiệm của bạn',

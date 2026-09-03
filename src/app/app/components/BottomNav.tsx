@@ -6,13 +6,17 @@ import { useTranslation } from '@/lib/i18n';
 import { Icon, type IconName } from '@yasser172/tec-ui';
 import { C, bgA } from '@/lib-client/palette';
 
-export type LifeTab = 'home' | 'goals' | 'activity' | 'settings';
+// Five tabs, not four. Skills is one of the six capabilities C-106 §4 says
+// Life owns, and the first of the three that were missing entirely — it earns a
+// tab rather than a card inside another screen.
+export type LifeTab = 'home' | 'goals' | 'skills' | 'activity' | 'settings';
 
 export function BottomNav({ active, onSelect }: { active: LifeTab; onSelect: (t: LifeTab) => void }) {
   const { t } = useTranslation();
   const ITEMS: { key: LifeTab; icon: IconName; label: string }[] = [
     { key: 'home',     icon: 'home',     label: t.life.nav.home     },
     { key: 'goals',    icon: 'trophy',   label: t.life.nav.goals    },
+    { key: 'skills',   icon: 'sprout',   label: t.life.nav.skills   },
     { key: 'activity', icon: 'chart',    label: t.life.nav.activity },
     { key: 'settings', icon: 'settings', label: t.life.nav.settings },
   ];

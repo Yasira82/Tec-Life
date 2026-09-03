@@ -28,9 +28,10 @@ export const ar = {
     welcome:     'مرحباً',
     welcomeName: 'مرحباً، {name}',
     subtitle:    'سياقك الشخصي داخل منظومة TEC. بياناتك ملكك — أنت تعلنها، وهي خاصة، ولا تُستخدم بدون موافقتك.',
-    nav: { home: 'الرئيسية', goals: 'الأهداف', activity: 'النشاط', settings: 'الإعدادات' },
+    nav: { home: 'الرئيسية', goals: 'الأهداف', skills: 'المهارات', activity: 'النشاط', settings: 'الإعدادات' },
     cards: {
       goals:    { title: 'الأهداف',    hint: 'حدد أهدافك وتابع تقدمك' },
+      skills:   { title: 'المهارات',   hint: 'اللي بتعرف تعمله' },
       activity: { title: 'النشاط', hint: 'نشاطك الأخير عبر TEC' },
       prefs:    { title: 'التفضيلات',    hint: 'اضبط تجربتك' },
     },
@@ -41,6 +42,14 @@ export const ar = {
       addPlaceholder: 'أضف هدفاً', targetPlaceholder: 'هدف π (اختياري)', add: 'إضافة',
       logPlaceholder: '+ مبلغ π', log: 'تسجيل',
       empty: 'لا أهداف بعد — أضف أول هدف من الأعلى.',
+    },
+    skills: {
+      title: 'المهارات', hint: 'اللي بتعرف تعمله · سُلَّم، مش درجة',
+      addPlaceholder: 'أضف مهارة', add: 'إضافة',
+      empty: 'لا مهارات بعد — أضف أول واحدة من الأعلى.',
+      inferred: 'مستنتَجة', remove: 'حذف',
+      privacyNote: 'أنت وحدك تراها. لا شيء يُستنتَج من نشاطك بعد — كل مهارة هنا أضفتها بنفسك.',
+      levels: { learning: 'أتعلّم', practising: 'أمارس', proficient: 'متمكّن', expert: 'خبير' },
     },
     prefs: {
       title: 'التفضيلات', hint: 'كيف تضبط TEC تجربتك',

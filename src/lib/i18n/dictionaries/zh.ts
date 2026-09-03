@@ -28,9 +28,10 @@ export const zh = {
     welcome:     '欢迎',
     welcomeName: '欢迎，{name}',
     subtitle:    '你在 TEC 生态中的个人情境。数据属于你 — 由你自行申报、保持私密，未经同意绝不使用。',
-    nav: { home: '首页', goals: '目标', activity: '动态', settings: '设置' },
+    nav: { home: '首页', goals: '目标', skills: '技能', activity: '动态', settings: '设置' },
     cards: {
       goals:    { title: '目标',    hint: '设定目标并跟踪进度' },
+      skills:   { title: '技能',   hint: '你会做什么' },
       activity: { title: '动态', hint: '你在 TEC 上的近期动态' },
       prefs:    { title: '偏好',    hint: '调整你的体验' },
     },
@@ -41,6 +42,14 @@ export const zh = {
       addPlaceholder: '添加目标', targetPlaceholder: 'π 目标（可选）', add: '添加',
       logPlaceholder: '+ π 数额', log: '记录',
       empty: '还没有目标 — 在上方添加第一个。',
+    },
+    skills: {
+      title: '技能', hint: '你会做什么 · 是阶梯，不是评分',
+      addPlaceholder: '添加技能', add: '添加',
+      empty: '还没有技能 — 在上方添加第一个。',
+      inferred: '推断', remove: '移除',
+      privacyNote: '只有你能看到。目前不会从你的活动中推断任何内容 — 这里的每项技能都是你自己添加的。',
+      levels: { learning: '学习中', practising: '练习中', proficient: '熟练', expert: '专家' },
     },
     prefs: {
       title: '偏好', hint: 'TEC 如何为你调整体验',

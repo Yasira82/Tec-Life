@@ -28,9 +28,10 @@ export const ko = {
     welcome:     '환영합니다',
     welcomeName: '환영합니다, {name}님',
     subtitle:    'TEC 생태계에서의 개인 맥락입니다. 데이터는 당신의 것입니다 — 직접 선언하고, 비공개이며, 동의 없이는 결코 사용되지 않습니다.',
-    nav: { home: '홈', goals: '목표', activity: '활동', settings: '설정' },
+    nav: { home: '홈', goals: '목표', skills: '기술', activity: '활동', settings: '설정' },
     cards: {
       goals:    { title: '목표',    hint: '목표를 세우고 진행 상황을 확인하세요' },
+      skills:   { title: '기술',   hint: '할 수 있는 일' },
       activity: { title: '활동', hint: 'TEC에서의 최근 활동' },
       prefs:    { title: '환경설정',    hint: '경험을 맞춤 설정하세요' },
     },
@@ -41,6 +42,14 @@ export const ko = {
       addPlaceholder: '목표 추가', targetPlaceholder: 'π 목표 (선택)', add: '추가',
       logPlaceholder: '+ π 금액', log: '기록',
       empty: '아직 목표가 없습니다 — 위에서 첫 목표를 추가하세요.',
+    },
+    skills: {
+      title: '기술', hint: '할 수 있는 일 · 점수가 아니라 단계',
+      addPlaceholder: '기술 추가', add: '추가',
+      empty: '아직 기술이 없습니다 — 위에서 첫 기술을 추가하세요.',
+      inferred: '추론됨', remove: '삭제',
+      privacyNote: '본인만 볼 수 있습니다. 아직 활동에서 추론되는 것은 없습니다 — 여기 모든 기술은 직접 추가한 것입니다.',
+      levels: { learning: '배우는 중', practising: '연습 중', proficient: '능숙', expert: '전문가' },
     },
     prefs: {
       title: '환경설정', hint: 'TEC가 경험을 맞추는 방식',
