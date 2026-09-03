@@ -259,6 +259,76 @@ export function usePreferences() {
   return { prefs, loading, saving, error, save };
 }
 
+// ── Consent + right to delete (C-106 §5 · §11 P0-1) ──────────
+//
+// The two halves of the sentence on Life's own home screen: "your data is
+// yours — private, and never used without your consent."
+
+export const LIFE_DATA_CATEGORIES = ['GOALS', 'SKILLS', 'PREFERENCES', 'ACTIVITY', 'TRAJECTORY'] as const;
+export type LifeDataCategory = (typeof LIFE_DATA_CATEGORIES)[number];
+
+export interface ConsentEntry {
+  category:   LifeDataCategory;
+  granted:    boolean;
+  updated_at: string | null; // null = never answered, which is a NO
+}
+
+export function useConsent() {
+  const [consent, setConsent] = useState<ConsentEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving,  setSaving]  = useState(false);
+  const [error,   setError]   = useState<string | null>(null);
+
+  const reload = useCallback(() => {
+    setLoading(true);
+    fetch('/api/bff/life/consent', { credentials: 'include', cache: 'no-store' })
+      .then(readJson)
+      .then((d) => setConsent((d.consent as ConsentEntry[]) ?? []))
+      // Fail closed to an empty list: the screen then shows nothing to toggle
+      // rather than a row of switches whose state it could not read. A switch
+      // drawn OFF because a fetch failed is a lie about a permission.
+      .catch((e: unknown) => { setConsent([]); setError(e instanceof Error ? e.message : 'Failed to load'); })
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => reload(), [reload]);
+
+  const grant = useCallback(async (category: LifeDataCategory, granted: boolean) => {
+    setSaving(true);
+    setError(null);
+    // Optimistic, then reconciled with the server's answer — the toggle must
+    // move under a thumb, but what it settles on is what was actually stored.
+    setConsent((prev) => prev.map((c) => (c.category === category ? { ...c, granted } : c)));
+    try {
+      const res = await fetch('/api/bff/life/consent', {
+        method: 'PUT', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ consent: { [category]: granted } }),
+      });
+      const data = await readJson(res);
+      setConsent((data.consent as ConsentEntry[]) ?? []);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to save');
+      reload(); // roll back to server truth
+    } finally {
+      setSaving(false);
+    }
+  }, [reload]);
+
+  return { consent, loading, saving, error, grant, reload };
+}
+
+export interface PurgeResult {
+  goals: number; skills: number; preferences: number; consents: number;
+}
+
+/** Purge the caller's Life data. Irreversible; the caller confirms first. */
+export async function purgeLifeData(): Promise<PurgeResult> {
+  const res  = await fetch('/api/bff/life/data', { method: 'DELETE', credentials: 'include' });
+  const data = await readJson(res);
+  return (data.deleted as PurgeResult) ?? { goals: 0, skills: 0, preferences: 0, consents: 0 };
+}
+
 // ── Subscription (Pro entitlement — read from commerce, the Subscription owner) ──
 export function useSubscription() {
   const [plan,          setPlan]          = useState<string | null>(null);
