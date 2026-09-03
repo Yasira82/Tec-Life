@@ -6,12 +6,12 @@
 import { useState } from 'react';
 import { InviteCard } from '@/components/referral/InviteCard';
 import { usePiAuth } from '@yasser172/tec-auth';
-import {Icon, type IconName} from '@yasser172/tec-ui';
 import { C, goldA } from '@/lib-client/palette';
 import {
   useGoals, useActivity, useSubscription, useSkills, SKILL_LEVELS,
   type Goal, type GoalStatus, type Skill, type SkillLevel,
 } from '@/lib-client/life/useLife';
+import { pickFocusGoal, goalPercent } from '@/lib-client/life/focus';
 import { useMe } from '@/lib-client/hooks/useMe';
 import { LifePro } from './components/LifePro';
 import { LifeInsights } from './components/LifeInsights';
@@ -51,19 +51,6 @@ const isProPlan = (plan?: string | null) => {
   const p = (plan ?? '').toUpperCase();
   return p === 'PRO' || p === 'ENTERPRISE';
 };
-
-// Takes a glyph NAME, not a character. The emoji it used to take rendered as a
-// glossy 3D object on one phone and flat grey line art on the next — see
-// @yasser172/tec-ui 2.3.0.
-function SectionTitle({ icon, title, hint }: { icon: IconName; title: string; hint?: string }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-      <Icon name={icon} size={20} color={C.gold} strokeWidth={1.9} />
-      <h2 style={{ fontSize: 18, fontWeight: 800, color: C.text, margin: 0 }}>{title}</h2>
-      {hint && <span style={{ fontSize: 12, color: C.subtext }}>{hint}</span>}
-    </div>
-  );
-}
 
 // Trim a π amount for display: 100, 42.5, 0.25 — never "100.00".
 const fmtPi = (n: number) => {
@@ -182,6 +169,11 @@ function Goals({ isPro }: { isPro: boolean }) {
   const activeCount = goals.filter((g) => g.status === 'ACTIVE').length;
   const atFreeCap   = !isPro && activeCount >= FREE_ACTIVE_GOAL_CAP;
 
+  // No section heading in any tab below: the band already carries the tab's
+  // title AND its hint, in these exact words. Printing both twice — once in
+  // gold, once in white, ten pixels apart — is what made every screen look
+  // like the one before it.
+
   const submit = async () => {
     const t = title.trim();
     if (!t) return;
@@ -197,9 +189,7 @@ function Goals({ isPro }: { isPro: boolean }) {
   };
 
   return (
-    <section style={{ marginTop: 24 }}>
-      <SectionTitle icon="target" title={t.life.goals.title} hint={t.life.goals.hint} />
-
+    <section style={{ marginTop: 4 }}>
       {!loading && goals.length > 0 && <Overview goals={goals} />}
 
       {/* Life Pro — Goal Insights (deeper own-data analytics; gated behind live Pro) */}
@@ -349,9 +339,7 @@ function Skills() {
   };
 
   return (
-    <section style={{ marginTop: 24 }}>
-      <SectionTitle icon="sprout" title={s.title} hint={s.hint} />
-
+    <section style={{ marginTop: 4 }}>
       <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
         <input
           value={name}
@@ -413,8 +401,7 @@ function Activity() {
   const { events, loading, error } = useActivity(25);
 
   return (
-    <section style={{ marginTop: 24 }}>
-      <SectionTitle icon="trending" title={t.life.activity.title} hint={t.life.activity.hint} />
+    <section style={{ marginTop: 4 }}>
       <div style={{ ...card }}>
         {loading ? (
           <p style={{ fontSize: 13, color: C.subtext, margin: 0 }}>Loading…</p>
@@ -452,35 +439,195 @@ function Activity() {
   );
 }
 
-// Home tab — quick-launch cards into each section, so the shell feels navigable.
-function HomeQuickNav({ onGo }: { onGo: (t: LifeTab) => void }) {
-  const { t } = useTranslation();
-  const items: { id: LifeTab; icon: IconName; title: string; hint: string }[] = [
-    { id: 'goals',    icon: 'trophy',   title: t.life.cards.goals.title,    hint: t.life.cards.goals.hint },
-    { id: 'skills',   icon: 'sprout',   title: t.life.cards.skills.title,   hint: t.life.cards.skills.hint },
-    { id: 'activity', icon: 'chart',    title: t.life.cards.activity.title, hint: t.life.cards.activity.hint },
-    { id: 'settings', icon: 'settings', title: t.life.cards.prefs.title,    hint: t.life.cards.prefs.hint },
-  ];
+// ── Home ─────────────────────────────────────────────────────────────────────
+//
+// Home used to be four cards reading Goals · Skills · Activity · Preferences —
+// the same four destinations the tab bar already carries, in the same order,
+// under the same grey rounded rectangle. Tapping a card and tapping its tab did
+// the identical thing, so the app's first screen was a second copy of its own
+// navigation: four rows that looked alike and told you nothing.
+//
+// A home screen earns its place by showing STATE, not routes. These numbers
+// still lead where the cards led — they are buttons — but they say something on
+// the way there, and they are different from each other on sight.
+
+// One live number. Tappable, because a number you can act on is a better link
+// than a label that only names a screen.
+function Stat({ value, label, accent, onClick }: {
+  value: string; label: string; accent: string; onClick: () => void;
+}) {
   return (
-    <div style={{ display: 'grid', gap: 10, marginTop: 20 }}>
-      {items.map((it) => (
-        <button key={it.id} onClick={() => onGo(it.id)}
-          style={{ ...card, display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left', cursor: 'pointer', width: '100%' }}>
-          <span style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-            background: goldA(0.1), border: `1px solid ${goldA(0.18)}`,
-          }}>
-            <Icon name={it.icon} size={20} color={C.gold} strokeWidth={2} />
-          </span>
-          <span style={{ flex: 1 }}>
-            <span style={{ display: 'block', fontSize: 15, fontWeight: 800, color: C.text }}>{it.title}</span>
-            <span style={{ display: 'block', fontSize: 12, color: C.subtext, marginTop: 2 }}>{it.hint}</span>
-          </span>
-          <Icon name="chevron-right" size={18} color={C.subtext} strokeWidth={2} />
-        </button>
-      ))}
+    <button onClick={onClick} style={{
+      flex: 1, minWidth: 0, background: 'none', border: 'none', padding: '2px 4px',
+      cursor: 'pointer', textAlign: 'center', font: 'inherit',
+    }}>
+      <div style={{ fontSize: 26, fontWeight: 900, color: accent, fontVariantNumeric: 'tabular-nums', lineHeight: 1.1 }}>
+        {value}
+      </div>
+      <div style={{ fontSize: 11, color: C.subtext, marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {label}
+      </div>
+    </button>
+  );
+}
+
+// The one goal you are closest to finishing, with the only action worth having
+// on a home screen: add to it. Everything else about a goal (rename, complete,
+// delete) belongs in the Goals tab — a home screen that repeats a full editor
+// is the duplication this replaced, wearing a different shape.
+function Focus({ goals, busy, onLog, onGo }: {
+  goals: Goal[]; busy: boolean; onLog: (id: string, delta: number) => void; onGo: (t: LifeTab) => void;
+}) {
+  const { t } = useTranslation();
+  const h = t.life.home;
+  const [amt, setAmt] = useState('');
+
+  const goal = pickFocusGoal(goals);
+
+  if (!goal) {
+    return (
+      <div style={{ ...card, marginTop: 14 }}>
+        <div style={{ fontSize: 15, fontWeight: 800, color: C.text }}>{h.noGoals}</div>
+        <p style={{ fontSize: 13, color: C.subtext, margin: '6px 0 14px', lineHeight: 1.5 }}>{h.noGoalsHint}</p>
+        <button onClick={() => onGo('goals')} style={goldBtn}>{h.addGoal}</button>
+      </div>
+    );
+  }
+
+  const target = goal.target_amount ?? 0;
+  const done   = goal.progress ?? 0;
+  const p      = Math.round(goalPercent(goal));
+  const log = () => {
+    const d = parseFloat(amt);
+    if (!Number.isFinite(d) || d <= 0) return;
+    setAmt('');
+    onLog(goal.id, d);
+  };
+
+  return (
+    <div style={{ ...card, marginTop: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 10 }}>
+        <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: 0.6, textTransform: 'uppercase', color: C.gold }}>
+          {h.focus}
+        </span>
+        {target > 0 && <span style={{ fontSize: 11, color: C.faint }}>{h.focusHint}</span>}
+      </div>
+
+      <div style={{ fontSize: 17, fontWeight: 800, color: C.text, lineHeight: 1.35, overflowWrap: 'anywhere' }}>
+        {goal.title}
+      </div>
+
+      {target > 0 && (
+        <>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '12px 0 6px' }}>
+            <span style={{ fontSize: 22, fontWeight: 900, color: C.gold, fontVariantNumeric: 'tabular-nums' }}>{p}%</span>
+            <span style={{ flex: 1 }} />
+            <span style={{ fontSize: 12, color: C.subtext, fontVariantNumeric: 'tabular-nums' }}>
+              π {fmtPi(done)} / {fmtPi(target)}
+            </span>
+          </div>
+          <div style={{ height: 8, borderRadius: 999, background: C.bg, overflow: 'hidden' }}>
+            <div style={{ width: `${p}%`, height: '100%', borderRadius: 999,
+                          background: `linear-gradient(90deg, ${C.gold}, ${C.goldDark})`, transition: 'width .3s' }} />
+          </div>
+          <div style={{ fontSize: 11.5, color: C.faint, marginTop: 6 }}>
+            π {fmtPi(Math.max(0, target - done))} {h.remaining}
+          </div>
+
+          <div style={{ display: 'flex', gap: 6, marginTop: 12 }}>
+            <input
+              style={{ ...inputStyle, flex: '0 0 120px', padding: '9px 11px', fontSize: 13 }}
+              value={amt}
+              onChange={(e) => setAmt(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') log(); }}
+              inputMode="decimal"
+              placeholder={t.life.goals.logPlaceholder}
+            />
+            <button onClick={log} disabled={busy}
+              style={{ background: 'transparent', color: C.gold, border: `1px solid ${goldA(0.333)}`,
+                       borderRadius: 10, padding: '9px 16px', fontSize: 13, fontWeight: 700,
+                       cursor: 'pointer', opacity: busy ? 0.6 : 1 }}>
+              {t.life.goals.log}
+            </button>
+          </div>
+        </>
+      )}
     </div>
+  );
+}
+
+// The last three things that happened, not the last twenty-five. The full list
+// is one tap away and says so.
+function RecentActivity({ onGo }: { onGo: (t: LifeTab) => void }) {
+  const { t } = useTranslation();
+  const h = t.life.home;
+  const { events, loading } = useActivity(3);
+
+  return (
+    <div style={{ ...card, marginTop: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: events.length ? 4 : 8 }}>
+        <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: 0.6, textTransform: 'uppercase', color: C.gold }}>
+          {h.recent}
+        </span>
+        <span style={{ flex: 1 }} />
+        <button onClick={() => onGo('activity')}
+          style={{ background: 'none', border: 'none', color: C.subtext, fontSize: 12, cursor: 'pointer', padding: 0, font: 'inherit' }}>
+          {h.seeAll} ›
+        </button>
+      </div>
+
+      {loading ? (
+        <p style={{ fontSize: 13, color: C.subtext, margin: 0 }}>{t.common.loading}</p>
+      ) : events.length === 0 ? (
+        <p style={{ fontSize: 12.5, color: C.subtext, margin: 0, lineHeight: 1.5 }}>{h.noActivity}</p>
+      ) : (
+        events.map((ev, i) => {
+          const amt = piAmount(ev.payload);
+          return (
+            <div key={ev.id ?? i}
+              style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 0',
+                       borderTop: i === 0 ? 'none' : `1px solid ${C.border}` }}>
+              <span style={{ width: 6, height: 6, borderRadius: 999, background: C.gold, flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13.5, color: C.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {prettyType(ev.type)}
+                </div>
+                <div style={{ fontSize: 11, color: C.faint }}>{fmtWhen(ev.created_at)}</div>
+              </div>
+              {amt && <div style={{ fontSize: 13, fontWeight: 800, color: C.gold, whiteSpace: 'nowrap' }}>{amt}</div>}
+            </div>
+          );
+        })
+      )}
+    </div>
+  );
+}
+
+function HomeView({ isPro, daysRemaining, onGo }: {
+  isPro: boolean; daysRemaining: number | null; onGo: (t: LifeTab) => void;
+}) {
+  const { t } = useTranslation();
+  const { goals, busy, addProgress } = useGoals();
+  const { skills } = useSkills();
+
+  const active  = goals.filter((g) => g.status === 'ACTIVE').length;
+  const tracked = goals.reduce((sum, g) => sum + (g.target_amount ? (g.progress ?? 0) : 0), 0);
+
+  return (
+    <>
+      <div style={{ ...card, display: 'flex', gap: 4, marginTop: 18, padding: '16px 12px' }}>
+        <Stat value={String(active)}          label={t.life.goals.active}   accent={C.gold}    onClick={() => onGo('goals')} />
+        <div style={{ width: 1, background: C.border }} />
+        <Stat value={String(skills.length)}   label={t.life.home.skills}    accent={C.text}    onClick={() => onGo('skills')} />
+        <div style={{ width: 1, background: C.border }} />
+        <Stat value={`π ${fmtPi(tracked)}`}   label={t.life.goals.tracked}  accent={C.success} onClick={() => onGo('goals')} />
+      </div>
+
+      <Focus goals={goals} busy={busy} onLog={addProgress} onGo={onGo} />
+      <RecentActivity onGo={onGo} />
+      <LifePro isPro={isPro} daysRemaining={daysRemaining} />
+      <InviteCard />
+    </>
   );
 }
 
@@ -548,13 +695,7 @@ export default function LifeHome() {
           </p>
         </header>
 
-        {tab === 'home' && (
-          <>
-            <LifePro isPro={isPro} daysRemaining={daysRemaining} />
-            <HomeQuickNav onGo={setTab} />
-            <InviteCard />
-          </>
-        )}
+        {tab === 'home' && <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={setTab} />}
         {tab === 'goals'    && <Goals isPro={isPro} />}
         {tab === 'skills'   && <Skills />}
         {tab === 'activity' && <Activity />}

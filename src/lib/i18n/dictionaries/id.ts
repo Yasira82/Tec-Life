@@ -29,11 +29,17 @@ export const id = {
     welcomeName: 'Selamat datang, {name}',
     subtitle:    'Konteks pribadi Anda di ekosistem TEC. Data Anda milik Anda — Anda yang menyatakannya, bersifat pribadi, dan tidak pernah dipakai tanpa izin Anda.',
     nav: { home: 'Beranda', goals: 'Tujuan', skills: 'Keterampilan', activity: 'Aktivitas', settings: 'Pengaturan' },
-    cards: {
-      goals:    { title: 'Tujuan',    hint: 'Tetapkan target dan pantau kemajuan' },
-      skills:   { title: 'Keterampilan',   hint: 'apa yang Anda bisa' },
-      activity: { title: 'Aktivitas', hint: 'Aktivitas terbaru Anda di TEC' },
-      prefs:    { title: 'Preferensi',    hint: 'Sesuaikan pengalaman Anda' },
+    home: {
+      focus: 'Fokus kamu',
+      focusHint: 'paling dekat selesai',
+      noGoals: 'Belum ada tujuan',
+      noGoalsHint: 'Tetapkan satu — progresmu tampil di sini.',
+      addGoal: 'Tambah tujuan',
+      recent: 'Terbaru',
+      seeAll: 'Lihat semua',
+      noActivity: 'Belum ada — aktivitas TEC kamu muncul di sini.',
+      skills: 'Keterampilan',
+      remaining: 'π lagi',
     },
     goals: {
       title: 'Tujuan', hint: 'tetapkan target · pantau kemajuan',

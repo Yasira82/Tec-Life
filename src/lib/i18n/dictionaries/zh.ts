@@ -29,11 +29,17 @@ export const zh = {
     welcomeName: '欢迎，{name}',
     subtitle:    '你在 TEC 生态中的个人情境。数据属于你 — 由你自行申报、保持私密，未经同意绝不使用。',
     nav: { home: '首页', goals: '目标', skills: '技能', activity: '动态', settings: '设置' },
-    cards: {
-      goals:    { title: '目标',    hint: '设定目标并跟踪进度' },
-      skills:   { title: '技能',   hint: '你会做什么' },
-      activity: { title: '动态', hint: '你在 TEC 上的近期动态' },
-      prefs:    { title: '偏好',    hint: '调整你的体验' },
+    home: {
+      focus: '当前焦点',
+      focusHint: '最接近完成',
+      noGoals: '还没有目标',
+      noGoalsHint: '设一个 — 进度会显示在这里。',
+      addGoal: '添加目标',
+      recent: '最近',
+      seeAll: '查看全部',
+      noActivity: '还没有 — 你在 TEC 的动态会显示在这里。',
+      skills: '技能',
+      remaining: 'π 待完成',
     },
     goals: {
       title: '目标', hint: '设定目标 · 跟踪进度',

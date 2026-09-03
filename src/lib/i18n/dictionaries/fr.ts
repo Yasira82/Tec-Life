@@ -29,11 +29,17 @@ export const fr = {
     welcomeName: 'Bienvenue, {name}',
     subtitle:    'Votre contexte personnel dans l’écosystème TEC. Vos données vous appartiennent — déclarées par vous, privées, jamais utilisées sans votre consentement.',
     nav: { home: 'Accueil', goals: 'Objectifs', skills: 'Compétences', activity: 'Activité', settings: 'Réglages' },
-    cards: {
-      goals:    { title: 'Objectifs',    hint: 'Fixez des cibles et suivez vos progrès' },
-      skills:   { title: 'Compétences',   hint: 'ce que vous savez faire' },
-      activity: { title: 'Activité', hint: 'Votre activité récente sur TEC' },
-      prefs:    { title: 'Préférences',    hint: 'Adaptez votre expérience' },
+    home: {
+      focus: 'Votre priorité',
+      focusHint: 'le plus proche du but',
+      noGoals: 'Aucun objectif',
+      noGoalsHint: 'Définissez-en un — votre progression vivra ici.',
+      addGoal: 'Ajouter un objectif',
+      recent: 'Récent',
+      seeAll: 'Tout voir',
+      noActivity: 'Rien pour l’instant — votre activité TEC apparaîtra ici.',
+      skills: 'Compétences',
+      remaining: 'π restants',
     },
     goals: {
       title: 'Objectifs', hint: 'fixez une cible · suivez vos progrès',

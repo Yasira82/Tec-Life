@@ -29,11 +29,17 @@ export const ar = {
     welcomeName: 'مرحباً، {name}',
     subtitle:    'سياقك الشخصي داخل منظومة TEC. بياناتك ملكك — أنت تعلنها، وهي خاصة، ولا تُستخدم بدون موافقتك.',
     nav: { home: 'الرئيسية', goals: 'الأهداف', skills: 'المهارات', activity: 'النشاط', settings: 'الإعدادات' },
-    cards: {
-      goals:    { title: 'الأهداف',    hint: 'حدد أهدافك وتابع تقدمك' },
-      skills:   { title: 'المهارات',   hint: 'اللي بتعرف تعمله' },
-      activity: { title: 'النشاط', hint: 'نشاطك الأخير عبر TEC' },
-      prefs:    { title: 'التفضيلات',    hint: 'اضبط تجربتك' },
+    home: {
+      focus: 'تركيزك',
+      focusHint: 'الأقرب للاكتمال',
+      noGoals: 'لا أهداف بعد',
+      noGoalsHint: 'حدد هدفاً — تقدمك هيبان هنا.',
+      addGoal: 'أضف هدفاً',
+      recent: 'الأحدث',
+      seeAll: 'عرض الكل',
+      noActivity: 'لا شيء بعد — نشاطك في TEC هيظهر هنا.',
+      skills: 'المهارات',
+      remaining: 'π متبقّي',
     },
     goals: {
       title: 'الأهداف', hint: 'حدد هدفاً · وتابع تقدمك',

@@ -36,11 +36,17 @@ export const en = {
     welcomeName: 'Welcome, {name}',
     subtitle:    'Your personal context in the TEC ecosystem. Your data is yours — self-declared, private, and never used without your consent.',
     nav: { home: 'Home', goals: 'Goals', skills: 'Skills', activity: 'Activity', settings: 'Settings' },
-    cards: {
-      goals:    { title: 'Goals',    hint: 'Set targets and track your progress' },
-      skills:   { title: 'Skills',   hint: 'what you can do' },
-      activity: { title: 'Activity', hint: 'Your recent activity across TEC' },
-      prefs:    { title: 'Preferences',    hint: 'Tailor your experience' },
+    home: {
+      focus: 'Your focus',
+      focusHint: 'closest to done',
+      noGoals: 'No goals yet',
+      noGoalsHint: 'Set one — your progress lives here.',
+      addGoal: 'Add a goal',
+      recent: 'Recent',
+      seeAll: 'See all',
+      noActivity: 'Nothing yet — your TEC activity appears here.',
+      skills: 'Skills',
+      remaining: 'π to go',
     },
     goals: {
       title: 'Goals', hint: 'set a target · track your progress',

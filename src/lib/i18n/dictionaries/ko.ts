@@ -29,11 +29,17 @@ export const ko = {
     welcomeName: '환영합니다, {name}님',
     subtitle:    'TEC 생태계에서의 개인 맥락입니다. 데이터는 당신의 것입니다 — 직접 선언하고, 비공개이며, 동의 없이는 결코 사용되지 않습니다.',
     nav: { home: '홈', goals: '목표', skills: '기술', activity: '활동', settings: '설정' },
-    cards: {
-      goals:    { title: '목표',    hint: '목표를 세우고 진행 상황을 확인하세요' },
-      skills:   { title: '기술',   hint: '할 수 있는 일' },
-      activity: { title: '활동', hint: 'TEC에서의 최근 활동' },
-      prefs:    { title: '환경설정',    hint: '경험을 맞춤 설정하세요' },
+    home: {
+      focus: '지금 집중',
+      focusHint: '완료에 가장 가까운',
+      noGoals: '아직 목표가 없어요',
+      noGoalsHint: '하나 정해 보세요 — 진행 상황이 여기 표시됩니다.',
+      addGoal: '목표 추가',
+      recent: '최근',
+      seeAll: '전체 보기',
+      noActivity: '아직 없어요 — TEC 활동이 여기에 표시됩니다.',
+      skills: '스킬',
+      remaining: 'π 남음',
     },
     goals: {
       title: '목표', hint: '목표 설정 · 진행 상황 추적',
