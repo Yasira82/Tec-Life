@@ -264,7 +264,12 @@ export function usePreferences() {
 // The two halves of the sentence on Life's own home screen: "your data is
 // yours — private, and never used without your consent."
 
-export const LIFE_DATA_CATEGORIES = ['GOALS', 'SKILLS', 'PREFERENCES', 'ACTIVITY', 'TRAJECTORY'] as const;
+// Kept in step with the Prisma enum. INTENT joined the set after the first
+// five and needed no backfill: with "absence is a NO", a category nobody has a
+// row for is denied for everybody, automatically.
+export const LIFE_DATA_CATEGORIES = [
+  'GOALS', 'SKILLS', 'PREFERENCES', 'ACTIVITY', 'TRAJECTORY', 'INTENT',
+] as const;
 export type LifeDataCategory = (typeof LIFE_DATA_CATEGORIES)[number];
 
 export interface ConsentEntry {
@@ -316,6 +321,40 @@ export function useConsent() {
   }, [reload]);
 
   return { consent, loading, saving, error, grant, reload };
+}
+
+// ── Intent (C-106 §4 — "what the user is trying to do now") ──
+//
+// Shown on the Privacy screen rather than the home screen, and that placement
+// is the design: the value of showing someone their own intent window is not
+// news (they just did those things) — it is TRANSPARENCY. This is the thing
+// Life would tell another runtime about them, sitting directly under the
+// switch that decides whether it may.
+
+export interface IntentSignal { kind: string; at: string }
+
+export interface Intent {
+  signals:    IntentSignal[];
+  intent:     string | null;
+  expires_in: number | null; // seconds left in the window
+}
+
+export function useIntent() {
+  const [intent, setIntent] = useState<Intent | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/bff/life/intent', { credentials: 'include', cache: 'no-store' })
+      .then(readJson)
+      .then((d) => { if (alive) setIntent((d.intent as Intent) ?? null); })
+      // Null, never an empty-looking window: "we could not ask" and "there is
+      // nothing there" are different, and only one of them should be shown as
+      // an answer.
+      .catch(() => { if (alive) setIntent(null); });
+    return () => { alive = false; };
+  }, []);
+
+  return intent;
 }
 
 export interface PurgeResult {

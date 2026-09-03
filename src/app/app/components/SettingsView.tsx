@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { C, errorA, goldA, successA } from '@/lib-client/palette';
 import { THEME_ORDER, readTheme, saveTheme, type ThemeChoice } from '@/lib-client/theme';
 import {
-  usePreferences, useConsent, purgeLifeData, type LifeDataCategory,
+  usePreferences, useConsent, useIntent, purgeLifeData,
 } from '@/lib-client/life/useLife';
 import { useMe } from '@/lib-client/hooks/useMe';
 import { useTranslation } from '@/lib/i18n';
@@ -110,12 +110,22 @@ function Privacy() {
   const { t } = useTranslation();
   const p = t.life.privacy;
   const { consent, loading, saving, grant } = useConsent();
+  const intent = useIntent();
   const [armed,   setArmed]   = useState(false);
   const [state,   setState]   = useState<'idle' | 'busy' | 'done' | 'failed'>('idle');
 
-  const LABEL: Record<LifeDataCategory, string> = {
+  const LABEL: Record<string, string> = {
     GOALS: p.goals, SKILLS: p.skills, PREFERENCES: p.preferences,
-    ACTIVITY: p.activity, TRAJECTORY: p.trajectory,
+    ACTIVITY: p.activity, TRAJECTORY: p.trajectory, INTENT: p.intentTitle,
+  };
+
+  // A signal kind reads as a verb, not a constant: "Logging progress", never
+  // PROGRESS_LOGGED. An unknown kind falls through to its raw name rather than
+  // being hidden — a category the screen cannot name is exactly the one a
+  // person should still be told about.
+  const INTENT_LABEL: Record<string, string> = {
+    GOAL_CREATED: p.kGoal, PROGRESS_LOGGED: p.kProgress, GOAL_COMPLETED: p.kDone,
+    SKILL_ADDED: p.kSkill, SKILL_LEVELED: p.kLevel, PREFERENCE_SET: p.kPref,
   };
 
   // Two taps, not a modal. The second tap is the confirmation, and it disarms
@@ -149,6 +159,27 @@ function Privacy() {
         <div style={{ fontSize: 14, fontWeight: 700, color: C.text }}>{p.shareTitle}</div>
         <p style={{ fontSize: 12, color: C.subtext, margin: '6px 0 0', lineHeight: 1.6 }}>{p.shareNote}</p>
       </div>
+
+      {/* The live window, directly under the sentence about it and directly
+          above the switch that governs it. Showing someone what they just did
+          is not news; showing them WHAT LIFE WOULD SAY ABOUT THEM, next to the
+          control that decides whether it may, is the whole point. */}
+      {intent && (
+        <div style={{ padding: '0 16px 14px' }}>
+          <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 0.6, textTransform: 'uppercase', color: C.gold }}>
+            {p.intentTitle}
+          </div>
+          <div style={{ fontSize: 13.5, color: C.text, marginTop: 6 }}>
+            {intent.intent ? (INTENT_LABEL[intent.intent] ?? intent.intent) : p.intentNone}
+          </div>
+          {intent.intent && intent.expires_in != null && (
+            <div style={{ fontSize: 11, color: C.faint, marginTop: 4 }}>
+              {p.intentExpires.replace('{n}', String(Math.max(1, Math.round(intent.expires_in / 60))))}
+            </div>
+          )}
+          <p style={{ fontSize: 11.5, color: C.subtext, margin: '8px 0 0', lineHeight: 1.6 }}>{p.intentNote}</p>
+        </div>
+      )}
 
       {(loading ? [] : consent).map((c) => (
         <Row key={c.category} label={LABEL[c.category] ?? c.category}>
