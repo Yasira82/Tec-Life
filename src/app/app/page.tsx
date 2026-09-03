@@ -404,9 +404,14 @@ function Skills() {
   const { skills, loading, error, busy, addSkill, setLevel, removeSkill } = useSkills();
   const [name, setName] = useState('');
 
+  // One character is a real skill: R, C, Go, AI. The old rule demanded two and
+  // enforced it by DISABLING the button — so typing "R" and tapping Add did
+  // nothing at all, with no message and no cursor change to explain it. A
+  // control that refuses in silence is worse than one that refuses out loud;
+  // this one now only refuses an EMPTY field, which the placeholder covers.
   const submit = () => {
     const v = name.trim();
-    if (v.length < 2) return;
+    if (!v) return;
     void addSkill(v);
     setName('');
   };
@@ -426,7 +431,8 @@ function Skills() {
             padding: '11px 13px', fontSize: 14, outline: 'none',
           }}
         />
-        <button onClick={submit} disabled={busy || name.trim().length < 2} style={goldBtn}>
+        <button onClick={submit} disabled={busy || name.trim().length === 0}
+          style={{ ...goldBtn, opacity: busy || !name.trim() ? 0.55 : 1 }}>
           {s.add}
         </button>
       </div>

@@ -138,26 +138,39 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
 
   const busy = status === 'creating' || status === 'paying';
 
+  // ── The upgrade surface, compact ──────────────────────────────────────────
+  //
+  // This was a full-height card carrying a four-line paragraph and a
+  // full-width button, sitting at the bottom of the home screen under the
+  // user's own data. Nobody reads a four-line pitch on a phone, and its SIZE
+  // was the loudest claim on the page — for the one block that is not the
+  // user's.
+  //
+  // One line of value, the price, and a button that fits the sentence. The
+  // detail lives on the Pro screen for anyone who taps.
   return (
-    <div style={card}>
-      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12 }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: C.gold, display: 'flex', alignItems: 'center', gap: 7 }}><Icon name="sprout" size={17} color={C.gold} strokeWidth={1.9} />Life Pro</div>
-        <div style={{ fontSize: 20, fontWeight: 900, color: C.text }}>
-          {PRICE}π<span style={{ fontSize: 12, color: C.subtext, fontWeight: 600 }}> / month</span>
+    <div style={{ ...card, padding: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <Icon name="sprout" size={18} color={C.gold} strokeWidth={1.9} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 15, fontWeight: 800, color: C.text }}>Life Pro</div>
+          <div style={{ fontSize: 12, color: C.subtext, marginTop: 2 }}>
+            Unlimited goals · Goal Insights
+          </div>
         </div>
-      </div>
-      <div style={{ fontSize: 12, color: C.subtext, marginTop: 8, lineHeight: 1.5 }}>
-        Premium planning for your Pi life — <strong style={{ color: C.text }}>unlimited goals</strong> plus
-        a <strong style={{ color: C.text }}>Goal Insights</strong> dashboard (completion rate, funding
-        progress toward your π targets, goals reached) — a deeper read of your own data.
-        Your data stays yours. Early price, locked in.
+        <div style={{ textAlign: 'end', flexShrink: 0 }}>
+          <div style={{ fontSize: 18, fontWeight: 900, color: C.text, fontVariantNumeric: 'tabular-nums' }}>
+            {PRICE}π
+          </div>
+          <div style={{ fontSize: 10.5, color: C.faint }}>/ month</div>
+        </div>
       </div>
 
       <button
         onClick={() => { void handleUpgrade(); }}
         disabled={busy}
         style={{
-          marginTop: 14, width: '100%', padding: '12px 16px', borderRadius: 12,
+          marginTop: 14, width: '100%', padding: '11px 16px', borderRadius: 10,
           background: busy ? C.surface3 : `linear-gradient(135deg, ${C.gold}, ${C.goldDark})`,
           color: busy ? C.faint : C.onGold,
           border: 'none', fontSize: 14, fontWeight: 800,
@@ -166,7 +179,7 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
       >
         {status === 'creating' ? 'Preparing…'
           : status === 'paying' ? 'Confirm in Pi…'
-          : `Upgrade — ${PRICE}π / month`}
+          : `Upgrade — ${PRICE}π`}
       </button>
 
       {status === 'error' && (
