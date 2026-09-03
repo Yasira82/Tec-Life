@@ -49,6 +49,17 @@ export const tr = {
       logPlaceholder: '+ π tutarı', log: 'Kaydet',
       empty: 'Henüz hedef yok — ilkini yukarıdan ekle.',
     },
+    trajectory: {
+      title: 'Tempo',
+      perWeek: 'π / hafta',
+      activeDays: 'aktif gün',
+      window: 'son {n} gün',
+      notEnough: 'Henüz yeterli geçmiş yok — iki ayrı günde ilerleme kaydet, temponu burada gör.',
+      atThisPace: 'bu tempoda',
+      days: 'gün',
+      completed: '{n} tamamlandı',
+      note: 'Kendi kayıtlarından bir tahmin — ne öngörü ne tavsiye.',
+    },
     skills: {
       title: 'Beceriler', hint: 'yapabildiklerin · bir merdiven, not değil',
       addPlaceholder: 'Beceri ekle', add: 'Ekle',

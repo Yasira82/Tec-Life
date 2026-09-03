@@ -49,6 +49,17 @@ export const ko = {
       logPlaceholder: '+ π 금액', log: '기록',
       empty: '아직 목표가 없습니다 — 위에서 첫 목표를 추가하세요.',
     },
+    trajectory: {
+      title: '속도',
+      perWeek: 'π / 주',
+      activeDays: '기록한 날',
+      window: '최근 {n}일',
+      notEnough: '아직 기록이 부족해요 — 서로 다른 이틀에 진행을 기록하면 속도가 표시됩니다.',
+      atThisPace: '이 속도라면',
+      days: '일',
+      completed: '{n}개 달성',
+      note: '직접 기록한 값에서 계산한 추정치 — 예측도, 조언도 아닙니다.',
+    },
     skills: {
       title: '기술', hint: '할 수 있는 일 · 점수가 아니라 단계',
       addPlaceholder: '기술 추가', add: '추가',

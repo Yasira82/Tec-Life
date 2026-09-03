@@ -49,6 +49,17 @@ export const vi = {
       logPlaceholder: '+ số π', log: 'Ghi nhận',
       empty: 'Chưa có mục tiêu — thêm mục tiêu đầu tiên ở trên.',
     },
+    trajectory: {
+      title: 'Nhịp độ',
+      perWeek: 'π / tuần',
+      activeDays: 'ngày hoạt động',
+      window: '{n} ngày qua',
+      notEnough: 'Chưa đủ dữ liệu — ghi tiến độ trong hai ngày khác nhau, nhịp độ sẽ hiện ở đây.',
+      atThisPace: 'với nhịp này',
+      days: 'ngày',
+      completed: '{n} đã đạt',
+      note: 'Ước tính từ chính các mục bạn ghi — không phải dự báo, cũng không phải lời khuyên.',
+    },
     skills: {
       title: 'Kỹ năng', hint: 'những gì bạn làm được · một bậc thang, không phải điểm số',
       addPlaceholder: 'Thêm kỹ năng', add: 'Thêm',

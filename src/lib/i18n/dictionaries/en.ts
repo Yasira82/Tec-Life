@@ -56,6 +56,17 @@ export const en = {
       logPlaceholder: '+ π amount', log: 'Log',
       empty: 'No goals yet — add your first above.',
     },
+    trajectory: {
+      title: 'Pace',
+      perWeek: 'π / week',
+      activeDays: 'active days',
+      window: 'last {n} days',
+      notEnough: 'Not enough history yet — log progress on two different days and your pace appears here.',
+      atThisPace: 'at this pace',
+      days: 'days',
+      completed: '{n} reached',
+      note: 'An estimate from your own logged steps — not a prediction, and not advice.',
+    },
     skills: {
       title: 'Skills', hint: 'what you can do · a ladder, not a score',
       addPlaceholder: 'Add a skill', add: 'Add',

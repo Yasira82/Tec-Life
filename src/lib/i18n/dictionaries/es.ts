@@ -49,6 +49,17 @@ export const es = {
       logPlaceholder: '+ cantidad π', log: 'Registrar',
       empty: 'Aún no hay metas — añade la primera arriba.',
     },
+    trajectory: {
+      title: 'Ritmo',
+      perWeek: 'π / semana',
+      activeDays: 'días activos',
+      window: 'últimos {n} días',
+      notEnough: 'Aún no hay historial suficiente — registra progreso en dos días distintos y tu ritmo aparecerá aquí.',
+      atThisPace: 'a este ritmo',
+      days: 'días',
+      completed: '{n} alcanzados',
+      note: 'Una estimación a partir de tus propios registros — no es una predicción ni un consejo.',
+    },
     skills: {
       title: 'Habilidades', hint: 'lo que sabes hacer · una escala, no una nota',
       addPlaceholder: 'Añadir una habilidad', add: 'Añadir',

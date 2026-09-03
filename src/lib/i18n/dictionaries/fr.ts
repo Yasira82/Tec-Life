@@ -49,6 +49,17 @@ export const fr = {
       logPlaceholder: '+ montant π', log: 'Enregistrer',
       empty: 'Aucun objectif — ajoutez le premier ci-dessus.',
     },
+    trajectory: {
+      title: 'Rythme',
+      perWeek: 'π / semaine',
+      activeDays: 'jours actifs',
+      window: '{n} derniers jours',
+      notEnough: 'Pas encore assez d’historique — enregistrez des progrès sur deux jours différents et votre rythme apparaîtra ici.',
+      atThisPace: 'à ce rythme',
+      days: 'jours',
+      completed: '{n} atteints',
+      note: 'Une estimation à partir de vos propres saisies — ni une prédiction, ni un conseil.',
+    },
     skills: {
       title: 'Compétences', hint: 'ce que vous savez faire · une échelle, pas une note',
       addPlaceholder: 'Ajouter une compétence', add: 'Ajouter',

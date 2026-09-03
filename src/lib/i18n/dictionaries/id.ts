@@ -49,6 +49,17 @@ export const id = {
       logPlaceholder: '+ jumlah π', log: 'Catat',
       empty: 'Belum ada tujuan — tambahkan yang pertama di atas.',
     },
+    trajectory: {
+      title: 'Tempo',
+      perWeek: 'π / minggu',
+      activeDays: 'hari aktif',
+      window: '{n} hari terakhir',
+      notEnough: 'Riwayat belum cukup — catat progres pada dua hari berbeda, tempo kamu muncul di sini.',
+      atThisPace: 'pada tempo ini',
+      days: 'hari',
+      completed: '{n} tercapai',
+      note: 'Perkiraan dari catatanmu sendiri — bukan ramalan, bukan saran.',
+    },
     skills: {
       title: 'Keterampilan', hint: 'apa yang Anda bisa · sebuah tangga, bukan nilai',
       addPlaceholder: 'Tambah keterampilan', add: 'Tambah',

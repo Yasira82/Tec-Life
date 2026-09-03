@@ -8,7 +8,7 @@ import { InviteCard } from '@/components/referral/InviteCard';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { C, goldA } from '@/lib-client/palette';
 import {
-  useGoals, useActivity, useSubscription, useSkills, SKILL_LEVELS,
+  useGoals, useActivity, useSubscription, useSkills, useTrajectory, SKILL_LEVELS,
   type Goal, type GoalStatus, type Skill, type SkillLevel,
 } from '@/lib-client/life/useLife';
 import { pickFocusGoal, goalPercent } from '@/lib-client/life/focus';
@@ -244,7 +244,79 @@ function Goals({ isPro }: { isPro: boolean }) {
           )}
         </div>
       </div>
+
+      {/* Where the person is HEADED, under what they have. It reads the same
+          logged steps the list above writes, so it belongs beside them rather
+          than on a sixth tab. */}
+      {!loading && goals.length > 0 && <Pace />}
     </section>
+  );
+}
+
+// ── Pace (C-106 §4 — personal trajectory) ────────────────────────────────────
+//
+// How fast the person is actually moving, and what that reaches. Every figure
+// is arithmetic on their own logged steps — no recommendation (that is TEC AI's
+// function, C-104) and no claim about π itself.
+//
+// It refuses more often than it answers, and the refusal is the feature: with
+// one entry, or several on a single day, there is no pace, and the panel says
+// so instead of dividing by a day and naming a Thursday.
+function Pace() {
+  const { t } = useTranslation();
+  const tr = t.life.trajectory;
+  const { trajectory, loading } = useTrajectory();
+
+  if (loading || !trajectory) return null;
+  const { projectable, pi_per_week, active_days, window_days, completed_in_window, goals } = trajectory;
+
+  return (
+    <div style={{ ...card, marginTop: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 10 }}>
+        <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: 0.6, textTransform: 'uppercase', color: C.gold }}>
+          {tr.title}
+        </span>
+        <span style={{ fontSize: 11, color: C.faint }}>{tr.window.replace('{n}', String(window_days))}</span>
+      </div>
+
+      {!projectable ? (
+        <p style={{ fontSize: 12.5, color: C.subtext, margin: 0, lineHeight: 1.6 }}>{tr.notEnough}</p>
+      ) : (
+        <>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 26, fontWeight: 900, color: C.gold, fontVariantNumeric: 'tabular-nums' }}>
+              π {fmtPi(pi_per_week)}
+            </span>
+            <span style={{ fontSize: 12, color: C.subtext }}>{tr.perWeek}</span>
+            <span style={{ flex: 1 }} />
+            <span style={{ fontSize: 11.5, color: C.faint }}>
+              {active_days} {tr.activeDays}
+              {completed_in_window > 0 && ` · ${tr.completed.replace('{n}', String(completed_in_window))}`}
+            </span>
+          </div>
+
+          {goals.length > 0 && (
+            <div style={{ marginTop: 12 }}>
+              {goals.map((g, i) => (
+                <div key={g.id}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 0',
+                           borderTop: i === 0 ? `1px solid ${C.border}` : `1px solid ${C.border}` }}>
+                  <span style={{ flex: 1, minWidth: 0, fontSize: 13.5, color: C.text,
+                                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {g.title}
+                  </span>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: C.gold, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
+                    {g.eta_days} {tr.days}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <p style={{ fontSize: 11, color: C.faint, margin: '12px 0 0', lineHeight: 1.5 }}>{tr.note}</p>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -475,8 +547,9 @@ function Stat({ value, label, accent, onClick }: {
 // on a home screen: add to it. Everything else about a goal (rename, complete,
 // delete) belongs in the Goals tab — a home screen that repeats a full editor
 // is the duplication this replaced, wearing a different shape.
-function Focus({ goals, busy, onLog, onGo }: {
-  goals: Goal[]; busy: boolean; onLog: (id: string, delta: number) => void; onGo: (t: LifeTab) => void;
+function Focus({ goals, busy, eta, onLog, onGo }: {
+  goals: Goal[]; busy: boolean; eta: Map<string, number>;
+  onLog: (id: string, delta: number) => void; onGo: (t: LifeTab) => void;
 }) {
   const { t } = useTranslation();
   const h = t.life.home;
@@ -496,7 +569,8 @@ function Focus({ goals, busy, onLog, onGo }: {
 
   const target = goal.target_amount ?? 0;
   const done   = goal.progress ?? 0;
-  const p      = Math.round(goalPercent(goal));
+  const p       = Math.round(goalPercent(goal));
+  const etaDays = eta.get(goal.id);
   const log = () => {
     const d = parseFloat(amt);
     if (!Number.isFinite(d) || d <= 0) return;
@@ -532,6 +606,10 @@ function Focus({ goals, busy, onLog, onGo }: {
           </div>
           <div style={{ fontSize: 11.5, color: C.faint, marginTop: 6 }}>
             π {fmtPi(Math.max(0, target - done))} {h.remaining}
+            {/* The trajectory, in one clause, only when there is one. The full
+                pace panel lives in the Goals tab; here it is the answer to
+                "and how long is that?" — never printed on a guess. */}
+            {etaDays !== undefined && ` · ${etaDays} ${t.life.trajectory.days} ${t.life.trajectory.atThisPace}`}
           </div>
 
           <div style={{ display: 'flex', gap: 6, marginTop: 12 }}>
@@ -609,6 +687,10 @@ function HomeView({ isPro, daysRemaining, onGo }: {
   const { t } = useTranslation();
   const { goals, busy, addProgress } = useGoals();
   const { skills } = useSkills();
+  // Home shows the ETA of ONE goal, so it reads the same trajectory the Goals
+  // tab renders in full rather than computing a second, quietly different one.
+  const { trajectory } = useTrajectory();
+  const eta = new Map((trajectory?.goals ?? []).map((g) => [g.id, g.eta_days]));
 
   const active  = goals.filter((g) => g.status === 'ACTIVE').length;
   const tracked = goals.reduce((sum, g) => sum + (g.target_amount ? (g.progress ?? 0) : 0), 0);
@@ -623,7 +705,7 @@ function HomeView({ isPro, daysRemaining, onGo }: {
         <Stat value={`π ${fmtPi(tracked)}`}   label={t.life.goals.tracked}  accent={C.success} onClick={() => onGo('goals')} />
       </div>
 
-      <Focus goals={goals} busy={busy} onLog={addProgress} onGo={onGo} />
+      <Focus goals={goals} busy={busy} eta={eta} onLog={addProgress} onGo={onGo} />
       <RecentActivity onGo={onGo} />
       <LifePro isPro={isPro} daysRemaining={daysRemaining} />
       <InviteCard />

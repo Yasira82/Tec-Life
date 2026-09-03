@@ -49,6 +49,17 @@ export const zh = {
       logPlaceholder: '+ π 数额', log: '记录',
       empty: '还没有目标 — 在上方添加第一个。',
     },
+    trajectory: {
+      title: '节奏',
+      perWeek: 'π / 周',
+      activeDays: '活跃天数',
+      window: '最近 {n} 天',
+      notEnough: '记录还不够 — 在两个不同的日子记录进度，你的节奏就会出现在这里。',
+      atThisPace: '按此节奏',
+      days: '天',
+      completed: '已达成 {n} 个',
+      note: '根据你自己的记录估算 — 不是预测，也不是建议。',
+    },
     skills: {
       title: '技能', hint: '你会做什么 · 是阶梯，不是评分',
       addPlaceholder: '添加技能', add: '添加',

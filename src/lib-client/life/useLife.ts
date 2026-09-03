@@ -169,6 +169,53 @@ export function useSkills() {
   return { skills, loading, error, busy, reload, addSkill, setLevel, removeSkill };
 }
 
+// ── Trajectory (C-106 §4 — "where the user is headed") ───────
+//
+// A pace computed from the user's OWN logged steps, and what that pace
+// reaches. `projectable` is false far more often than it is true — one entry,
+// or several on a single day, is not a pace — and the screen must respect that
+// rather than filling the gap with a number.
+
+export interface TrajectoryGoal {
+  id:        string;
+  title:     string;
+  remaining: number;
+  eta_days:  number;
+  eta_date:  string;
+}
+
+export interface Trajectory {
+  window_days:         number;
+  entries:             number;
+  active_days:         number;
+  pi_logged:           number;
+  pi_per_week:         number;
+  first_entry_at:      string | null;
+  completed_in_window: number;
+  projectable:         boolean;
+  goals:               TrajectoryGoal[];
+}
+
+export function useTrajectory(windowDays = 30) {
+  const [trajectory, setTrajectory] = useState<Trajectory | null>(null);
+  const [loading,    setLoading]    = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    fetch(`/api/bff/life/trajectory?window_days=${windowDays}`, { credentials: 'include', cache: 'no-store' })
+      .then(readJson)
+      .then((d) => { if (alive) setTrajectory((d.trajectory as Trajectory) ?? null); })
+      // Fail closed to null: no trajectory panel at all is honest, a zeroed one
+      // would read as "you have logged nothing" when the truth is "we could not
+      // ask".
+      .catch(() => { if (alive) setTrajectory(null); })
+      .finally(() => { if (alive) setLoading(false); });
+    return () => { alive = false; };
+  }, [windowDays]);
+
+  return { trajectory, loading };
+}
+
 // ── Preferences ──────────────────────────────────────────────
 export function usePreferences() {
   const [prefs,   setPrefs]   = useState<Record<string, string>>({});
