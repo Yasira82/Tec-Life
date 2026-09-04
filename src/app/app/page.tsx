@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { InviteCard } from '@/components/referral/InviteCard';
 import { usePiAuth } from '@yasser172/tec-auth';
-import { C, goldA, inkA } from '@/lib-client/palette';
+import { C, goldA, inkA, successA } from '@/lib-client/palette';
 import {
   useGoals, useActivity, useSubscription, useSkills, useTrajectory, SKILL_LEVELS,
   type Goal, type GoalStatus, type Skill, type SkillLevel,
@@ -92,9 +92,14 @@ function GoalItem({
   goal: Goal; first: boolean; busy: boolean;
   onToggle: () => void; onDelete: () => void; onLog: (delta: number) => void;
 }) {
+  const { t } = useTranslation();
   const [amt, setAmt] = useState('');
   const hasTarget = typeof goal.target_amount === 'number' && goal.target_amount > 0;
   const pct = hasTarget ? Math.min(100, Math.round(((goal.progress ?? 0) / (goal.target_amount as number)) * 100)) : 0;
+  // The server no longer closes a goal on its own (C-106: goals are the user's
+  // to control). A goal sitting AT its target is REACHED — the screen says so
+  // and offers the tap; the status changes when they take it.
+  const reached = hasTarget && goal.status === 'ACTIVE' && (goal.progress ?? 0) >= (goal.target_amount as number);
 
   const log = () => {
     const d = parseFloat(amt);
@@ -135,7 +140,16 @@ function GoalItem({
             <div style={{ width: `${pct}%`, height: '100%', borderRadius: 999,
                           background: `linear-gradient(90deg, ${C.gold}, ${C.goldDark})`, transition: 'width .3s' }} />
           </div>
-          {goal.status !== 'DONE' && (
+          {reached ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 10 }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: C.success }}>✓ {t.life.goals.reached}</span>
+              <button onClick={onToggle}
+                style={{ background: successA(0.12), color: C.success, border: `1px solid ${successA(0.3)}`,
+                         borderRadius: 999, padding: '5px 12px', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}>
+                {t.life.goals.markDone}
+              </button>
+            </div>
+          ) : goal.status !== 'DONE' && (
             <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
               <input
                 style={{ ...inputStyle, flex: '0 0 110px', padding: '7px 10px', fontSize: 13 }}
@@ -404,9 +418,14 @@ function Skills() {
   const { skills, loading, error, busy, addSkill, setLevel, removeSkill } = useSkills();
   const [name, setName] = useState('');
 
+  // One character is a real skill: R, C, Go, AI. The old rule demanded two and
+  // enforced it by DISABLING the button — so typing "R" and tapping Add did
+  // nothing at all, with no message and no cursor change to explain it. A
+  // control that refuses in silence is worse than one that refuses out loud;
+  // this one now only refuses an EMPTY field, which the placeholder covers.
   const submit = () => {
     const v = name.trim();
-    if (v.length < 2) return;
+    if (!v) return;
     void addSkill(v);
     setName('');
   };
@@ -426,7 +445,8 @@ function Skills() {
             padding: '11px 13px', fontSize: 14, outline: 'none',
           }}
         />
-        <button onClick={submit} disabled={busy || name.trim().length < 2} style={goldBtn}>
+        <button onClick={submit} disabled={busy || name.trim().length === 0}
+          style={{ ...goldBtn, opacity: busy || !name.trim() ? 0.55 : 1 }}>
           {s.add}
         </button>
       </div>
@@ -698,7 +718,20 @@ function Focus({ goals, busy, eta, onLog, onGo }: {
         </div>
       )}
 
-      {target > 0 && (
+      {target > 0 && done >= target ? (
+        // Reached. Offering "+ π amount" here would be asking for progress on
+        // something already at its target; the useful next move is closing it,
+        // and that is the person's call to make (C-106).
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 16 }}>
+          <span style={{ fontSize: 13, fontWeight: 800, color: C.success }}>✓ {t.life.goals.reached}</span>
+          <span style={{ flex: 1 }} />
+          <button onClick={() => onGo('goals')}
+            style={{ background: successA(0.12), color: C.success, border: `1px solid ${successA(0.3)}`,
+                     borderRadius: 999, padding: '7px 14px', fontSize: 12.5, fontWeight: 800, cursor: 'pointer' }}>
+            {t.life.goals.markDone}
+          </button>
+        </div>
+      ) : target > 0 && (
         <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
           <input
             style={{ ...inputStyle, flex: 1, padding: '10px 12px', fontSize: 13 }}

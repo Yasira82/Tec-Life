@@ -40,8 +40,8 @@ export function InviteCard() {
   };
 
   const card: React.CSSProperties = {
-    background: C.surface, border: `1px solid ${goldA(0.2)}`,
-    borderRadius: 12, padding: 16, marginTop: 20,
+    background: C.surface, border: `1px solid ${C.border}`,
+    borderRadius: 12, padding: 14, marginTop: 12,
   };
 
   if (state === 'loading') return null;
@@ -49,8 +49,8 @@ export function InviteCard() {
   return (
     <section style={card}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <Icon name="gift" size={18} color={C.gold} strokeWidth={1.9} />
-        <span style={{ fontSize: 15, fontWeight: 800, color: C.text }}>Invite &amp; earn</span>
+        <Icon name="gift" size={16} color={C.gold} strokeWidth={1.9} />
+        <span style={{ fontSize: 14, fontWeight: 800, color: C.text }}>Invite &amp; earn</span>
       </div>
 
       {state === 'anon' ? (
@@ -59,20 +59,28 @@ export function InviteCard() {
         </p>
       ) : (
         <>
-          <p style={{ fontSize: 13, color: C.subtext, margin: '8px 0 12px', lineHeight: 1.6 }}>
-            Share your link — you both earn when a friend joins TEC through it.
+          {/* The raw URL is gone. It was a truncated `https://life.tecosystem
+              .app/?ref=Q…` that nobody could read, copy by hand, or verify —
+              taking a full row to display a string whose ONLY use is the button
+              beside it. The button says what it copies; that is the whole
+              contract. */}
+          <p style={{ fontSize: 12.5, color: C.subtext, margin: '6px 0 12px', lineHeight: 1.5 }}>
+            You both earn when a friend joins TEC through your link.
           </p>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-            <code style={{ flex: 1, minWidth: 200, fontSize: 12, color: C.gold, background: '#00000030', border: `1px solid ${goldA(0.133)}`, borderRadius: 8, padding: '9px 12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {link}
-            </code>
-            <button
-              onClick={copy}
-              style={{ fontSize: 13, fontWeight: 800, color: C.onGold, background: `linear-gradient(135deg, ${C.gold}, ${C.goldDark})`, border: 'none', borderRadius: 8, padding: '9px 16px', cursor: 'pointer', whiteSpace: 'nowrap' }}
-            >
-              {copied ? '✓ Copied' : 'Copy link'}
-            </button>
-          </div>
+          <button
+            onClick={copy}
+            disabled={!link}
+            style={{
+              width: '100%', fontSize: 13.5, fontWeight: 800,
+              color: copied ? C.onGold : C.gold,
+              background: copied ? `linear-gradient(135deg, ${C.gold}, ${C.goldDark})` : goldA(0.1),
+              border: `1px solid ${goldA(copied ? 0 : 0.28)}`,
+              borderRadius: 10, padding: '10px 16px', cursor: 'pointer',
+              transition: 'background .2s, color .2s',
+            }}
+          >
+            {copied ? '✓ Copied' : 'Copy invite link'}
+          </button>
         </>
       )}
     </section>

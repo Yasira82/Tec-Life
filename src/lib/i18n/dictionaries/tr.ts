@@ -44,6 +44,7 @@ export const tr = {
       remaining: 'π kaldı',
     },
     goals: {
+      reached: 'Hedefe ulaşıldı', markDone: 'Bitti işaretle',
       title: 'Hedefler', hint: 'bir hedef koy · ilerlemeni izle',
       active: 'Aktif', completed: 'Tamamlandı', tracked: 'π izlenen',
       insights: 'Hedef analizi',

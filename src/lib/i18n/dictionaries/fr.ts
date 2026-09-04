@@ -44,6 +44,7 @@ export const fr = {
       remaining: 'π restants',
     },
     goals: {
+      reached: 'Objectif atteint', markDone: 'Marquer terminé',
       title: 'Objectifs', hint: 'fixez une cible · suivez vos progrès',
       active: 'Actifs', completed: 'Atteints', tracked: 'π suivis',
       insights: 'Analyse des objectifs',

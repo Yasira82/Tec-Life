@@ -44,6 +44,7 @@ export const ar = {
       remaining: 'π متبقّي',
     },
     goals: {
+      reached: 'وصلت للهدف', markDone: 'علّمه خلاص',
       title: 'الأهداف', hint: 'حدد هدفاً · وتابع تقدمك',
       active: 'نشط', completed: 'مكتمل', tracked: 'π متتبَّع',
       insights: 'تحليل الأهداف',

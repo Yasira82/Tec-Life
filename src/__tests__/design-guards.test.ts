@@ -41,6 +41,30 @@ describe('section headers use the icon set, not emoji', () => {
   });
 });
 
+describe('a control never refuses in silence', () => {
+  const page = strip(src('app/app/page.tsx'));
+
+  it('Skills accepts a one-character name', () => {
+    // R, C, Go and AI are real skills. The old rule demanded two characters and
+    // enforced it by DISABLING the button — so typing "R" and tapping Add did
+    // nothing at all, with no message and no cursor change to explain it. A
+    // control that refuses without saying so reads as a broken app.
+    expect(page).not.toMatch(/name\.trim\(\)\.length < 2/);
+    expect(page).toMatch(/name\.trim\(\)\.length === 0/);
+  });
+});
+
+describe('the footer earns less space than the user’s own data', () => {
+  const invite = strip(src('components/referral/InviteCard.tsx'));
+
+  it('does not print the raw referral URL', () => {
+    // It rendered truncated — unreadable, uncopyable by hand, unverifiable —
+    // and took a whole row to show a string whose only use is the button next
+    // to it.
+    expect(invite).not.toContain('{link}');
+  });
+});
+
 describe('the ring is painted through the theme, not around it', () => {
   const page = strip(src('app/app/page.tsx'));
 

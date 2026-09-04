@@ -44,6 +44,7 @@ export const es = {
       remaining: 'π restantes',
     },
     goals: {
+      reached: 'Objetivo alcanzado', markDone: 'Marcar hecho',
       title: 'Metas', hint: 'fija un objetivo · sigue tu progreso',
       active: 'Activas', completed: 'Completadas', tracked: 'π seguidos',
       insights: 'Análisis de metas',
