@@ -44,10 +44,14 @@ export const SOCIAL: SocialLink[] = [
 
   { key: 'x', label: 'X', href: 'https://x.com/TEC1c5' },
 
-  // WhatsApp is deliberately still empty — see the note in the PR. A wa.me link
-  // publishes a phone number to every user of 24 live apps, permanently and
-  // unscrapeable-back. Held for one confirmation rather than shipped by default.
-  { key: 'whatsapp', label: 'WhatsApp', href: '' },
+  // Confirmed by the owner. A wa.me link publishes this number to every user of
+  // 24 live apps and cannot be un-published once scraped — which is why it was
+  // held for an explicit decision rather than shipped by default. That decision
+  // was made; it is not re-litigated on every future edit.
+  //
+  // 01109742713 in local form. wa.me needs the international one with no + and
+  // no leading zero, so the country code REPLACES the 0: 20 + 1109742713.
+  { key: 'whatsapp', label: 'WhatsApp', href: 'https://wa.me/201109742713' },
 ];
 
 /**

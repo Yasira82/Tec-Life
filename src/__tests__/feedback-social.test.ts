@@ -6,12 +6,13 @@ import { SOCIAL, activeSocial } from '@/lib/social';
 const src = (p: string) => readFileSync(join(process.cwd(), 'src', p), 'utf8');
 
 describe('a link that opens nothing is worse than no link', () => {
-  it('an unconfigured handle is filtered out, not rendered', () => {
+  it('the filter still works when everything IS configured', () => {
     // A social icon that goes nowhere tells a user the product is abandoned,
-    // and that is a reasonable inference for them to draw.
-    const configured = SOCIAL.filter((s) => s.href === '');
-    expect(configured.length).toBeGreaterThan(0); // the TODOs are still open
+    // and that is a reasonable inference for them to draw. All five are filled
+    // in now, so this asserts the RULE rather than the current roster — the
+    // guard has to survive the next empty handle, not just today's list.
     expect(activeSocial().every((s) => s.href !== '')).toBe(true);
+    expect(activeSocial().length).toBe(SOCIAL.filter((s) => s.href !== '').length);
   });
 
   it('only https survives — a placeholder is treated as absent', () => {
