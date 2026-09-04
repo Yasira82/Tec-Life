@@ -84,11 +84,11 @@ html, body {
   --tec-topbar-gold:   #FBB44A;
   --tec-topbar-fill:   rgba(255,255,255,0.07);
   --tec-topbar-border: rgba(255,255,255,0.12);
-  /* 8. Twenty-two read as a curve, sixteen still read as a curve — on CHROME,
-     which should be the quietest thing on the screen. At 8 it is a softened
-     edge: you stop seeing it and start seeing the page under it, which is what
-     a frame is for. Keep in step with the Hub — a fleet frame, not a per-app
-     taste. */
+  /* 22 — the Hub's value. This went 22 -> 16 -> 8 chasing a report that the
+     top strip was "too big", and all three attempts were aimed at the wrong
+     property: the complaint was the band's HEIGHT, and the cause was one
+     125-character line where every sibling tab has a short hint. The radius
+     was never the problem, so it is back to the value the fleet shares. */
   --tec-topbar-radius: 22px;
 
   --tec-on-gold:     #0a0800;
