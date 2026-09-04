@@ -277,7 +277,10 @@ function Goals({ isPro }: { isPro: boolean }) {
               belongs under the thing it is history OF. */}
           {done.length > 0 && (
             <div style={{ marginTop: 14 }}>
-              <button onClick={() => setShowDone((v) => !v)}
+              {/* The chevron is the only thing saying whether this section is
+                  open, and a screen reader never sees a glyph. `aria-expanded`
+                  is the same information in the form assistive tech reads. */}
+              <button onClick={() => setShowDone((v) => !v)} aria-expanded={showDone}
                 style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%',
                          background: 'none', border: 'none', padding: '4px 2px', cursor: 'pointer',
                          font: 'inherit', color: C.faint, textAlign: 'start' }}>
