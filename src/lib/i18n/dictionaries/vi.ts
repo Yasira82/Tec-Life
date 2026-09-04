@@ -29,7 +29,7 @@ export const vi = {
     pro:         'PRO',
     welcome:     'Chào mừng',
     welcomeName: 'Chào mừng, {name}',
-    subtitle:    'Bối cảnh cá nhân của bạn trong hệ sinh thái TEC. Dữ liệu là của bạn — do bạn khai báo, riêng tư, và không bao giờ dùng nếu bạn không đồng ý.',
+    subtitle:    'bối cảnh cá nhân của bạn trong hệ sinh thái TEC',
     nav: { home: 'Trang chủ', goals: 'Mục tiêu', skills: 'Kỹ năng', activity: 'Hoạt động', settings: 'Cài đặt' },
     home: {
       focus: 'Trọng tâm của bạn',

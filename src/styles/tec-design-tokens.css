@@ -89,7 +89,7 @@ html, body {
      edge: you stop seeing it and start seeing the page under it, which is what
      a frame is for. Keep in step with the Hub — a fleet frame, not a per-app
      taste. */
-  --tec-topbar-radius: 8px;
+  --tec-topbar-radius: 22px;
 
   --tec-on-gold:     #0a0800;
   /* Channels for the ink ON gold. An own-message bubble is amber in both

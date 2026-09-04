@@ -29,7 +29,7 @@ export const id = {
     pro:         'PRO',
     welcome:     'Selamat datang',
     welcomeName: 'Selamat datang, {name}',
-    subtitle:    'Konteks pribadi Anda di ekosistem TEC. Data Anda milik Anda — Anda yang menyatakannya, bersifat pribadi, dan tidak pernah dipakai tanpa izin Anda.',
+    subtitle:    'konteks pribadi Anda di ekosistem TEC',
     nav: { home: 'Beranda', goals: 'Tujuan', skills: 'Keterampilan', activity: 'Aktivitas', settings: 'Pengaturan' },
     home: {
       focus: 'Fokus kamu',

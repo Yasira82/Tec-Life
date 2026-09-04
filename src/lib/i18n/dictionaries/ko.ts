@@ -29,7 +29,7 @@ export const ko = {
     pro:         'PRO',
     welcome:     '환영합니다',
     welcomeName: '환영합니다, {name}님',
-    subtitle:    'TEC 생태계에서의 개인 맥락입니다. 데이터는 당신의 것입니다 — 직접 선언하고, 비공개이며, 동의 없이는 결코 사용되지 않습니다.',
+    subtitle:    'TEC 생태계에서의 개인 맥락',
     nav: { home: '홈', goals: '목표', skills: '기술', activity: '활동', settings: '설정' },
     home: {
       focus: '지금 집중',

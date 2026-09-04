@@ -29,7 +29,7 @@ export const es = {
     pro:         'PRO',
     welcome:     'Bienvenido',
     welcomeName: 'Bienvenido, {name}',
-    subtitle:    'Tu contexto personal en el ecosistema TEC. Tus datos son tuyos — los declaras tú, son privados y nunca se usan sin tu consentimiento.',
+    subtitle:    'tu contexto personal en el ecosistema TEC',
     nav: { home: 'Inicio', goals: 'Metas', skills: 'Habilidades', activity: 'Actividad', settings: 'Ajustes' },
     home: {
       focus: 'Tu foco',

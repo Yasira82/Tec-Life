@@ -36,7 +36,7 @@ export const en = {
     pro:         'PRO',
     welcome:     'Welcome',
     welcomeName: 'Welcome, {name}',
-    subtitle:    'Your personal context in the TEC ecosystem. Your data is yours — self-declared, private, and never used without your consent.',
+    subtitle:    'your personal context in the TEC ecosystem',
     nav: { home: 'Home', goals: 'Goals', skills: 'Skills', activity: 'Activity', settings: 'Settings' },
     home: {
       focus: 'Your focus',
