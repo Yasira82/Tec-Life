@@ -65,6 +65,29 @@ describe('the footer earns less space than the user’s own data', () => {
   });
 });
 
+describe('a screen is not a stack of identical grey panels', () => {
+  const page = strip(src('app/app/page.tsx'));
+
+  it('the stat strip sits on the page, not in a card', () => {
+    // Home and Goals both opened with the same grey card holding the same
+    // three numbers, so the two tabs were indistinguishable at a glance.
+    expect(page).not.toMatch(/\{\s*\.\.\.card,\s*display: 'flex', gap: 8, marginBottom: 12\s*\}/);
+  });
+
+  it('open and completed goals are separated', () => {
+    // The list ran them together, so three finished goals pushed the one being
+    // worked on off the screen — a to-do list showing mostly done.
+    expect(page).toContain("g.status !== 'DONE'");
+    expect(page).toContain('showDone');
+  });
+
+  it('the paid teaser sits BELOW the user’s own content', () => {
+    // A locked promo between the summary and the list put the upsell ahead of
+    // the person's own goals on their own screen.
+    expect(page.indexOf('<Pace />')).toBeLessThan(page.indexOf('<LifeInsights />'));
+  });
+});
+
 describe('the ring is painted through the theme, not around it', () => {
   const page = strip(src('app/app/page.tsx'));
 

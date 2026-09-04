@@ -67,18 +67,23 @@ function Overview({ goals }: { goals: Goal[] }) {
   const tracked = goals.reduce((sum, g) => sum + (g.target_amount ? (g.progress ?? 0) : 0), 0);
 
   const stat = (label: string, value: string, accent: string = C.text) => (
-    <div style={{ flex: 1, textAlign: 'center' }}>
-      <div style={{ fontSize: 24, fontWeight: 900, color: accent, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
-      <div style={{ fontSize: 11, color: C.subtext, marginTop: 2 }}>{label}</div>
+    <div style={{ flex: 1, minWidth: 0, textAlign: 'center' }}>
+      <div style={{ fontSize: 23, fontWeight: 900, color: accent, fontVariantNumeric: 'tabular-nums',
+                    lineHeight: 1.1, letterSpacing: '-0.02em' }}>{value}</div>
+      <div style={{ fontSize: 10.5, color: C.faint, marginTop: 3, letterSpacing: 0.2,
+                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</div>
     </div>
   );
 
+  // Bare, on the page ground — the same strip Home uses. In a card it was the
+  // third identical grey panel in a row, and the Goals tab opened looking like
+  // the Home tab.
   return (
-    <div style={{ ...card, display: 'flex', gap: 8, marginBottom: 12 }}>
+    <div style={{ display: 'flex', gap: 4, margin: '16px 2px 2px' }}>
       {stat(t.life.goals.active, String(active), C.gold)}
-      <div style={{ width: 1, background: C.border }} />
+      <div style={{ width: 1, background: C.border, margin: '4px 0' }} />
       {stat(t.life.goals.completed, String(done), C.text)}
-      <div style={{ width: 1, background: C.border }} />
+      <div style={{ width: 1, background: C.border, margin: '4px 0' }} />
       {stat(t.life.goals.tracked, `π ${fmtPi(tracked)}`)}
     </div>
   );
@@ -180,6 +185,10 @@ function Goals({ isPro }: { isPro: boolean }) {
   const [title,  setTitle]  = useState('');
   const [target, setTarget] = useState('');
   const [gate,   setGate]   = useState<string | null>(null);
+  const [showDone, setShowDone] = useState(false);
+
+  const open = goals.filter((g) => g.status !== 'DONE');
+  const done = goals.filter((g) => g.status === 'DONE');
 
   const activeCount = goals.filter((g) => g.status === 'ACTIVE').length;
   const atFreeCap   = !isPro && activeCount >= FREE_ACTIVE_GOAL_CAP;
@@ -205,65 +214,103 @@ function Goals({ isPro }: { isPro: boolean }) {
 
   return (
     <section style={{ marginTop: 4 }}>
+      {/* A bare strip on the page ground, like Home. The Goals tab opened with
+          the SAME grey card the Home tab opens with, holding the same three
+          numbers — so the two screens were indistinguishable at a glance. */}
       {!loading && goals.length > 0 && <Overview goals={goals} />}
 
-      {/* Life Pro — Goal Insights (deeper own-data analytics; gated behind live Pro) */}
-      {!loading && goals.length > 0 && <LifeInsights />}
-
-      <div style={{ ...card }}>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <input
-            style={inputStyle}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
-            placeholder={t.life.goals.addPlaceholder}
-            maxLength={200}
-          />
-          <input
-            style={{ ...inputStyle, flex: '0 0 120px' }}
-            value={target}
-            onChange={(e) => setTarget(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
-            inputMode="decimal"
-            placeholder={t.life.goals.targetPlaceholder}
-          />
-          <button style={{ ...goldBtn, opacity: busy ? 0.6 : 1 }} onClick={submit} disabled={busy}>{t.life.goals.add}</button>
-        </div>
-
-        {error && <p style={{ color: C.error, fontSize: 13, marginTop: 10 }}>{error}</p>}
-        {gate  && <p style={{ color: C.gold,  fontSize: 12, marginTop: 10 }}>🔒 {gate}</p>}
-        {!isPro && !gate && activeCount >= FREE_ACTIVE_GOAL_CAP - 1 && activeCount < FREE_ACTIVE_GOAL_CAP && (
-          <p style={{ color: C.subtext, fontSize: 11, marginTop: 10 }}>
-            Free plan: {activeCount}/{FREE_ACTIVE_GOAL_CAP} active goals. Life Pro = unlimited.
-          </p>
-        )}
-
-        <div style={{ marginTop: 6 }}>
-          {loading ? (
-            <p style={{ color: C.subtext, fontSize: 13 }}>Loading…</p>
-          ) : goals.length === 0 ? (
-            <p style={{ color: C.subtext, fontSize: 13 }}>{t.life.goals.empty}</p>
-          ) : (
-            goals.map((g, i) => (
-              <GoalItem
-                key={g.id}
-                goal={g}
-                first={i === 0}
-                busy={busy}
-                onToggle={() => setStatus(g.id, g.status === 'DONE' ? 'ACTIVE' : 'DONE')}
-                onDelete={() => removeGoal(g.id)}
-                onLog={(delta) => addProgress(g.id, delta)}
-              />
-            ))
-          )}
-        </div>
+      {/* The composer is not in a card either: it is an input, and wrapping it
+          in a panel made it look like content rather than a control. */}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 14 }}>
+        <input
+          style={{ ...inputStyle, background: C.surface, borderRadius: 12, padding: '11px 13px' }}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
+          placeholder={t.life.goals.addPlaceholder}
+          maxLength={200}
+        />
+        <input
+          style={{ ...inputStyle, background: C.surface, borderRadius: 12, padding: '11px 13px', flex: '0 0 120px' }}
+          value={target}
+          onChange={(e) => setTarget(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
+          inputMode="decimal"
+          placeholder={t.life.goals.targetPlaceholder}
+        />
+        <button style={{ ...goldBtn, borderRadius: 12, padding: '11px 18px', opacity: busy || !title.trim() ? 0.55 : 1 }}
+          onClick={submit} disabled={busy || !title.trim()}>{t.life.goals.add}</button>
       </div>
 
-      {/* Where the person is HEADED, under what they have. It reads the same
-          logged steps the list above writes, so it belongs beside them rather
-          than on a sixth tab. */}
+      {error && <p style={{ color: C.error, fontSize: 13, margin: '10px 2px 0' }}>{error}</p>}
+      {gate  && <p style={{ color: C.gold,  fontSize: 12, margin: '10px 2px 0' }}>🔒 {gate}</p>}
+      {!isPro && !gate && activeCount >= FREE_ACTIVE_GOAL_CAP - 1 && activeCount < FREE_ACTIVE_GOAL_CAP && (
+        <p style={{ color: C.faint, fontSize: 11, margin: '10px 2px 0' }}>
+          Free plan: {activeCount}/{FREE_ACTIVE_GOAL_CAP} active goals. Life Pro = unlimited.
+        </p>
+      )}
+
+      {loading ? (
+        <p style={{ color: C.subtext, fontSize: 13, margin: '16px 2px' }}>{t.common.loading}</p>
+      ) : goals.length === 0 ? (
+        <p style={{ color: C.subtext, fontSize: 13, margin: '16px 2px', lineHeight: 1.6 }}>{t.life.goals.empty}</p>
+      ) : (
+        <>
+          {/* OPEN goals only. The list used to run active and completed
+              together, so three finished goals pushed the one being worked on
+              off the screen — a to-do list showing mostly done. */}
+          {open.length > 0 && (
+            <div style={{ ...card, marginTop: 14, padding: '6px 20px' }}>
+              {open.map((g, i) => (
+                <GoalItem
+                  key={g.id} goal={g} first={i === 0} busy={busy}
+                  onToggle={() => setStatus(g.id, 'DONE')}
+                  onDelete={() => removeGoal(g.id)}
+                  onLog={(delta) => addProgress(g.id, delta)}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Finished ones are kept — deleting them would lose the record — but
+              folded away behind their own count. They are history, and history
+              belongs under the thing it is history OF. */}
+          {done.length > 0 && (
+            <div style={{ marginTop: 14 }}>
+              <button onClick={() => setShowDone((v) => !v)}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+                         background: 'none', border: 'none', padding: '4px 2px', cursor: 'pointer',
+                         font: 'inherit', color: C.faint, textAlign: 'start' }}>
+                <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: 0.7, textTransform: 'uppercase' }}>
+                  {t.life.goals.completed}
+                </span>
+                <span style={{ fontSize: 11.5, fontWeight: 700, color: C.subtext }}>{done.length}</span>
+                <span style={{ flex: 1 }} />
+                <span style={{ fontSize: 13 }}>{showDone ? '⌃' : '⌄'}</span>
+              </button>
+              {showDone && (
+                <div style={{ ...card, marginTop: 8, padding: '6px 20px' }}>
+                  {done.map((g, i) => (
+                    <GoalItem
+                      key={g.id} goal={g} first={i === 0} busy={busy}
+                      onToggle={() => setStatus(g.id, 'ACTIVE')}
+                      onDelete={() => removeGoal(g.id)}
+                      onLog={(delta) => addProgress(g.id, delta)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
+
       {!loading && goals.length > 0 && <Pace />}
+
+      {/* Life Pro — Goal Insights. BELOW the goals, not above them: a locked
+          promo sitting between the summary and the list put the paid teaser
+          ahead of the user's own content on their own screen. */}
+      {!loading && goals.length > 0 && <LifeInsights />}
     </section>
   );
 }
@@ -368,9 +415,16 @@ function SkillRow({ skill, busy, onLevel, onRemove }: {
   const inferred = skill.source === 'ACTIVITY_INFERRED';
 
   return (
-    <div style={{ ...card, display: 'grid', gap: 8 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <span style={{ flex: 1, minWidth: 0, fontSize: 15, fontWeight: 700, color: C.text, overflowWrap: 'anywhere' }}>
+    // One row, not a panel. A skill is a NAME and a RUNG — two short facts —
+    // and each one used to get a full card with four wrapping pills, so three
+    // skills filled the screen and the level chips were the biggest thing on
+    // it. The rung is now a segmented control at label size.
+    <div style={{
+      background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14,
+      padding: '12px 14px', display: 'grid', gap: 10,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ flex: 1, minWidth: 0, fontSize: 14.5, fontWeight: 700, color: C.text, overflowWrap: 'anywhere' }}>
           {skill.name}
         </span>
         {/* An inferred skill is a statement about what someone DID. It is
@@ -378,29 +432,39 @@ function SkillRow({ skill, busy, onLevel, onRemove }: {
             would make the distinction between the two sources worthless. */}
         {inferred && (
           <span style={{
-            fontSize: 10, fontWeight: 800, letterSpacing: 0.4, color: C.gold,
-            border: `1px solid ${goldA(0.35)}`, borderRadius: 999, padding: '2px 8px',
+            fontSize: 9.5, fontWeight: 800, letterSpacing: 0.4, color: C.gold,
+            border: `1px solid ${goldA(0.35)}`, borderRadius: 999, padding: '2px 7px',
           }}>{s.inferred}</span>
         )}
         {!inferred && (
           <button onClick={onRemove} disabled={busy} aria-label={s.remove}
-            style={{ background: 'none', border: 'none', color: C.faint, cursor: 'pointer', fontSize: 16, flexShrink: 0 }}>
+            style={{ background: 'none', border: 'none', color: C.faint, cursor: 'pointer',
+                     fontSize: 15, lineHeight: 1, flexShrink: 0, padding: 2 }}>
             ×
           </button>
         )}
       </div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+
+      {/* A segmented control: one track, four segments, the current rung
+          filled. Four separate outlined pills read as four buttons of equal
+          weight — which is the opposite of a ladder. */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: `repeat(${SKILL_LEVELS.length}, 1fr)`,
+        background: C.bg, border: `1px solid ${C.border}`, borderRadius: 999, padding: 2,
+      }}>
         {SKILL_LEVELS.map((lvl) => {
           const active = skill.level === lvl;
           return (
             <button key={lvl} disabled={busy || inferred} onClick={() => onLevel(lvl)}
               aria-pressed={active}
               style={{
-                fontSize: 11.5, fontWeight: 700, padding: '5px 11px', borderRadius: 999,
+                fontSize: 11, fontWeight: 700, padding: '6px 2px', borderRadius: 999,
                 cursor: busy || inferred ? 'default' : 'pointer',
                 color: active ? C.onGold : C.subtext,
                 background: active ? C.gold : 'transparent',
-                border: `1px solid ${active ? 'transparent' : C.border}`,
+                border: 'none', minWidth: 0,
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                transition: 'background .18s, color .18s',
                 opacity: inferred && !active ? 0.5 : 1,
               }}>
               {s.levels[SKILL_LEVEL_KEYS[lvl]]}
@@ -458,7 +522,16 @@ function Skills() {
       <div style={{ display: 'grid', gap: 10, marginTop: 14 }}>
         {loading && <p style={{ fontSize: 13, color: C.subtext, margin: 0 }}>{t.common.loading}</p>}
         {!loading && skills.length === 0 && (
-          <p style={{ fontSize: 13, color: C.subtext, margin: 0, lineHeight: 1.6 }}>{s.empty}</p>
+          // A real empty state, not a sentence left hanging under the input.
+          // The screen was blank from the field down to the tab bar, which
+          // reads as something that failed to load rather than something
+          // waiting to be filled.
+          <div style={{
+            ...card, marginTop: 4, padding: '32px 22px', textAlign: 'center',
+            borderStyle: 'dashed', borderColor: inkA(0.14), background: 'transparent',
+          }}>
+            <div style={{ fontSize: 13.5, color: C.subtext, lineHeight: 1.7 }}>{s.empty}</div>
+          </div>
         )}
         {skills.map((sk: Skill) => (
           <SkillRow
@@ -472,8 +545,13 @@ function Skills() {
       </div>
 
       {/* The honest note. Nobody else can read this, and nothing infers from it
-          yet — saying so is better than letting someone guess either way. */}
-      <p style={{ fontSize: 11.5, color: C.faint, margin: '14px 0 0', lineHeight: 1.6 }}>
+          yet — saying so is better than letting someone guess either way. It
+          sits under a hairline as a footnote: it is a standing fact about the
+          screen, not another row of content. */}
+      <p style={{
+        fontSize: 11.5, color: C.faint, margin: '18px 2px 0', paddingTop: 14,
+        borderTop: `1px solid ${C.border}`, lineHeight: 1.6,
+      }}>
         {s.privacyNote}
       </p>
     </section>
