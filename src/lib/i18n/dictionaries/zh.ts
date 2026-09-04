@@ -107,6 +107,22 @@ export const zh = {
       title: '动态', hint: '你最近的经济活动',
       empty: '还没有动态 — 使用 TEC 后会出现在这里。',
     },
+    feedback: {
+      title: '反馈',
+      hint: '告诉我们哪些好用、哪些不好用',
+      placeholder: '你想改变什么？',
+      send: '发送',
+      sending: '发送中…',
+      thanks: '谢谢 — 已收到。',
+      thanksHint: '会有人阅读这些内容。如需回复，我们会通过你的 Pi 用户名找到你。',
+      sendAnother: '再发一条',
+      failed: '发送失败，请重试。',
+      tooShort: '请再多写一些。',
+      tooLong: '这是 {n} 个字符 — 上限为 2000。',
+      privacyNote: '随你的 Pi 用户名和当前所在页面一起发送，不含其他信息。',
+      social: '其他平台上的 TEC',
+    },
+
     settings: {
       profile: '资料', planFree: '免费', planPro: 'Pro', connectedPi: '已连接 Pi', notSignedIn: '未登录', member: 'TEC 会员',
       appearance: '外观',

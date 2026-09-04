@@ -107,6 +107,22 @@ export const ko = {
       title: '활동', hint: '최근 경제 활동',
       empty: '아직 활동이 없습니다 — TEC를 사용하면 여기에 표시됩니다.',
     },
+    feedback: {
+      title: '피드백',
+      hint: '무엇이 잘되고 무엇이 안 되는지 알려주세요',
+      placeholder: '무엇을 바꾸고 싶으신가요?',
+      send: '보내기',
+      sending: '보내는 중…',
+      thanks: '감사합니다 — 잘 도착했습니다.',
+      thanksHint: '사람이 직접 읽습니다. 답변이 필요하면 Pi 사용자 이름으로 찾아뵙겠습니다.',
+      sendAnother: '하나 더 보내기',
+      failed: '보내지 못했습니다. 다시 시도해 주세요.',
+      tooShort: '조금만 더 적어주세요.',
+      tooLong: '{n}자입니다 — 제한은 2000자입니다.',
+      privacyNote: 'Pi 사용자 이름과 현재 화면과 함께 전송됩니다. 그 외에는 없습니다.',
+      social: '다른 곳의 TEC',
+    },
+
     settings: {
       profile: '프로필', planFree: '무료', planPro: 'Pro', connectedPi: 'Pi에 연결됨', notSignedIn: '로그인하지 않음', member: 'TEC 회원',
       appearance: '화면',

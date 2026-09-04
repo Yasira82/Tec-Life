@@ -11,6 +11,25 @@ const strip = (s: string) => s
   .replace(/\{\/\*[\s\S]*?\*\/\}/g, '')
   .replace(/^[ \t]*\/\/.*$/gm, '');
 
+/**
+ * The index of a marker, asserting it EXISTS first.
+ *
+ * `indexOf` answers -1 for "not here", and -1 is less than every real index —
+ * so `expect(indexOf(a)).toBeLessThan(indexOf(b))` passes when `a` has been
+ * DELETED. A guard whose subject can vanish while the guard stays green is
+ * worse than no guard: it reports that a rule is held by code that no longer
+ * contains it. The same -1 fed to `slice` silently returns a region nobody
+ * meant to search.
+ *
+ * Fail closed here for the same reason the platform does everywhere else (P6):
+ * absence is not permission to pass.
+ */
+const at = (hay: string, needle: string): number => {
+  const i = hay.indexOf(needle);
+  if (i < 0) throw new Error(`guard marker not found: ${needle}`);
+  return i;
+};
+
 describe('timestamps are written, not dumped', () => {
   const page = strip(src('app/app/page.tsx'));
 
@@ -84,7 +103,7 @@ describe('a screen is not a stack of identical grey panels', () => {
   it('the paid teaser sits BELOW the user’s own content', () => {
     // A locked promo between the summary and the list put the upsell ahead of
     // the person's own goals on their own screen.
-    expect(page.indexOf('<Pace />')).toBeLessThan(page.indexOf('<LifeInsights />'));
+    expect(at(page, '<Pace />')).toBeLessThan(at(page, '<LifeInsights />'));
   });
 });
 
@@ -130,7 +149,28 @@ describe('the band is chrome, and chrome does not grow', () => {
   it('the band renders ONE line of hint, not a paragraph block', () => {
     // A second <p> would reintroduce the height the string limit just removed.
     const page = strip(src('app/app/page.tsx'));
-    const band = page.slice(page.indexOf('className="tec-on-band"'), page.indexOf('</header>'));
+    const band = page.slice(at(page, 'className="tec-on-band"'), at(page, '</header>'));
     expect((band.match(/<p /g) ?? []).length).toBe(1);
+  });
+});
+
+describe('the guards themselves fail closed', () => {
+  // Every check above reads the source and looks for a marker. If a marker is
+  // deleted, the check must go RED — it must not quietly conclude that a rule
+  // it can no longer see is being obeyed.
+  //
+  // Copilot's review caught this on the ordering check: `indexOf` returns -1
+  // for a missing marker, and -1 is less than every real index, so removing
+  // `<Pace />` entirely would have left the test green and the upsell free to
+  // climb back above the user's own goals. The same -1 handed to `slice` reads
+  // a region nobody chose.
+
+  it('a missing marker throws instead of returning -1', () => {
+    expect(() => at('some source', '<Pace />')).toThrow(/not found/);
+  });
+
+  it('the ordering check would FAIL if the earlier marker were deleted', () => {
+    const withoutPace = 'x <LifeInsights /> y';
+    expect(() => at(withoutPace, '<Pace />')).toThrow();
   });
 });

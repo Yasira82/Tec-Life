@@ -107,6 +107,22 @@ export const ar = {
       title: 'النشاط', hint: 'نشاطك الاقتصادي الأخير',
       empty: 'لا نشاط بعد — سيظهر هنا مع استخدامك لـ TEC.',
     },
+    feedback: {
+      title: 'رأيك',
+      hint: 'قول لنا إيه اللي شغال وإيه اللي لأ',
+      placeholder: 'إيه اللي كنت هتغيّره؟',
+      send: 'ابعت',
+      sending: 'جاري الإرسال…',
+      thanks: 'شكراً — وصلت.',
+      thanksHint: 'في حد بيقرا الرسائل دي. لو محتاجة رد، هنلاقيك باسمك على Pi.',
+      sendAnother: 'ابعت تانية',
+      failed: 'مقدرناش نبعت. جرّب تاني.',
+      tooShort: 'اكتب شوية كمان لو سمحت.',
+      tooLong: 'ده {n} حرف — الحد ٢٠٠٠.',
+      privacyNote: 'بتتبعت باسمك على Pi والشاشة اللي انت فيها. مفيش حاجة تانية.',
+      social: 'TEC في أماكن تانية',
+    },
+
     settings: {
       profile: 'الملف الشخصي', planFree: 'مجاني', planPro: 'Pro', connectedPi: 'متصل بـ Pi', notSignedIn: 'غير مسجّل الدخول', member: 'عضو TEC',
       appearance: 'المظهر',

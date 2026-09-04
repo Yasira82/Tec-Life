@@ -107,6 +107,22 @@ export const id = {
       title: 'Aktivitas', hint: 'aktivitas ekonomi terbaru Anda',
       empty: 'Belum ada aktivitas — akan muncul di sini saat Anda memakai TEC.',
     },
+    feedback: {
+      title: 'Masukan',
+      hint: 'beri tahu kami apa yang berhasil dan apa yang tidak',
+      placeholder: 'Apa yang ingin Anda ubah?',
+      send: 'Kirim',
+      sending: 'Mengirim…',
+      thanks: 'Terima kasih — sudah sampai.',
+      thanksHint: 'Ada orang yang membacanya. Jika perlu balasan, kami akan mencari Anda lewat nama Pi Anda.',
+      sendAnother: 'Kirim lagi',
+      failed: 'Gagal mengirim. Coba lagi.',
+      tooShort: 'Tulis sedikit lagi.',
+      tooLong: 'Itu {n} karakter — batasnya 2000.',
+      privacyNote: 'Dikirim dengan nama Pi Anda dan layar tempat Anda berada. Tidak ada yang lain.',
+      social: 'TEC di tempat lain',
+    },
+
     settings: {
       profile: 'Profil', planFree: 'Gratis', planPro: 'Pro', connectedPi: 'Terhubung ke Pi', notSignedIn: 'Belum masuk', member: 'Anggota TEC',
       appearance: 'Tampilan',
