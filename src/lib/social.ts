@@ -28,12 +28,21 @@ export const SOCIAL: SocialLink[] = [
   // INTO the ecosystem rather than out of it, which is why it is first.
   { key: 'connection', label: 'TEC Connection', href: 'https://connection.tecosystem.app' },
 
-  // TODO(owner): the handles below are the CEO's to provide — inventing a URL
-  // here would ship a broken link to 24 apps. Each stays hidden until filled.
-  { key: 'telegram', label: 'Telegram', href: '' },
+  // A private-group invite link, not a public channel handle: it is revocable
+  // from inside Telegram, which a @username is not.
+  { key: 'telegram', label: 'Telegram', href: 'https://t.me/+7yEiJGgSZ2QzM2M0' },
+
+  // A /share/ link is a short redirect Facebook mints and can regenerate. It
+  // works today; a page URL (facebook.com/<page>) would be the durable form,
+  // and swapping it later is one line here.
+  { key: 'facebook', label: 'Facebook', href: 'https://www.facebook.com/share/19G28ma6yK/' },
+
+  { key: 'x', label: 'X', href: 'https://x.com/TEC1c5' },
+
+  // WhatsApp is deliberately still empty — see the note in the PR. A wa.me link
+  // publishes a phone number to every user of 24 live apps, permanently and
+  // unscrapeable-back. Held for one confirmation rather than shipped by default.
   { key: 'whatsapp', label: 'WhatsApp', href: '' },
-  { key: 'facebook', label: 'Facebook', href: '' },
-  { key: 'x',        label: 'X',        href: '' },
 ];
 
 /**
