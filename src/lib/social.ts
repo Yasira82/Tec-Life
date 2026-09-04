@@ -32,10 +32,15 @@ export const SOCIAL: SocialLink[] = [
   // from inside Telegram, which a @username is not.
   { key: 'telegram', label: 'Telegram', href: 'https://t.me/+7yEiJGgSZ2QzM2M0' },
 
-  // A /share/ link is a short redirect Facebook mints and can regenerate. It
-  // works today; a page URL (facebook.com/<page>) would be the durable form,
-  // and swapping it later is one line here.
-  { key: 'facebook', label: 'Facebook', href: 'https://www.facebook.com/share/19G28ma6yK/' },
+  // ⚠️ A /share/ link, and it is NOT stable. Facebook mints these per share:
+  // the same profile produced 19G28ma6yK and then 198YXN8kaF thirteen minutes
+  // apart, which means the one below can stop resolving with no warning and no
+  // error on our side — it would simply 404 for users, in 24 apps at once.
+  //
+  // The durable form is a username URL (facebook.com/<username>), set once in
+  // Facebook under Settings → Personal details → Username. Replace this line
+  // with it the moment it exists.
+  { key: 'facebook', label: 'Facebook', href: 'https://www.facebook.com/share/198YXN8kaF/' },
 
   { key: 'x', label: 'X', href: 'https://x.com/TEC1c5' },
 
