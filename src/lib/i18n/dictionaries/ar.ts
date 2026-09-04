@@ -29,7 +29,7 @@ export const ar = {
     pro:         'PRO',
     welcome:     'مرحباً',
     welcomeName: 'مرحباً، {name}',
-    subtitle:    'سياقك الشخصي داخل منظومة TEC. بياناتك ملكك — أنت تعلنها، وهي خاصة، ولا تُستخدم بدون موافقتك.',
+    subtitle:    'سياقك الشخصي داخل منظومة TEC',
     nav: { home: 'الرئيسية', goals: 'الأهداف', skills: 'المهارات', activity: 'النشاط', settings: 'الإعدادات' },
     home: {
       focus: 'تركيزك',

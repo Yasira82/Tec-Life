@@ -29,7 +29,7 @@ export const tr = {
     pro:         'PRO',
     welcome:     'Hoş geldin',
     welcomeName: 'Hoş geldin, {name}',
-    subtitle:    'TEC ekosistemindeki kişisel bağlamın. Verilerin senindir — sen beyan edersin, özeldir ve onayın olmadan asla kullanılmaz.',
+    subtitle:    'TEC ekosistemindeki kişisel bağlamın',
     nav: { home: 'Ana sayfa', goals: 'Hedefler', skills: 'Beceriler', activity: 'Etkinlik', settings: 'Ayarlar' },
     home: {
       focus: 'Odağın',

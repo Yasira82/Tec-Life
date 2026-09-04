@@ -102,3 +102,35 @@ describe('the ring is painted through the theme, not around it', () => {
     expect(page).toContain('inkA(0.09)');
   });
 });
+
+describe('the band is chrome, and chrome does not grow', () => {
+  // The CEO's report was "the strip at the top of the first page is too wide"
+  // — the band's HEIGHT, not its curve. The cause was one string: Home's line
+  // was 125 characters (two sentences, one of them a privacy manifesto) while
+  // every sibling tab's was 29–39. At 12.5px on a phone that is four wrapped
+  // lines against one, so the first screen a person ever sees carried a band
+  // three times taller than every screen after it.
+  //
+  // The fix is a shorter string; the guard is what stops the next one. A band
+  // line is a HINT — it names the tab, it does not explain the product. The
+  // privacy sentence lives on the Privacy screen, where it can be acted on.
+  const LIMIT = 60;
+  const locales = ['en', 'ar', 'es', 'fr', 'hi', 'id', 'ko', 'pt', 'ru', 'tr', 'vi', 'zh'];
+
+  for (const loc of locales) {
+    it(`${loc}: every band line fits on one or two lines`, () => {
+      const dict = src(`lib/i18n/dictionaries/${loc}.ts`);
+      const lines = [...dict.matchAll(/(?:subtitle|hint):\s*'([^']*)'/g)].map((m) => m[1] ?? '');
+      expect(lines.length).toBeGreaterThan(0);
+      const tooLong = lines.filter((l) => l.length > LIMIT);
+      expect(tooLong).toEqual([]);
+    });
+  }
+
+  it('the band renders ONE line of hint, not a paragraph block', () => {
+    // A second <p> would reintroduce the height the string limit just removed.
+    const page = strip(src('app/app/page.tsx'));
+    const band = page.slice(page.indexOf('className="tec-on-band"'), page.indexOf('</header>'));
+    expect((band.match(/<p /g) ?? []).length).toBe(1);
+  });
+});

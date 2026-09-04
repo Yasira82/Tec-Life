@@ -29,7 +29,7 @@ export const zh = {
     pro:         'PRO',
     welcome:     '欢迎',
     welcomeName: '欢迎，{name}',
-    subtitle:    '你在 TEC 生态中的个人情境。数据属于你 — 由你自行申报、保持私密，未经同意绝不使用。',
+    subtitle:    '你在 TEC 生态中的个人情境',
     nav: { home: '首页', goals: '目标', skills: '技能', activity: '动态', settings: '设置' },
     home: {
       focus: '当前焦点',
