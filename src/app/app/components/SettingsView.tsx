@@ -15,6 +15,8 @@ import { useMe } from '@/lib-client/hooks/useMe';
 import { useTranslation } from '@/lib/i18n';
 import { LOCALES } from '@/lib/i18n/locales';
 import { InviteCard } from '@/components/referral/InviteCard';
+import { FeedbackCard } from '@/components/feedback/FeedbackCard';
+import { SocialLinks } from '@/components/social/SocialLinks';
 
 const FOCUS_OPTIONS = ['Saving', 'Earning', 'Learning', 'Building', 'Trading'];
 
@@ -329,6 +331,23 @@ export function SettingsView({ isPro }: { isPro: boolean }) {
 
       {/* Privacy — the promise on the home screen, made operable. */}
       <Privacy />
+
+      {/* Feedback — the only channel a user has. Above About on purpose: the
+          version number is reference material, this is something to act on. */}
+      <Section title={t.life.feedback.title} icon="bell">
+        <div style={{ padding: '14px 16px' }}>
+          <div style={{ color: C.subtext, fontSize: 12.5, lineHeight: 1.5, marginBottom: 10 }}>
+            {t.life.feedback.hint}
+          </div>
+          <FeedbackCard page="/app/settings" />
+        </div>
+      </Section>
+
+      {/* Where TEC can be reached. Renders nothing until a link is configured —
+          a social icon that opens nothing reads as an abandoned product. */}
+      <Section title={t.life.feedback.social} icon="globe">
+        <div style={{ padding: '16px' }}><SocialLinks /></div>
+      </Section>
 
       {/* About */}
       <Section title={s.about} icon="info">

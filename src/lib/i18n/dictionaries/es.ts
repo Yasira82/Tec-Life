@@ -107,6 +107,22 @@ export const es = {
       title: 'Actividad', hint: 'tu actividad económica reciente',
       empty: 'Aún no hay actividad — aparecerá aquí a medida que uses TEC.',
     },
+    feedback: {
+      title: 'Comentarios',
+      hint: 'cuéntanos qué funciona y qué no',
+      placeholder: '¿Qué cambiarías?',
+      send: 'Enviar',
+      sending: 'Enviando…',
+      thanks: 'Gracias, ha llegado.',
+      thanksHint: 'Una persona lee esto. Si necesita respuesta, te buscaremos por tu usuario de Pi.',
+      sendAnother: 'Enviar otro',
+      failed: 'No se pudo enviar. Inténtalo de nuevo.',
+      tooShort: 'Escribe un poco más.',
+      tooLong: 'Son {n} caracteres — el límite es 2000.',
+      privacyNote: 'Se envía con tu usuario de Pi y la pantalla en la que estás. Nada más.',
+      social: 'TEC en otros sitios',
+    },
+
     settings: {
       profile: 'Perfil', planFree: 'Gratis', planPro: 'Pro', connectedPi: 'Conectado a Pi', notSignedIn: 'Sin sesión', member: 'Miembro TEC',
       appearance: 'Apariencia',

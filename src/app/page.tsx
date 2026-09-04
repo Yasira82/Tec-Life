@@ -3,6 +3,7 @@
 import { useEffect }               from 'react';
 import { useRouter }               from 'next/navigation';
 import { usePiAuth, ssoRedirect }  from '@yasser172/tec-auth';
+import { SocialLinks } from '@/components/social/SocialLinks';
 import { Icon }                    from '@yasser172/tec-ui';
 import { C }                       from '@/lib-client/palette';
 
@@ -62,6 +63,15 @@ export default function HomePage() {
           }}>
           {isLoading ? '...' : 'Login with Pi'}
         </button>
+
+        {/* Below the button, not beside it. This screen has exactly one job and
+            the social row must not compete with it — but "is anyone actually
+            behind this?" is a question a person asks BEFORE they sign in, not
+            after, and a login screen with no answer to it is a dead end.
+            Renders nothing at all until a link is configured. */}
+        <div style={{ marginTop: 28 }}>
+          <SocialLinks compact />
+        </div>
       </div>
     </div>
   );

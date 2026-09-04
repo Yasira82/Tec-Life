@@ -107,6 +107,22 @@ export const tr = {
       title: 'Etkinlik', hint: 'son ekonomik etkinliğin',
       empty: 'Henüz etkinlik yok — TEC’i kullandıkça burada görünür.',
     },
+    feedback: {
+      title: 'Geri bildirim',
+      hint: 'neyin işe yaradığını, neyin yaramadığını söyle',
+      placeholder: 'Neyi değiştirirdin?',
+      send: 'Gönder',
+      sending: 'Gönderiliyor…',
+      thanks: 'Teşekkürler — ulaştı.',
+      thanksHint: 'Bunları bir insan okuyor. Yanıt gerekirse Pi kullanıcı adınla seni buluruz.',
+      sendAnother: 'Bir tane daha gönder',
+      failed: 'Gönderilemedi. Tekrar dene.',
+      tooShort: 'Biraz daha yaz.',
+      tooLong: 'Bu {n} karakter — sınır 2000.',
+      privacyNote: 'Pi kullanıcı adın ve bulunduğun ekranla gönderilir. Başka hiçbir şey.',
+      social: 'TEC başka yerlerde',
+    },
+
     settings: {
       profile: 'Profil', planFree: 'Ücretsiz', planPro: 'Pro', connectedPi: 'Pi’ye bağlı', notSignedIn: 'Giriş yapılmadı', member: 'TEC Üyesi',
       appearance: 'Görünüm',

@@ -107,6 +107,22 @@ export const vi = {
       title: 'Hoạt động', hint: 'hoạt động kinh tế gần đây của bạn',
       empty: 'Chưa có hoạt động — sẽ hiện ở đây khi bạn dùng TEC.',
     },
+    feedback: {
+      title: 'Phản hồi',
+      hint: 'cho chúng tôi biết điều gì hiệu quả và điều gì không',
+      placeholder: 'Bạn muốn thay đổi điều gì?',
+      send: 'Gửi',
+      sending: 'Đang gửi…',
+      thanks: 'Cảm ơn — đã nhận được.',
+      thanksHint: 'Có người đọc những phản hồi này. Nếu cần trả lời, chúng tôi sẽ tìm bạn qua tên Pi.',
+      sendAnother: 'Gửi phản hồi khác',
+      failed: 'Không gửi được. Vui lòng thử lại.',
+      tooShort: 'Hãy viết thêm một chút.',
+      tooLong: 'Đó là {n} ký tự — giới hạn là 2000.',
+      privacyNote: 'Được gửi kèm tên Pi của bạn và màn hình bạn đang xem. Không gì khác.',
+      social: 'TEC ở nơi khác',
+    },
+
     settings: {
       profile: 'Hồ sơ', planFree: 'Miễn phí', planPro: 'Pro', connectedPi: 'Đã kết nối Pi', notSignedIn: 'Chưa đăng nhập', member: 'Thành viên TEC',
       appearance: 'Giao diện',
