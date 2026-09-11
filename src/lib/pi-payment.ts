@@ -32,7 +32,7 @@ export interface PaymentResult {
 // APP_SOURCE slug — payment-service resolves PI_API_KEY_LIFE from this (C-12 §11).
 const APP_SOURCE = 'life';
 
-import { hubPaymentOrigin } from '@/lib/pi-network';
+import { hubPaymentOrigin, isHubReferrer } from '@/lib/pi-network';
 
 const HUB_URL = process.env.NEXT_PUBLIC_HUB_URL ?? 'https://hub.tecosystem.app';
 
@@ -48,8 +48,7 @@ export const isHubNavigation = (): boolean => {
   try {
     if (sessionStorage.getItem('__tec_hub_entry') === '1') return true;
   } catch { /* sessionStorage blocked → fall back to referrer */ }
-  return typeof document !== 'undefined' &&
-    document.referrer.toLowerCase().includes('hub.tecosystem.app');
+  return isHubReferrer(document.referrer);
 };
 
 /** Mode 1 — hand the payment off to the Hub modal. `/hub?pay=1` is LOCKED (C-76/ADR-007). */
