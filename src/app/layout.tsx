@@ -82,7 +82,8 @@ export default function RootLayout({
                 } catch(e) {}
                 if (typeof window.Pi === 'undefined') { setTimeout(initPi, 150); return; }
                 try {
-                    var __isTestnetHost = /\\.vercel\\.app$/i.test(location.hostname);
+                    var __isTestnetHost = /\\.vercel\\.app$/i.test(location.hostname)
+                      || /-test\\.tecosystem\\.app$/i.test(location.hostname);
                     // SANDBOX IS NOT TESTNET. The HOST decides which Pi APP the
                     // visitor is in (and so which network the server approves
                     // against); "sandbox" points the SDK at Pi's SANDBOX

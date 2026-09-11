@@ -14,6 +14,7 @@ import { HUB_HOSTS }                 from '@/lib/pi-network';
 const ALLOWED_AUDIENCES = [
   'https://life.tecosystem.app',
   'https://tec-life.vercel.app',
+  'https://life-test.tecosystem.app',
 ];
 const DEFAULT_REDIRECT = '/app';
 
