@@ -7,6 +7,7 @@ import '@/styles/tec-design-tokens.css';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { LocaleProvider } from '@/lib/i18n';
 import { THEME_BOOT_SCRIPT } from '@/lib-client/theme';
+import { ArrivalReport } from '@/components/pioneer/ArrivalReport';
 
 export const metadata: Metadata = {
   title:       'TEC Life',
@@ -131,7 +132,8 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body><PiWarmup /><ErrorBoundary><LocaleProvider><RefCapture /><RefApply />{children}</LocaleProvider></ErrorBoundary></body>
+      <body><PiWarmup />
+        <ArrivalReport /><ErrorBoundary><LocaleProvider><RefCapture /><RefApply />{children}</LocaleProvider></ErrorBoundary></body>
     </html>
   );
 }
