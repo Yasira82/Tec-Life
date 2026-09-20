@@ -8,6 +8,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { LocaleProvider } from '@/lib/i18n';
 import { THEME_BOOT_SCRIPT } from '@/lib-client/theme';
 import { ArrivalReport } from '@/components/pioneer/ArrivalReport';
+import { QuestReturn } from '@/components/pioneer/QuestReturn';
 
 export const metadata: Metadata = {
   title:       'TEC Life',
@@ -133,7 +134,7 @@ export default function RootLayout({
         />
       </head>
       <body><PiWarmup />
-        <ArrivalReport /><ErrorBoundary><LocaleProvider><RefCapture /><RefApply />{children}</LocaleProvider></ErrorBoundary></body>
+        <ArrivalReport /><QuestReturn /><ErrorBoundary><LocaleProvider><RefCapture /><RefApply />{children}</LocaleProvider></ErrorBoundary></body>
     </html>
   );
 }
