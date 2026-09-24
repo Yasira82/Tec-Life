@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
       // SSO (P6).
       const sessionCookieOpts = {
         httpOnly: false, secure: true, sameSite: 'none',
+        partitioned: true,
         path: '/', domain: cookieDomain, maxAge: 60 * 60 * 24,
       } as const;
       response.cookies.set('tec_access_token', newToken, sessionCookieOpts);
