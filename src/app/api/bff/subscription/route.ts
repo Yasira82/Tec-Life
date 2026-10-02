@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isTestnetHost } from '@/lib/pi-network';
 import { forwardLife } from '@/lib/bff/lifeGateway';
+import { APP_SOURCE } from '@/lib/app-source';
 
 // GET /api/bff/subscription — the caller's subscription (plan + status), read from
 // commerce-service (the Subscription owner — C-47 Canonical Entities). Identity is the
@@ -29,5 +30,6 @@ export async function GET(req: NextRequest) {
   if (isTestnetHost(req.headers.get('host'))) {
     return NextResponse.json(FREE_ON_TESTNET, { status: 200 });
   }
-  return forwardLife(req, 'GET', '/api/commerce/subscriptions/status');
+  // THIS app's Pro (owner decision, 2026-10-02) — not the Hub's plan, not another app's.
+  return forwardLife(req, 'GET', `/api/commerce/subscriptions/status?app=${encodeURIComponent(APP_SOURCE)}`);
 }
