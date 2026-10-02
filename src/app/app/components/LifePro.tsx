@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react';
 import {Icon} from '@yasser172/tec-ui';
 import { C, goldA, successA } from '@/lib-client/palette';
+import { CancelProButton } from '@/components/pro/CancelProButton';
 import {
   isHubNavigation,
   redirectToHubPayment,
@@ -121,6 +122,7 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
             {soon ? ' — re-subscribe to keep Pro (one-time monthly payment, no auto-renewal).' : '.'}
           </div>
         )}
+        <CancelProButton />
       </div>
     );
   }
