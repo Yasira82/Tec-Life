@@ -1,94 +1,67 @@
-# TEC Domain App Template
+# TEC Life
 
-The **golden starter template** for a new app in the **TEC Federated Platform**.
-It ships a correct, Portal-ready skeleton — Hub SSO, dual-mode Pi payments, CSRF,
-legal pages, observability, and CI policy guards — so a new app is compliant from
-commit zero.
+**System of Record (Personal)** for the TEC Federated Platform — the memory of a TEC identity.
+Life holds what a Pioneer declares about their own economic life: **goals, skills, preferences,
+activity, trajectory and intent** (charter: `tec-knowledge-base/knowledge-base/C-106`).
 
-> Full architecture rules and rationale live in [`CLAUDE.md`](./CLAUDE.md).
-> Reference of record: `yasira82/tec-knowledge-base` (`C-12_Dual_Mode_Payment.md`).
+Live on Pi Mainnet at **https://life.tecosystem.app** · Pi App ID `life-app-c468e9eb5bf115fa` · app slug `life`.
 
----
+## What it does
 
-## Stack
+| Screen | What a Pioneer can do | Where the truth lives |
+|---|---|---|
+| **Home** | See the goal closest to done, log π against it, see recent activity | `tec-identity-service` (life module) |
+| **Goals** | Add a goal with an optional π target, log progress, mark done, delete | strong consistency — self-declared |
+| **Skills** | Keep a skills ladder: Learning → Practising → Proficient → Expert (never a score) | self-declared; an inferred row has a place but is never written by the client |
+| **Activity** | Read their own recent TEC events, grouped by day | presented from `tec-analytics-service`; Life stores none of it |
+| **Pace** | A projection of goal pace — refused until there is enough data (two days of progress) | computed server-side |
+| **Settings → Privacy** | Grant or withdraw consent per data category; delete all Life data | absence is a no; the purge is audited |
 
-- Next.js 15 App Router + TypeScript strict · React 18
-- `@yasser172/tec-ui` · `@yasser172/tec-auth` · `@yasser172/tec-sdk`
-- Vitest (unit) + Playwright (e2e) · Deploy: Vercel
+Life Pro (unlimited goals + insights) is paid in Pi through the shared payment flow (ADR-007 / ADR-009).
 
----
+## Architecture in one paragraph
 
-## Quick start
+Next.js 15 App Router. The browser only ever talks to this app's **BFF** (`/api/bff/*`), which
+forwards to the API Gateway with the session token as the only identity (`src/lib/bff/lifeGateway.ts`).
+Sessions are Hub SSO cookies (`tec_access_token`, `tec_csrf`, `tec_user`) set on a 200 HTML landing
+(C-123); the app can also sign itself in from a standalone Pi visit (`src/lib/pi/self-sign-in.ts`).
+CSRF is enforced in `middleware.ts` only. Pi SDK calls go through `src/lib/pi/PiRuntime.ts`.
+
+```
+src/app/app/            the signed-in app: page.tsx (shell) + components/ (Home, Goals, Skills, Activity, Pace, Settings, LifePro)
+src/app/api/bff/life/   goals · skills · preferences · activity · trajectory · consent · intent · data
+src/app/api/auth/       sso-callback (landing) · pi-login (self sign-in) · refresh · me
+src/app/pi-test         on-device diagnostics: this tab's Pi sign-in and campaign arrival
+src/lib-client/life/    useLife.ts (the hooks) · focus.ts
+src/lib/i18n/           12 locales, one key set
+```
+
+## Run it
 
 ```bash
-git clone <this-repo> tec-<domain>
-cd tec-<domain>
-cp .env.example .env.local
-npm install --legacy-peer-deps
+npm install
+cp .env.example .env.local      # API_GATEWAY_URL · INTERNAL_SECRET · SSO_SECRET · NEXT_PUBLIC_PI_APP_ID …
 npm run dev
 ```
 
----
-
-## New-app setup checklist
-
-```
-□ package.json: set "name"
-□ middleware.ts: adjust PROTECTED_ROUTES
-□ sso-callback/route.ts: set ALLOWED_AUDIENCES + DEFAULT_REDIRECT to your domain
-□ src/lib/pi-payment.ts + payment/create: set APP_SOURCE slug
-□ privacy/page.tsx + terms/page.tsx: set APP / DOMAIN / governing law / contacts
-□ Add ADR-007 isHubNavigation() guard to every buy handler
-□ .env: API_GATEWAY_URL · INTERNAL_SECRET · SSO_SECRET · NEXT_PUBLIC_PI_APP_ID · PI_SANDBOX=false (prod)
-□ Pi Developer Portal: register domain + App ID; set /privacy + /terms URLs
-□ Verify a real Pi payment Mode 1 (via Hub) AND Mode 2 (standalone)
-```
-
----
-
-## What's included
-
-| Area | Files |
-|------|-------|
-| Auth / SSO | `middleware.ts` (CSRF + page guard), `api/auth/sso-callback`, `api/auth/refresh` |
-| Payments | `api/bff/payment/{create,approve,complete,resolve-incomplete}`, `lib/pi-payment.ts` |
-| Pi runtime | `lib/pi/PiRuntime.ts` (PAL), `lib/pi/PiCircuitBreaker.ts` |
-| Observability | `api/health` (fail-safe), `lib/observability/{logger,reportError}.ts` |
-| Platform | `lib/flags.ts`, `lib/bff/createHandler.ts`, `styles/tec-design-tokens.css` |
-| Legal | `app/privacy`, `app/terms` (Pi Portal) |
-| CI | `.github/workflows/` — payment-policy + CSRF guard + lint/typecheck/test/build + e2e |
-
----
-
-## Files you change per domain
-
-| File | Change |
-|------|--------|
-| `package.json` | `"name": "tec-<domain>"` |
-| `src/app/layout.tsx` | title + description |
-| `src/app/page.tsx` | login page |
-| `src/app/app/` | domain pages |
-| `src/app/api/bff/` | domain BFF routes |
-| `.env.local` | domain secrets |
-
-## Files you keep (the compliant core)
-
-`middleware.ts` · `src/lib/bff/createHandler.ts` · `src/lib-client/pi/*` ·
-`src/lib/pi/*` · `src/lib/observability/*` · `src/components/ErrorBoundary.tsx` ·
-`next.config.js` · `Dockerfile`
-
----
-
-## Commands
+## Gates (what CI runs)
 
 ```bash
-npm run dev            # dev server
-npm run build          # production build
-npm run lint           # ESLint
-npm run typecheck      # tsc --noEmit (strict + noUncheckedIndexedAccess)
-npm run test           # vitest
-npm run test:coverage  # vitest + coverage (60% floor)
-npm run test:e2e       # Playwright
+npm run typecheck        # tsc --noEmit — 0 errors
+npm run lint             # eslint — 0 errors
+npm run test:coverage    # vitest + the 60% floor in vitest.config.ts
+npm run build
+npm run test:e2e         # Playwright: landing + the Life screens against a mocked BFF (e2e/)
 ```
 
-See [CHANGELOG.md](./CHANGELOG.md). Licensed [MIT](./LICENSE).
+## Rules that bite (see `CLAUDE.md` for the full list)
+
+- Identity comes from the session, never from a request body or query (P6).
+- Never validate CSRF inside a route handler — middleware only.
+- Never write `granted: false` consent rows; absence **is** the denial.
+- Never persist intent signals; the 30-minute Redis TTL is the privacy guarantee.
+- Never show a projection the backend marked unprojectable, and never fill the gap with a number.
+
+## Knowledge base
+
+`yasira82/tec-knowledge-base` → `C-02` (current state) · `C-106` (this app's charter) · `C-123` (session & cookie law) · `C-12` (dual-mode payment).
