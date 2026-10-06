@@ -14,6 +14,7 @@ Live on Pi Mainnet at **https://life.tecosystem.app** · Pi App ID `life-app-c46
 | **Goals** | Add a goal with an optional π target, log progress, mark done, delete | strong consistency — self-declared |
 | **Skills** | Keep a skills ladder: Learning → Practising → Proficient → Expert (never a score) | self-declared; an inferred row has a place but is never written by the client |
 | **Activity** | Read their own recent TEC events, grouped by day | presented from `tec-analytics-service`; Life stores none of it |
+| **Budget + Cash flow** | Set a monthly π cap per app; see what the owning services say was spent and received | the caps are self-declared (Life owns them); the amounts are presented from `tec-payment-service` and `tec-commerce-service` — an amount that could not be read is said, never shown as 0 |
 | **Pace** | A projection of goal pace — refused until there is enough data (two days of progress) | computed server-side |
 | **Settings → Privacy** | Grant or withdraw consent per data category; delete all Life data | absence is a no; the purge is audited |
 

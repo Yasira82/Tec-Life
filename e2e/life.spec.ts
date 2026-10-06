@@ -27,7 +27,7 @@ async function signedIn(page: Page) {
 
 /** An in-memory Life for one test: goals + skills, the rest empty. */
 async function fakeLife(page: Page) {
-  const goals: Goal[] = []; const skills: Skill[] = [];
+  const goals: Goal[] = []; const skills: Skill[] = []; const caps: { category: string; cap_pi: string }[] = [];
   const now = () => new Date().toISOString();
   await page.route('**/api/bff/**', async (route) => {
     const req = route.request(); const url = new URL(req.url()); const p = url.pathname; const m = req.method();
@@ -65,6 +65,14 @@ async function fakeLife(page: Page) {
     if (p === '/api/bff/life/preferences')      return route.fulfill(ok({ preferences: {} }));
     if (p === '/api/bff/life/consent')          return route.fulfill(ok({ consent: {} }));
     if (p === '/api/bff/life/intent')           return route.fulfill(ok({ signals: [] }));
+    // L1 — the caps are the test's; the amounts beside them are what the owning services "say".
+    if (p === '/api/bff/life/budget' && m === 'GET') return route.fulfill(ok({
+      period: '2026-10',
+      lines: caps.map((c) => ({ category: c.category, cap_pi: c.cap_pi, spent_pi: '2.5', pct: 10, over: false })),
+      unallocated: [], spent_total: '2.5', spent_status: null,
+    }));
+    if (p === '/api/bff/life/budget' && m === 'PUT') { const b = body(); caps.push({ category: String(b.category), cap_pi: String(b.cap_pi) }); return route.fulfill(ok({ period: '2026-10', caps })); }
+    if (p === '/api/bff/life/cashflow')          return route.fulfill(ok({ period: '2026-10', in: null, in_status: 503, out: { total: '2.5', lines: [] }, out_status: null, net: null }));
     return route.fulfill(ok({}));
   });
   await page.route('**/api/referral**', (route) => route.fulfill(ok({ code: 'E2E', url: 'http://localhost:3000/?ref=E2E', count: 0 })));
@@ -98,6 +106,17 @@ test.describe('Life, signed in', () => {
     await expect(completed).toBeVisible();
     await completed.click();
     await expect(page.getByText('Save 10 π')).toBeVisible();
+  });
+
+  test('a budget cap is set on Home and the unknown side of the cash flow is said, not zeroed', async ({ page }) => {
+    await page.goto('/app');
+    await page.getByPlaceholder('App').fill('ecommerce');
+    await page.getByPlaceholder('π cap').fill('40');
+    await page.getByRole('button', { name: 'Set', exact: true }).click();
+    await expect(page.getByTestId('budget-ecommerce')).toContainText('π 2.5');
+    await expect(page.getByTestId('budget-ecommerce')).toContainText('/ π 40');
+    await expect(page.getByTestId('cashflow-in')).toContainText("couldn't read");
+    await expect(page.getByTestId('cashflow-net')).not.toContainText('π');
   });
 
   test('a skill is added on the ladder', async ({ page }) => {

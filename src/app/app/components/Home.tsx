@@ -13,6 +13,7 @@ import { card, fmtPi, goldBtn, inputStyle } from './shared';
 import { Goals } from './Goals';
 import { Skills } from './Skills';
 import { Activity, piAmount, prettyType } from './Activity';
+import { Budget, Cashflow } from './Money';
 
 // ── Home ─────────────────────────────────────────────────────────────────────
 //
@@ -294,6 +295,11 @@ export function HomeView({ isPro, daysRemaining, onGo }: {
       </div>
 
       <Focus goals={goals} busy={busy} eta={eta} onLog={addProgress} onGo={onGo} />
+      {/* L1 — the person's caps and the month's in/out, each amount from the
+          service that owns it. Below the focus goal: a budget is a tool, the
+          goal is what the screen is for. */}
+      <Budget />
+      <Cashflow />
       <RecentActivity onGo={onGo} />
       <LifePro isPro={isPro} daysRemaining={daysRemaining} />
       <InviteCard />

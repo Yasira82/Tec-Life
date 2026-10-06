@@ -268,7 +268,7 @@ export function usePreferences() {
 // five and needed no backfill: with "absence is a NO", a category nobody has a
 // row for is denied for everybody, automatically.
 export const LIFE_DATA_CATEGORIES = [
-  'GOALS', 'SKILLS', 'PREFERENCES', 'ACTIVITY', 'TRAJECTORY', 'INTENT',
+  'GOALS', 'SKILLS', 'PREFERENCES', 'ACTIVITY', 'TRAJECTORY', 'INTENT', 'BUDGET',
 ] as const;
 export type LifeDataCategory = (typeof LIFE_DATA_CATEGORIES)[number];
 
@@ -358,14 +358,14 @@ export function useIntent() {
 }
 
 export interface PurgeResult {
-  goals: number; skills: number; preferences: number; consents: number;
+  goals: number; skills: number; preferences: number; budgets: number; consents: number;
 }
 
 /** Purge the caller's Life data. Irreversible; the caller confirms first. */
 export async function purgeLifeData(): Promise<PurgeResult> {
   const res  = await fetch('/api/bff/life/data', { method: 'DELETE', credentials: 'include' });
   const data = await readJson(res);
-  return (data.deleted as PurgeResult) ?? { goals: 0, skills: 0, preferences: 0, consents: 0 };
+  return (data.deleted as PurgeResult) ?? { goals: 0, skills: 0, preferences: 0, budgets: 0, consents: 0 };
 }
 
 // ── Subscription (Pro entitlement — read from commerce, the Subscription owner) ──
@@ -412,6 +412,94 @@ export function useSubscription() {
   }, []);
 
   return { plan, daysRemaining, isExpired, loading };
+}
+
+// ── Budget + cash flow (L1) ──────────────────────────────────────────────────
+// The caps are Life's own; what was spent or received is the owning services'
+// answer, presented. `null` on a line means "could not be read", and the screen
+// says so — it never draws a 0 for it.
+
+export interface BudgetLine { category: string; cap_pi: string; spent_pi: string | null; pct: number | null; over: boolean | null }
+export interface Budget {
+  period:       string;
+  lines:        BudgetLine[];
+  unallocated:  { source: string; spent_pi: string }[];
+  spent_total:  string | null;
+  spent_status: number | 'partial' | null;
+}
+
+export function useBudget(period?: string) {
+  const [budget,  setBudget]  = useState<Budget | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState<string | null>(null);
+  const [busy,    setBusy]    = useState(false);
+  const q = period ? `?period=${encodeURIComponent(period)}` : '';
+
+  const reload = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    fetch(`/api/bff/life/budget${q}`, { credentials: 'include', cache: 'no-store' })
+      .then(readJson)
+      .then((d) => setBudget(d as unknown as Budget))
+      .catch((e: unknown) => { setBudget(null); setError(e instanceof Error ? e.message : 'Failed to load budget'); })
+      .finally(() => setLoading(false));
+  }, [q]);
+
+  useEffect(() => reload(), [reload]);
+
+  const mutate = useCallback(async (fn: () => Promise<Response>) => {
+    setBusy(true);
+    setError(null);
+    try {
+      await readJson(await fn());
+      reload();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Action failed');
+    } finally {
+      setBusy(false);
+    }
+  }, [reload]);
+
+  const setCap = useCallback((category: string, cap_pi: string) =>
+    mutate(() => fetch('/api/bff/life/budget', {
+      method: 'PUT', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ category, cap_pi, ...(period ? { period } : {}) }),
+    })), [mutate, period]);
+
+  const removeCap = useCallback((category: string) =>
+    mutate(() => fetch(`/api/bff/life/budget/${encodeURIComponent(category)}${q}`, { method: 'DELETE', credentials: 'include' })),
+    [mutate, q]);
+
+  return { budget, loading, error, busy, reload, setCap, removeCap };
+}
+
+export interface CashflowSide { total: string; lines: { label: string; amount_pi: string; at: string | null }[] }
+export interface Cashflow {
+  period:     string;
+  in:         CashflowSide | null;
+  in_status:  number | null;
+  out:        CashflowSide | null;
+  out_status: number | 'partial' | null;
+  net:        string | null;
+}
+
+export function useCashflow(period?: string) {
+  const [cashflow, setCashflow] = useState<Cashflow | null>(null);
+  const [loading,  setLoading]  = useState(true);
+  const [error,    setError]    = useState<string | null>(null);
+  const q = period ? `?period=${encodeURIComponent(period)}` : '';
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`/api/bff/life/cashflow${q}`, { credentials: 'include', cache: 'no-store' })
+      .then(readJson)
+      .then((d) => setCashflow(d as unknown as Cashflow))
+      .catch((e: unknown) => { setCashflow(null); setError(e instanceof Error ? e.message : 'Failed to load cash flow'); })
+      .finally(() => setLoading(false));
+  }, [q]);
+
+  return { cashflow, loading, error };
 }
 
 export function useActivity(limit = 25) {
