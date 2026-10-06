@@ -10,6 +10,34 @@ const GW = process.env.API_GATEWAY_URL ?? '';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
+/**
+ * Read one gateway route with the same identity rule as `forwardLife` — the
+ * session token, nothing else — and hand the result back as data instead of a
+ * response, for routes that put two services' answers side by side (budget,
+ * cash flow). `ok: false` carries the status so the caller can say WHICH half
+ * could not be read; it never invents a body.
+ */
+export async function readGateway(
+  req: NextRequest,
+  gatewayPath: string,
+): Promise<{ ok: boolean; status: number; data: unknown }> {
+  if (!GW) return { ok: false, status: 503, data: null };
+  const token = req.cookies.get('tec_access_token')?.value ?? '';
+  if (!token) return { ok: false, status: 401, data: null };
+  try {
+    const res  = await fetch(`${GW}${gatewayPath}`, {
+      headers: { Authorization: `Bearer ${token}`, 'x-request-id': crypto.randomUUID() },
+      cache:   'no-store',
+    });
+    const json = await res.json().catch(() => ({})) as { data?: unknown };
+    if (!res.ok) console.error('[bff/life] gateway error:', res.status, 'GET', gatewayPath);
+    return { ok: res.ok, status: res.status, data: res.ok ? (json?.data ?? json) : null };
+  } catch (err) {
+    console.error('[bff/life] network error:', (err as Error).message, gatewayPath);
+    return { ok: false, status: 503, data: null };
+  }
+}
+
 /** Forward an authenticated Life request to the gateway, passing the response through. */
 export async function forwardLife(
   req: NextRequest,

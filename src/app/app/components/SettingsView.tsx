@@ -125,6 +125,7 @@ function Privacy() {
   const LABEL: Record<string, string> = {
     GOALS: p.goals, SKILLS: p.skills, PREFERENCES: p.preferences,
     ACTIVITY: p.activity, TRAJECTORY: p.trajectory, INTENT: p.intentTitle,
+    BUDGET: p.budget,
   };
 
   // A signal kind reads as a verb, not a constant: "Logging progress", never
