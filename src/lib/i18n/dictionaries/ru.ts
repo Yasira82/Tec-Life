@@ -125,6 +125,13 @@ export const ru = {
       social: 'TEC в других местах',
     },
 
+    gate: {
+      title: "Войдите, чтобы открыть Life",
+      body: "Ваши цели, навыки и прогресс принадлежат только вам. Войдите через Pi, чтобы их увидеть.",
+      button: "Войти через Pi",
+      busy: "Выполняется вход…",
+      viaHub: "Или войти через Hub",
+    },
     settings: {
       profile: 'Профиль', planFree: 'Бесплатно', planPro: 'Pro', connectedPi: 'Подключено к Pi', notSignedIn: 'Вы не вошли', member: 'Участник TEC',
       appearance: 'Оформление',

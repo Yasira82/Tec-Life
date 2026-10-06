@@ -125,6 +125,13 @@ export const zh = {
       social: '其他平台上的 TEC',
     },
 
+    gate: {
+      title: "登录以打开你的 Life",
+      body: "你的目标、技能和进度只属于你。用 Pi 登录即可查看。",
+      button: "用 Pi 登录",
+      busy: "正在登录…",
+      viaHub: "或通过 Hub 登录",
+    },
     settings: {
       profile: '资料', planFree: '免费', planPro: 'Pro', connectedPi: '已连接 Pi', notSignedIn: '未登录', member: 'TEC 会员',
       appearance: '外观',

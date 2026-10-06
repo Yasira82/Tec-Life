@@ -109,3 +109,12 @@ test.describe('Life, signed in', () => {
     await expect(page.getByText('Learning').first()).toBeVisible();
   });
 });
+
+test.describe('Life, signed out', () => {
+  test('/app opens on the sign-in button — not on an app that says "Not signed in"', async ({ page }) => {
+    await page.goto('/app');
+    await expect(page.getByRole('button', { name: 'Sign in with Pi' })).toBeVisible();
+    await expect(page.getByText('No goals yet')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Goals', exact: true })).toHaveCount(0);
+  });
+});

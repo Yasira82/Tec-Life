@@ -125,6 +125,13 @@ export const id = {
       social: 'TEC di tempat lain',
     },
 
+    gate: {
+      title: "Masuk untuk membuka Life Anda",
+      body: "Tujuan, keterampilan, dan kemajuan Anda hanya milik Anda. Masuk dengan Pi untuk melihatnya.",
+      button: "Masuk dengan Pi",
+      busy: "Sedang masuk…",
+      viaHub: "Atau masuk melalui Hub",
+    },
     settings: {
       profile: 'Profil', planFree: 'Gratis', planPro: 'Pro', connectedPi: 'Terhubung ke Pi', notSignedIn: 'Belum masuk', member: 'Anggota TEC',
       appearance: 'Tampilan',
