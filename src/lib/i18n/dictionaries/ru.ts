@@ -48,6 +48,8 @@ export const ru = {
       title: 'Цели', hint: 'поставьте цель · следите за прогрессом',
       active: 'Активные', completed: 'Достигнутые', tracked: 'π отслежено',
       insights: 'Анализ целей',
+      askAi: "Спросить TEC AI",
+      askAiQuestion: "Как мне достичь цели «{title}»? Что сделать на этой неделе?",
       addPlaceholder: 'Добавить цель', targetPlaceholder: 'цель π (необяз.)', add: 'Добавить',
       logPlaceholder: '+ сумма π', log: 'Записать',
       empty: 'Целей пока нет — добавьте первую выше.',

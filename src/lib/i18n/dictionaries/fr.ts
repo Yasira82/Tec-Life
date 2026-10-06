@@ -48,6 +48,8 @@ export const fr = {
       title: 'Objectifs', hint: 'fixez une cible · suivez vos progrès',
       active: 'Actifs', completed: 'Atteints', tracked: 'π suivis',
       insights: 'Analyse des objectifs',
+      askAi: "Demander à TEC AI",
+      askAiQuestion: "Comment atteindre mon objectif « {title} » ? Que faire cette semaine ?",
       addPlaceholder: 'Ajouter un objectif', targetPlaceholder: 'cible π (opt.)', add: 'Ajouter',
       logPlaceholder: '+ montant π', log: 'Enregistrer',
       empty: 'Aucun objectif — ajoutez le premier ci-dessus.',

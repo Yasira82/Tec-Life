@@ -42,7 +42,7 @@ async function fakeLife(page: Page) {
     if (gm) {
       const g = goals.find((x) => x.id === gm[1]); if (!g) return route.fulfill({ status: 404, body: '{}' });
       if (m === 'DELETE') { goals.splice(goals.indexOf(g), 1); return route.fulfill(ok({})); }
-      if (gm[2]) { g.progress += Number(body().delta ?? 0); if (g.target_amount && g.progress >= g.target_amount) g.status = 'DONE'; }
+      if (gm[2]) { g.progress = Math.min(g.target_amount ?? Infinity, g.progress + Number(body().delta ?? 0)); }
       else if (typeof body().status === 'string') g.status = body().status as Goal['status'];
       g.updated_at = now(); return route.fulfill(ok({ goal: g }));
     }
@@ -89,8 +89,11 @@ test.describe('Life, signed in', () => {
     await expect(page.getByText('Save 10 π')).toBeVisible();
     await page.getByPlaceholder('+ π amount').first().fill('10');
     await page.getByRole('button', { name: 'Log', exact: true }).first().click();
-    // Reaching the target auto-completes the goal (the service does the same),
-    // so it leaves the open list and lands in the collapsed Completed section.
+    // At its target the goal is REACHED, not closed — the goal is the person's to
+    // close (C-106). The screen says so and offers the tap; then it moves to Completed.
+    await expect(page.getByText('Target reached').first()).toBeVisible();
+    await expect(page.getByTestId('ask-ai-g1')).toHaveAttribute('href', /\/ai\?q=.*Save%2010/);
+    await page.getByRole('button', { name: 'Mark done', exact: true }).click();
     const completed = page.getByRole('button', { name: /Completed/ });
     await expect(completed).toBeVisible();
     await completed.click();

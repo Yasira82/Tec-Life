@@ -1,6 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+
+// The Hub's assistant (C-104 V1) prefills its composer from `?q=` — Life asks on the
+// goal's behalf and never grows an AI surface of its own (C-104 §5.6: a third surface
+// drifts). The question travels in the URL; the answer uses whatever Life context the
+// person has CONSENTED to share (C-106 §5), read by the Hub through Life's gated door.
+const HUB_URL = process.env.NEXT_PUBLIC_HUB_URL ?? 'https://hub.tecosystem.app';
+const askAiHref = (question: string) => `${HUB_URL}/ai?q=${encodeURIComponent(question)}`;
 import { C, goldA, successA } from '@/lib-client/palette';
 import { type Goal, useGoals } from '@/lib-client/life/useLife';
 import { LifeInsights } from './LifeInsights';
@@ -32,6 +39,7 @@ export function GoalItem({
     setAmt('');
     onLog(d);
   };
+  const askAi = askAiHref(t.life.goals.askAiQuestion.replace('{title}', goal.title));
 
   return (
     <div style={{ padding: '12px 0', borderTop: first ? 'none' : `1px solid ${C.border}` }}>
@@ -54,6 +62,12 @@ export function GoalItem({
           <span style={{ fontSize: 12, fontWeight: 700, color: C.gold, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
             π {fmtPi(goal.progress ?? 0)} / {fmtPi(goal.target_amount as number)}
           </span>
+        )}
+        {goal.status === 'ACTIVE' && (
+          <a href={askAi} target="_blank" rel="noopener noreferrer" data-testid={`ask-ai-${goal.id}`}
+            style={{ fontSize: 12, fontWeight: 700, color: C.gold, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+            {t.life.goals.askAi} →
+          </a>
         )}
         <button onClick={onDelete} title="Delete"
           style={{ background: 'none', border: 'none', color: C.subtext, cursor: 'pointer', fontSize: 16, flexShrink: 0 }}>×</button>

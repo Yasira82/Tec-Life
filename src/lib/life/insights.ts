@@ -10,7 +10,6 @@ const gwHeaders = (token: string) => ({
   'Content-Type': 'application/json',
   'x-request-id': crypto.randomUUID(),
   Authorization:  `Bearer ${token}`,
-  ...(process.env.INTERNAL_SECRET && { 'x-internal-key': process.env.INTERNAL_SECRET }),
 });
 
 export interface GoalInsights {

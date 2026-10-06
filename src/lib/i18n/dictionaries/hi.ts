@@ -48,6 +48,8 @@ export const hi = {
       title: 'लक्ष्य', hint: 'लक्ष्य तय करें · प्रगति देखें',
       active: 'सक्रिय', completed: 'पूर्ण', tracked: 'π ट्रैक किया',
       insights: 'लक्ष्य विश्लेषण',
+      askAi: "TEC AI से पूछें",
+      askAiQuestion: "मैं अपना लक्ष्य \"{title}\" कैसे पूरा करूँ? इस हफ़्ते क्या करूँ?",
       addPlaceholder: 'लक्ष्य जोड़ें', targetPlaceholder: 'π लक्ष्य (वैकल्पिक)', add: 'जोड़ें',
       logPlaceholder: '+ π राशि', log: 'दर्ज करें',
       empty: 'अभी कोई लक्ष्य नहीं — ऊपर पहला जोड़ें।',
