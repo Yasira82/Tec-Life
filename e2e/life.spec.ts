@@ -93,7 +93,7 @@ test.describe('Life, signed in', () => {
     // close (C-106). The screen says so and offers the tap; then it moves to Completed.
     await expect(page.getByText('Target reached').first()).toBeVisible();
     await expect(page.getByTestId('ask-ai-g1')).toHaveAttribute('href', /\/ai\?q=.*Save%2010/);
-    await page.getByRole('button', { name: 'Mark done', exact: true }).click();
+    await page.getByText('Mark done', { exact: true }).click(); // the text button — the status circle carries the same title
     const completed = page.getByRole('button', { name: /Completed/ });
     await expect(completed).toBeVisible();
     await completed.click();
