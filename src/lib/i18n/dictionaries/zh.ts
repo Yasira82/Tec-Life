@@ -53,6 +53,7 @@ export const zh = {
       addPlaceholder: '添加目标', targetPlaceholder: 'π 目标（可选）', add: '添加',
       logPlaceholder: '+ π 数额', log: '记录',
       empty: '还没有目标 — 在上方添加第一个。',
+      prefill: 'TEC AI 的建议——可以修改或忽略。点击添加之前不会保存任何内容。',
     },
     privacy: {
       title: '隐私',

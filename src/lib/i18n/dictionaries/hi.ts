@@ -53,6 +53,7 @@ export const hi = {
       addPlaceholder: 'लक्ष्य जोड़ें', targetPlaceholder: 'π लक्ष्य (वैकल्पिक)', add: 'जोड़ें',
       logPlaceholder: '+ π राशि', log: 'दर्ज करें',
       empty: 'अभी कोई लक्ष्य नहीं — ऊपर पहला जोड़ें।',
+      prefill: 'TEC AI का सुझाव — इसे बदलें या छोड़ दें। जोड़ें दबाने तक कुछ भी सहेजा नहीं जाता।',
     },
     privacy: {
       title: 'निजता',

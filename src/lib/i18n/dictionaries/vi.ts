@@ -53,6 +53,7 @@ export const vi = {
       addPlaceholder: 'Thêm mục tiêu', targetPlaceholder: 'mục tiêu π (tùy chọn)', add: 'Thêm',
       logPlaceholder: '+ số π', log: 'Ghi nhận',
       empty: 'Chưa có mục tiêu — thêm mục tiêu đầu tiên ở trên.',
+      prefill: 'TEC AI gợi ý — sửa hoặc bỏ qua. Không có gì được lưu cho đến khi bạn nhấn Thêm.',
     },
     privacy: {
       title: 'Quyền riêng tư',

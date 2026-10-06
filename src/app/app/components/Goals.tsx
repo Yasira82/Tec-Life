@@ -15,6 +15,7 @@ import { useTranslation } from '@/lib/i18n';
 import { FREE_ACTIVE_GOAL_CAP, STATUS_COLOR, card, fmtPi, goldBtn, inputStyle } from './shared';
 import { Overview } from './Overview';
 import { Pace } from './Pace';
+import { type GoalPrefill } from '@/lib/life/prefill';
 
 // One goal row. If it has a π target, shows a progress bar + a compact "log progress"
 // control (the momentum loop). Ownership + clamping/auto-complete are server-side.
@@ -114,11 +115,14 @@ export function GoalItem({
 }
 
 
-export function Goals({ isPro }: { isPro: boolean }) {
+export function Goals({ isPro, prefill }: { isPro: boolean; prefill?: GoalPrefill | null }) {
   const { t } = useTranslation();
   const { goals, loading, error, busy, addGoal, addProgress, setStatus, removeGoal } = useGoals();
-  const [title,  setTitle]  = useState('');
-  const [target, setTarget] = useState('');
+  // A3 (C-104 §10.1): a goal TEC AI proposed arrives as text in the form, and
+  // nothing is saved until the person taps Add — the same submit as a typed goal.
+  const [title,  setTitle]  = useState(prefill?.title ?? '');
+  const [target, setTarget] = useState(prefill?.target ?? '');
+  const [suggested, setSuggested] = useState(Boolean(prefill));
   const [gate,   setGate]   = useState<string | null>(null);
   const [showDone, setShowDone] = useState(false);
 
@@ -144,6 +148,7 @@ export function Goals({ isPro }: { isPro: boolean }) {
     const amt = parseFloat(target);
     setTitle('');
     setTarget('');
+    setSuggested(false);
     await addGoal(t, Number.isFinite(amt) && amt > 0 ? amt : undefined);
   };
 
@@ -156,7 +161,12 @@ export function Goals({ isPro }: { isPro: boolean }) {
 
       {/* The composer is not in a card either: it is an input, and wrapping it
           in a panel made it look like content rather than a control. */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 14 }}>
+      {suggested && (
+        <p data-testid="goal-prefill-note" style={{ color: C.gold, fontSize: 12, margin: '14px 2px 0', lineHeight: 1.5 }}>
+          {t.life.goals.prefill}
+        </p>
+      )}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: suggested ? 8 : 14 }}>
         <input
           style={{ ...inputStyle, background: C.surface, borderRadius: 12, padding: '11px 13px' }}
           value={title}
