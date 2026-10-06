@@ -53,6 +53,7 @@ export const pt = {
       addPlaceholder: 'Adicionar uma meta', targetPlaceholder: 'alvo π (opc.)', add: 'Adicionar',
       logPlaceholder: '+ valor π', log: 'Registrar',
       empty: 'Ainda sem metas — adicione a primeira acima.',
+      prefill: 'Sugerido pela TEC AI — edita ou ignora. Nada é guardado até tocares em Adicionar.',
     },
     privacy: {
       title: 'Privacidade',

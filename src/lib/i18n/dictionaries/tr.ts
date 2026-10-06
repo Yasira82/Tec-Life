@@ -53,6 +53,7 @@ export const tr = {
       addPlaceholder: 'Hedef ekle', targetPlaceholder: 'π hedefi (ops.)', add: 'Ekle',
       logPlaceholder: '+ π tutarı', log: 'Kaydet',
       empty: 'Henüz hedef yok — ilkini yukarıdan ekle.',
+      prefill: 'TEC AI önerisi — düzenle ya da yok say. Ekle’ye dokunana kadar hiçbir şey kaydedilmez.',
     },
     privacy: {
       title: 'Gizlilik',

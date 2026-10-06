@@ -119,6 +119,18 @@ test.describe('Life, signed in', () => {
     await expect(page.getByTestId('cashflow-net')).not.toContainText('π');
   });
 
+  test('a goal proposed by TEC AI opens filled in, and exists only after Add', async ({ page }) => {
+    await page.goto('/app?goal=Save%2010%20%CF%80&target=10&ref=ABC');
+    await expect(page.getByPlaceholder('Add a goal')).toHaveValue('Save 10 π');
+    await expect(page.getByPlaceholder('π target (opt)')).toHaveValue('10');
+    await expect(page.getByTestId('goal-prefill-note')).toBeVisible();
+    await expect(page).toHaveURL(/\/app\?ref=ABC$/);             // the two keys are consumed
+    await expect(page.getByText('No goals yet — add your first above.')).toBeVisible(); // nothing saved yet
+    await page.getByRole('button', { name: 'Add', exact: true }).click();
+    await expect(page.getByText('Save 10 π')).toBeVisible();
+    await expect(page.getByTestId('goal-prefill-note')).toHaveCount(0);
+  });
+
   test('a skill is added on the ladder', async ({ page }) => {
     await page.goto('/app');
     await page.getByRole('button', { name: 'Skills', exact: true }).click();

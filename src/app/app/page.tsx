@@ -16,6 +16,8 @@ import { Skills } from './components/Skills';
 import { Activity } from './components/Activity';
 import { HomeView } from './components/Home';
 import { SignInGate } from './components/SignInGate';
+import { GoalPrefillReader } from './components/GoalPrefillReader';
+import { type GoalPrefill } from '@/lib/life/prefill';
 
 export default function LifeHome() {
   const { user, isLoading } = usePiAuth();
@@ -25,6 +27,7 @@ export default function LifeHome() {
   const name  = piName ? `@${piName}` : '';
   const isPro = isProPlan(plan ?? (user as { subscriptionPlan?: string } | null)?.subscriptionPlan);
   const [tab, setTab] = useState<LifeTab>('home');
+  const [prefill, setPrefill] = useState<GoalPrefill | null>(null);
   const { t } = useTranslation();
 
   return (
@@ -90,8 +93,9 @@ export default function LifeHome() {
         </header>
 
         <SignInGate>
+          <GoalPrefillReader onPrefill={(p) => { setPrefill(p); setTab('goals'); }} />
           {tab === 'home' && <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={setTab} />}
-          {tab === 'goals'    && <Goals isPro={isPro} />}
+          {tab === 'goals'    && <Goals isPro={isPro} prefill={prefill} key={prefill ? `pf:${prefill.title}` : 'goals'} />}
           {tab === 'skills'   && <Skills />}
           {tab === 'activity' && <Activity />}
           {tab === 'settings' && <SettingsView isPro={isPro} />}
