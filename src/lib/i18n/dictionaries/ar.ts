@@ -48,6 +48,8 @@ export const ar = {
       title: 'الأهداف', hint: 'حدد هدفاً · وتابع تقدمك',
       active: 'نشط', completed: 'مكتمل', tracked: 'π متتبَّع',
       insights: 'تحليل الأهداف',
+      askAi: "اسأل TEC AI",
+      askAiQuestion: "إزاي أوصل لهدفي \"{title}\"؟ أعمل إيه الأسبوع ده؟",
       addPlaceholder: 'أضف هدفاً', targetPlaceholder: 'هدف π (اختياري)', add: 'إضافة',
       logPlaceholder: '+ مبلغ π', log: 'تسجيل',
       empty: 'لا أهداف بعد — أضف أول هدف من الأعلى.',

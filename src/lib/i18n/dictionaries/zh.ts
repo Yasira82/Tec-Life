@@ -48,6 +48,8 @@ export const zh = {
       title: '目标', hint: '设定目标 · 跟踪进度',
       active: '进行中', completed: '已完成', tracked: 'π 已跟踪',
       insights: '目标分析',
+      askAi: "问问 TEC AI",
+      askAiQuestion: "我怎样才能实现目标「{title}」？这周我该做什么？",
       addPlaceholder: '添加目标', targetPlaceholder: 'π 目标（可选）', add: '添加',
       logPlaceholder: '+ π 数额', log: '记录',
       empty: '还没有目标 — 在上方添加第一个。',

@@ -48,6 +48,8 @@ export const vi = {
       title: 'Mục tiêu', hint: 'đặt mục tiêu · theo dõi tiến độ',
       active: 'Đang thực hiện', completed: 'Hoàn thành', tracked: 'π đã theo dõi',
       insights: 'Phân tích mục tiêu',
+      askAi: "Hỏi TEC AI",
+      askAiQuestion: "Làm sao để tôi đạt mục tiêu \"{title}\"? Tuần này tôi nên làm gì?",
       addPlaceholder: 'Thêm mục tiêu', targetPlaceholder: 'mục tiêu π (tùy chọn)', add: 'Thêm',
       logPlaceholder: '+ số π', log: 'Ghi nhận',
       empty: 'Chưa có mục tiêu — thêm mục tiêu đầu tiên ở trên.',

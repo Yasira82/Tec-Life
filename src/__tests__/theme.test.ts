@@ -564,7 +564,7 @@ describe('every language the picker offers has a dictionary', () => {
 // that would quietly undo it: a fake inference, and a level that stops being a
 // ladder.
 describe('the skills inventory keeps its boundaries', () => {
-  const page = strip(src('app/app/page.tsx'));
+  const page = strip(src('app/app/components/Skills.tsx'));
   const hook = strip(src('lib-client/life/useLife.ts'));
 
   it('the ladder is a fixed list, in order, shared by the UI and the hook', () => {

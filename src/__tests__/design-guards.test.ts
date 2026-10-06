@@ -31,7 +31,7 @@ const at = (hay: string, needle: string): number => {
 };
 
 describe('timestamps are written, not dumped', () => {
-  const page = strip(src('app/app/page.tsx'));
+  const page = strip(src('app/app/components/Activity.tsx'));
 
   it('no raw toLocaleString on a date', () => {
     // `new Date(iso).toLocaleString()` is `8/28/2026, 11:02:27 PM` — seconds
@@ -61,7 +61,7 @@ describe('section headers use the icon set, not emoji', () => {
 });
 
 describe('a control never refuses in silence', () => {
-  const page = strip(src('app/app/page.tsx'));
+  const page = strip(src('app/app/components/Skills.tsx'));
 
   it('Skills accepts a one-character name', () => {
     // R, C, Go and AI are real skills. The old rule demanded two characters and
@@ -85,7 +85,7 @@ describe('the footer earns less space than the user’s own data', () => {
 });
 
 describe('a screen is not a stack of identical grey panels', () => {
-  const page = strip(src('app/app/page.tsx'));
+  const page = strip(src('app/app/components/Goals.tsx'));
 
   it('the stat strip sits on the page, not in a card', () => {
     // Home and Goals both opened with the same grey card holding the same
@@ -108,7 +108,7 @@ describe('a screen is not a stack of identical grey panels', () => {
 });
 
 describe('the ring is painted through the theme, not around it', () => {
-  const page = strip(src('app/app/page.tsx'));
+  const page = strip(src('app/app/components/Home.tsx'));
 
   it('sets stroke through style so the CSS variable resolves', () => {
     // `stroke={C.gold}` as an ATTRIBUTE is `stroke="var(--tec-gold)"`, which

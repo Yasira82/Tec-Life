@@ -9,6 +9,31 @@ Versioning: [Semantic Versioning](https://semver.org/)
 
 ## [Unreleased]
 
+### 2026-10-05 — repo review (tec-life)
+- **Security:** `next` 15.5.12 → 15.5.27 (critical advisory: request smuggling in
+  rewrites, DoS). `npm audit --omit=dev`: 36 → 2 (both need Next 16).
+- **Removed dead code and deps:** `src/lib/sdk.ts` (`TecSdk` with an empty gateway
+  URL, imported from client code — a Two-SDK-boundary leftover), `lib-client/pi/pi-auth.ts`
+  and `lib-client/hooks/usePiAuth.ts` (the app uses `usePiAuth` from `@yasser172/tec-auth`),
+  and with them `axios`, `socket.io-client` and `@sentry/nextjs` — none imported anywhere.
+- **BFF (`forwardLife`):** sends the session token as the only identity. It used to add
+  `x-user-id` from the client-controlled `tec_user` cookie (the gateway discards it) and
+  `x-internal-key` (the gateway adds it itself, and it marks the caller as a SERVICE — a
+  ServiceActor-gated Life route would have been open to every signed-in user). A signed-in
+  user without the `tec_user` cookie is no longer refused. Pinned by `life-gateway.test.ts`.
+- **`app/page.tsx` split** (1004 lines → a 100-line shell): the screens now live in
+  `app/app/components/` — `Home`, `Goals`, `Skills`, `Activity`, `Pace`, with `shared.ts` for
+  the styles and helpers they share. No behaviour change; the design guards now read the file
+  each screen lives in.
+- **E2E for the Life screens** (`e2e/life.spec.ts`): signed in with session cookies, the BFF
+  answered by the test — a goal is added, logged against and reaches its target; a skill is
+  added on the ladder.
+- **`/pi-test`**: the campaign-arrival diagnostics the other apps got on 2026-10-05 — this
+  tab's Pi sign-in result and the arrival report, on the phone that has the problem.
+- **README** describes Life instead of the template.
+- **Coverage gate is real:** `@vitest/coverage-v8` installed; CI runs `test:coverage`
+  (73% stmts · 64% branches · 63% funcs · 80% lines against the 60/50/60/60 floor).
+
 ### Added
 - Packaging hygiene: `LICENSE` (MIT), expanded `README`, this CHANGELOG,
   and Dependabot config (`npm` + `github-actions`, weekly).

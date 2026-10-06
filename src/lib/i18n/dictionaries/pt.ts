@@ -48,6 +48,8 @@ export const pt = {
       title: 'Metas', hint: 'defina um alvo · acompanhe seu progresso',
       active: 'Ativas', completed: 'Concluídas', tracked: 'π acompanhados',
       insights: 'Análise de metas',
+      askAi: "Perguntar à TEC AI",
+      askAiQuestion: "Como posso alcançar minha meta \"{title}\"? O que devo fazer esta semana?",
       addPlaceholder: 'Adicionar uma meta', targetPlaceholder: 'alvo π (opc.)', add: 'Adicionar',
       logPlaceholder: '+ valor π', log: 'Registrar',
       empty: 'Ainda sem metas — adicione a primeira acima.',

@@ -55,6 +55,8 @@ export const en = {
       title: 'Goals', hint: 'set a target · track your progress',
       active: 'Active', completed: 'Completed', tracked: 'π tracked',
       insights: 'Goal insights',
+      askAi: "Ask TEC AI",
+      askAiQuestion: "How can I reach my goal \"{title}\"? What should I do this week?",
       addPlaceholder: 'Add a goal', targetPlaceholder: 'π target (opt)', add: 'Add',
       logPlaceholder: '+ π amount', log: 'Log',
       empty: 'No goals yet — add your first above.',

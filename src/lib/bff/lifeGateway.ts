@@ -7,12 +7,6 @@ import { NextRequest, NextResponse } from 'next/server';
 //            body/query param (C-106 §6 / P6). Fail closed: no session → 401.
 const GW = process.env.API_GATEWAY_URL ?? '';
 
-const getUserId = (req: NextRequest): string => {
-  try {
-    const u = JSON.parse(decodeURIComponent(req.cookies.get('tec_user')?.value ?? ''));
-    return u?.id ?? u?.sub ?? u?.piId ?? '';
-  } catch { return ''; }
-};
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
@@ -25,17 +19,22 @@ export async function forwardLife(
 ): Promise<NextResponse> {
   if (!GW) return NextResponse.json({ error: 'Service unavailable' }, { status: 503 });
 
-  const token  = req.cookies.get('tec_access_token')?.value ?? '';
-  const userId = getUserId(req);
-  if (!token || !userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  // The session token is the ONLY identity sent. identity-service verifies it
+  // (HS256) and takes the owner from it; the gateway strips any caller-supplied
+  // x-user-id and rewrites it from the verified token. This used to send
+  // `x-user-id` read from the `tec_user` cookie — a client-controlled value the
+  // gateway discarded — and `x-internal-key`, which the gateway adds itself on
+  // every proxied request and which marks the caller as a SERVICE. A Life route
+  // gated on ServiceActor would have been open to every signed-in user through
+  // here (the Hub's campaign routes avoid the key for the same reason).
+  const token = req.cookies.get('tec_access_token')?.value ?? '';
+  if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     Authorization:  `Bearer ${token}`,
     'x-request-id': crypto.randomUUID(),
-    'x-user-id':    userId,
   };
-  if (process.env.INTERNAL_SECRET) headers['x-internal-key'] = process.env.INTERNAL_SECRET;
 
   const init: RequestInit = { method, headers, cache: 'no-store' };
   if (body !== undefined) init.body = JSON.stringify(body);

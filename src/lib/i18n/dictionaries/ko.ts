@@ -48,6 +48,8 @@ export const ko = {
       title: '목표', hint: '목표 설정 · 진행 상황 추적',
       active: '진행 중', completed: '완료', tracked: 'π 추적됨',
       insights: '목표 분석',
+      askAi: "TEC AI에게 묻기",
+      askAiQuestion: "제 목표 \"{title}\"를 어떻게 이룰 수 있을까요? 이번 주에 무엇을 해야 할까요?",
       addPlaceholder: '목표 추가', targetPlaceholder: 'π 목표 (선택)', add: '추가',
       logPlaceholder: '+ π 금액', log: '기록',
       empty: '아직 목표가 없습니다 — 위에서 첫 목표를 추가하세요.',

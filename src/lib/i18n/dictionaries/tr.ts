@@ -48,6 +48,8 @@ export const tr = {
       title: 'Hedefler', hint: 'bir hedef koy · ilerlemeni izle',
       active: 'Aktif', completed: 'Tamamlandı', tracked: 'π izlenen',
       insights: 'Hedef analizi',
+      askAi: "TEC AI'ya sor",
+      askAiQuestion: "\"{title}\" hedefime nasıl ulaşırım? Bu hafta ne yapmalıyım?",
       addPlaceholder: 'Hedef ekle', targetPlaceholder: 'π hedefi (ops.)', add: 'Ekle',
       logPlaceholder: '+ π tutarı', log: 'Kaydet',
       empty: 'Henüz hedef yok — ilkini yukarıdan ekle.',

@@ -48,6 +48,8 @@ export const id = {
       title: 'Tujuan', hint: 'tetapkan target · pantau kemajuan',
       active: 'Aktif', completed: 'Selesai', tracked: 'π terlacak',
       insights: 'Analisis tujuan',
+      askAi: "Tanya TEC AI",
+      askAiQuestion: "Bagaimana cara mencapai tujuan saya \"{title}\"? Apa yang harus saya lakukan minggu ini?",
       addPlaceholder: 'Tambah tujuan', targetPlaceholder: 'target π (opsional)', add: 'Tambah',
       logPlaceholder: '+ jumlah π', log: 'Catat',
       empty: 'Belum ada tujuan — tambahkan yang pertama di atas.',
