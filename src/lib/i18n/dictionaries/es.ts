@@ -125,6 +125,13 @@ export const es = {
       social: 'TEC en otros sitios',
     },
 
+    gate: {
+      title: "Inicia sesión para abrir tu Life",
+      body: "Tus metas, habilidades y progreso son solo tuyos. Inicia sesión con Pi para verlos.",
+      button: "Iniciar sesión con Pi",
+      busy: "Iniciando sesión…",
+      viaHub: "O inicia sesión a través del Hub",
+    },
     settings: {
       profile: 'Perfil', planFree: 'Gratis', planPro: 'Pro', connectedPi: 'Conectado a Pi', notSignedIn: 'Sin sesión', member: 'Miembro TEC',
       appearance: 'Apariencia',

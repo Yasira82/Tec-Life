@@ -9,6 +9,13 @@ Versioning: [Semantic Versioning](https://semver.org/)
 
 ## [Unreleased]
 
+### 2026-10-06 — the door
+- **`/app` opens on a sign-in button** when there is no session (`SignInGate`), instead of an
+  app that says "Not signed in" with nothing to press. The button runs the app's own Pi
+  sign-in (C-123 §10), forced past the 10-minute attempt window — that window guards loops,
+  not people. When Pi cannot answer on this page (a Hub-owned session, no SDK, a refusal) the
+  Hub signs them in and sends them back. Not a redirect guard (§7/§9/§11). 12 locales.
+
 ### 2026-10-05 — repo review (tec-life)
 - **Security:** `next` 15.5.12 → 15.5.27 (critical advisory: request smuggling in
   rewrites, DoS). `npm audit --omit=dev`: 36 → 2 (both need Next 16).

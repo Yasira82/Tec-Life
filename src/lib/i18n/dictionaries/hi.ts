@@ -125,6 +125,13 @@ export const hi = {
       social: 'TEC अन्य जगहों पर',
     },
 
+    gate: {
+      title: "अपनी Life खोलने के लिए साइन इन करें",
+      body: "आपके लक्ष्य, कौशल और प्रगति सिर्फ़ आपके हैं। उन्हें देखने के लिए Pi से साइन इन करें।",
+      button: "Pi से साइन इन करें",
+      busy: "साइन इन हो रहा है…",
+      viaHub: "या Hub के ज़रिए साइन इन करें",
+    },
     settings: {
       profile: 'प्रोफ़ाइल', planFree: 'मुफ़्त', planPro: 'Pro', connectedPi: 'Pi से जुड़ा', notSignedIn: 'साइन इन नहीं', member: 'TEC सदस्य',
       appearance: 'रूप',

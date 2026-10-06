@@ -125,6 +125,13 @@ export const ar = {
       social: 'TEC في أماكن تانية',
     },
 
+    gate: {
+      title: "سجّل دخولك لتفتح Life",
+      body: "أهدافك ومهاراتك وتقدّمك ملكك وحدك. سجّل دخولك بـ Pi لتراها.",
+      button: "تسجيل الدخول بـ Pi",
+      busy: "جارٍ تسجيل دخولك…",
+      viaHub: "أو سجّل الدخول من خلال الـ Hub",
+    },
     settings: {
       profile: 'الملف الشخصي', planFree: 'مجاني', planPro: 'Pro', connectedPi: 'متصل بـ Pi', notSignedIn: 'غير مسجّل الدخول', member: 'عضو TEC',
       appearance: 'المظهر',

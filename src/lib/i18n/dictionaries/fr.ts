@@ -125,6 +125,13 @@ export const fr = {
       social: 'TEC ailleurs',
     },
 
+    gate: {
+      title: "Connectez-vous pour ouvrir votre Life",
+      body: "Vos objectifs, compétences et progrès n'appartiennent qu'à vous. Connectez-vous avec Pi pour les voir.",
+      button: "Se connecter avec Pi",
+      busy: "Connexion en cours…",
+      viaHub: "Ou se connecter via le Hub",
+    },
     settings: {
       profile: 'Profil', planFree: 'Gratuit', planPro: 'Pro', connectedPi: 'Connecté à Pi', notSignedIn: 'Non connecté', member: 'Membre TEC',
       appearance: 'Apparence',

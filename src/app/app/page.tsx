@@ -15,6 +15,7 @@ import { Goals } from './components/Goals';
 import { Skills } from './components/Skills';
 import { Activity } from './components/Activity';
 import { HomeView } from './components/Home';
+import { SignInGate } from './components/SignInGate';
 
 export default function LifeHome() {
   const { user, isLoading } = usePiAuth();
@@ -88,14 +89,15 @@ export default function LifeHome() {
           </p>
         </header>
 
-        {tab === 'home' && <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={setTab} />}
-        {tab === 'goals'    && <Goals isPro={isPro} />}
-        {tab === 'skills'   && <Skills />}
-        {tab === 'activity' && <Activity />}
-        {tab === 'settings' && <SettingsView isPro={isPro} />}
+        <SignInGate>
+          {tab === 'home' && <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={setTab} />}
+          {tab === 'goals'    && <Goals isPro={isPro} />}
+          {tab === 'skills'   && <Skills />}
+          {tab === 'activity' && <Activity />}
+          {tab === 'settings' && <SettingsView isPro={isPro} />}
+          <BottomNav active={tab} onSelect={setTab} />
+        </SignInGate>
       </div>
-
-      <BottomNav active={tab} onSelect={setTab} />
     </main>
   );
 }

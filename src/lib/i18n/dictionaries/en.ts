@@ -132,6 +132,13 @@ export const en = {
       social: 'TEC elsewhere',
     },
 
+    gate: {
+      title: "Sign in to open your Life",
+      body: "Your goals, skills and progress are yours alone. Sign in with Pi to see them.",
+      button: "Sign in with Pi",
+      busy: "Signing you in…",
+      viaHub: "Sign in through the Hub instead",
+    },
     settings: {
       profile: 'Profile', planFree: 'Free', planPro: 'Pro', connectedPi: 'Connected to Pi', notSignedIn: 'Not signed in', member: 'TEC Member',
       appearance: 'Appearance',

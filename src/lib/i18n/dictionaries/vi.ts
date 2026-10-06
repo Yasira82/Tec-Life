@@ -125,6 +125,13 @@ export const vi = {
       social: 'TEC ở nơi khác',
     },
 
+    gate: {
+      title: "Đăng nhập để mở Life của bạn",
+      body: "Mục tiêu, kỹ năng và tiến độ chỉ thuộc về bạn. Đăng nhập bằng Pi để xem.",
+      button: "Đăng nhập bằng Pi",
+      busy: "Đang đăng nhập…",
+      viaHub: "Hoặc đăng nhập qua Hub",
+    },
     settings: {
       profile: 'Hồ sơ', planFree: 'Miễn phí', planPro: 'Pro', connectedPi: 'Đã kết nối Pi', notSignedIn: 'Chưa đăng nhập', member: 'Thành viên TEC',
       appearance: 'Giao diện',

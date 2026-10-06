@@ -125,6 +125,13 @@ export const ko = {
       social: '다른 곳의 TEC',
     },
 
+    gate: {
+      title: "Life를 열려면 로그인하세요",
+      body: "목표, 기술, 진행 상황은 오직 당신의 것입니다. Pi로 로그인해 확인하세요.",
+      button: "Pi로 로그인",
+      busy: "로그인 중…",
+      viaHub: "또는 Hub를 통해 로그인",
+    },
     settings: {
       profile: '프로필', planFree: '무료', planPro: 'Pro', connectedPi: 'Pi에 연결됨', notSignedIn: '로그인하지 않음', member: 'TEC 회원',
       appearance: '화면',

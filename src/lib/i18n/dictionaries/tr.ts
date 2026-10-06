@@ -125,6 +125,13 @@ export const tr = {
       social: 'TEC başka yerlerde',
     },
 
+    gate: {
+      title: "Life'ı açmak için giriş yapın",
+      body: "Hedefleriniz, becerileriniz ve ilerlemeniz yalnızca size aittir. Görmek için Pi ile giriş yapın.",
+      button: "Pi ile giriş yap",
+      busy: "Giriş yapılıyor…",
+      viaHub: "Ya da Hub üzerinden giriş yapın",
+    },
     settings: {
       profile: 'Profil', planFree: 'Ücretsiz', planPro: 'Pro', connectedPi: 'Pi’ye bağlı', notSignedIn: 'Giriş yapılmadı', member: 'TEC Üyesi',
       appearance: 'Görünüm',
