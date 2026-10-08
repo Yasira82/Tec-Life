@@ -53,6 +53,7 @@ export const ru = {
       addPlaceholder: 'Добавить цель', targetPlaceholder: 'цель π (необяз.)', add: 'Добавить',
       logPlaceholder: '+ сумма π', log: 'Записать',
       empty: 'Целей пока нет — добавьте первую выше.',
+      steps: 'Шаги к цели', removeStep: 'Убрать этот шаг', stepsDone: '{done} из {total} шагов',
       prefill: 'Предложено TEC AI — измените или проигнорируйте. Ничего не сохраняется, пока вы не нажмёте «Добавить».',
     },
     privacy: {

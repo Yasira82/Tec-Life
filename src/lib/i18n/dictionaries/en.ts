@@ -60,6 +60,7 @@ export const en = {
       addPlaceholder: 'Add a goal', targetPlaceholder: 'π target (opt)', add: 'Add',
       logPlaceholder: '+ π amount', log: 'Log',
       empty: 'No goals yet — add your first above.',
+      steps: 'Steps toward it', removeStep: 'Remove this step', stepsDone: '{done} of {total} steps',
       prefill: 'Suggested by TEC AI — edit it or ignore it. Nothing is saved until you tap Add.',
     },
     privacy: {

@@ -53,6 +53,7 @@ export const ar = {
       addPlaceholder: 'أضف هدفاً', targetPlaceholder: 'هدف π (اختياري)', add: 'إضافة',
       logPlaceholder: '+ مبلغ π', log: 'تسجيل',
       empty: 'لا أهداف بعد — أضف أول هدف من الأعلى.',
+      steps: 'الخطوات للوصول له', removeStep: 'شيل الخطوة دي', stepsDone: '{done} من {total} خطوات',
       prefill: 'اقتراح من TEC AI — عدّله أو تجاهله. لا شيء يُحفظ قبل أن تضغط إضافة.',
     },
     privacy: {

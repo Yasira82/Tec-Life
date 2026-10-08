@@ -7,13 +7,16 @@
  * Add — the same POST as a goal typed by hand, owner from the session (P6).
  *
  * Pure: no window, no fetch. The page reads the query; this decides what of it
- * is usable. Only the two whitelisted keys are read; everything else is ignored.
+ * is usable. Only the whitelisted keys (goal, target, steps) are read; everything else is ignored.
  */
 
 export const GOAL_TITLE_MAX = 200;           // the Add field's own maxLength
 const TARGET_MAX = 1_000_000_000;            // the BFF's CreateGoalSchema bound
 
-export interface GoalPrefill { title: string; target?: string }
+import { STEP_MAX, cleanStep } from './steps';
+
+/** `steps` — the steps TEC AI proposed toward the goal, `;`-separated; at most five. */
+export interface GoalPrefill { title: string; target?: string; steps?: string[] }
 
 export function readGoalPrefill(search: string): GoalPrefill | null {
   let q: URLSearchParams;
@@ -30,7 +33,9 @@ export function readGoalPrefill(search: string): GoalPrefill | null {
   const raw = (q.get('target') ?? '').trim();
   const ok  = /^(?:0|[1-9]\d{0,9})(?:\.\d{1,8})?$/.test(raw) && Number(raw) > 0 && Number(raw) <= TARGET_MAX;
 
-  return ok ? { title, target: raw } : { title };
+  const steps = (q.get('steps') ?? '').split(';').map(cleanStep).filter(Boolean).slice(0, STEP_MAX);
+
+  return { title, ...(ok ? { target: raw } : {}), ...(steps.length ? { steps } : {}) };
 }
 
 /** The query without the two keys this screen consumed — everything else kept. */
@@ -38,6 +43,7 @@ export function withoutGoalPrefill(search: string): string {
   const q = new URLSearchParams(search);
   q.delete('goal');
   q.delete('target');
+  q.delete('steps');
   const s = q.toString();
   return s ? `?${s}` : '';
 }
