@@ -60,7 +60,7 @@ export const tr = {
       title: 'Gizlilik',
       shareTitle: 'Neler paylaşılabilir',
       shareNote: 'Hub’daki TEC AI yalnızca burada açtıklarını okur — sen açana kadar hepsi kapalı kalır.',
-      checkin: 'Haftalık kontrol', checkinDesc: 'Bir hedefte bir hafta adım atılmazsa, TEC Alert’te haftada bir hatırlatma.',
+      checkin: 'Haftalık kontrol', checkinDesc: 'Bir hedefte bir hafta adım atılmazsa TEC Alert’te hatırlatma (haftada en fazla bir kez) ve ayın ilk haftasında ayına kısa bir bakış.',
       goals: 'Hedefler',
       skills: 'Beceriler',
       preferences: 'Tercihler',

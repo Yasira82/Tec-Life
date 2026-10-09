@@ -60,7 +60,7 @@ export const es = {
       title: 'Privacidad',
       shareTitle: 'Qué se puede compartir',
       shareNote: 'TEC AI en el Hub solo lee lo que actives aquí; todo sigue apagado hasta que lo enciendas.',
-      checkin: 'Seguimiento semanal', checkinDesc: 'Si una meta pasa una semana sin un paso, un recordatorio a la semana en TEC Alert.',
+      checkin: 'Seguimiento semanal', checkinDesc: 'Un recordatorio en TEC Alert si una meta pasa una semana sin un paso (como mucho uno por semana) y un breve repaso de tu mes en su primera semana.',
       goals: 'Objetivos',
       skills: 'Habilidades',
       preferences: 'Preferencias',

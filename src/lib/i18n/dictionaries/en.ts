@@ -67,7 +67,7 @@ export const en = {
       title: 'Privacy',
       shareTitle: 'What can be shared',
       shareNote: 'TEC AI in the Hub reads only what you switch on here — every one stays off until you turn it on.',
-      checkin: 'Weekly check-in', checkinDesc: 'If a goal goes a week without a step, one reminder a week in TEC Alert.',
+      checkin: 'Weekly check-in', checkinDesc: 'A reminder in TEC Alert if a goal goes a week without a step (once a week at most), and a short review of your month in its first week.',
       goals: 'Goals',
       skills: 'Skills',
       preferences: 'Preferences',

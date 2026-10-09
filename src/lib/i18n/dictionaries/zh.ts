@@ -60,7 +60,7 @@ export const zh = {
       title: '隐私',
       shareTitle: '可以分享的内容',
       shareNote: 'Hub 里的 TEC AI 只读取你在这里打开的内容——每一项在你打开之前都是关闭的。',
-      checkin: '每周回顾', checkinDesc: '如果某个目标一周没有进展，每周在 TEC Alert 里提醒一次。',
+      checkin: '每周回顾', checkinDesc: '如果某个目标一周没有进展，在 TEC Alert 里提醒（每周最多一次）；每月第一周还有一份简短的月度回顾。',
       goals: '目标',
       skills: '技能',
       preferences: '偏好',

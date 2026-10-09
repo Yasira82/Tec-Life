@@ -60,7 +60,7 @@ export const vi = {
       title: 'Quyền riêng tư',
       shareTitle: 'Những gì có thể chia sẻ',
       shareNote: 'TEC AI trong Hub chỉ đọc những gì bạn bật ở đây — mọi mục đều tắt cho đến khi bạn bật.',
-      checkin: 'Nhắc hằng tuần', checkinDesc: 'Nếu một mục tiêu một tuần không có bước nào, một lời nhắc mỗi tuần trong TEC Alert.',
+      checkin: 'Nhắc hằng tuần', checkinDesc: 'Nhắc trong TEC Alert nếu một mục tiêu một tuần không có bước nào (tối đa mỗi tuần một lần), và bản tóm tắt ngắn về tháng của bạn vào tuần đầu tháng.',
       goals: 'Mục tiêu',
       skills: 'Kỹ năng',
       preferences: 'Tuỳ chọn',

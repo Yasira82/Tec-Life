@@ -60,7 +60,7 @@ export const fr = {
       title: 'Confidentialité',
       shareTitle: 'Ce qui peut être partagé',
       shareNote: 'TEC AI dans le Hub ne lit que ce que vous activez ici — tout reste désactivé tant que vous ne l’activez pas.',
-      checkin: 'Point hebdomadaire', checkinDesc: 'Si un objectif reste une semaine sans un pas, un rappel par semaine dans TEC Alert.',
+      checkin: 'Point hebdomadaire', checkinDesc: 'Un rappel dans TEC Alert si un objectif reste une semaine sans un pas (une fois par semaine au plus), et un court bilan de votre mois la première semaine.',
       goals: 'Objectifs',
       skills: 'Compétences',
       preferences: 'Préférences',
