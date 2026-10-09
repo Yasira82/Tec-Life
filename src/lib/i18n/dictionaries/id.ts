@@ -60,7 +60,7 @@ export const id = {
       title: 'Privasi',
       shareTitle: 'Apa yang boleh dibagikan',
       shareNote: 'TEC AI di Hub hanya membaca yang kamu nyalakan di sini — semuanya mati sampai kamu menyalakannya.',
-      checkin: 'Pengingat mingguan', checkinDesc: 'Jika sebuah tujuan seminggu tanpa langkah, satu pengingat seminggu di TEC Alert.',
+      checkin: 'Pengingat mingguan', checkinDesc: 'Pengingat di TEC Alert jika sebuah tujuan seminggu tanpa langkah (paling banyak sekali seminggu), dan ulasan singkat bulanmu di minggu pertama.',
       goals: 'Tujuan',
       skills: 'Keterampilan',
       preferences: 'Preferensi',

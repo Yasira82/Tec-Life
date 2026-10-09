@@ -24,6 +24,11 @@ describe('the CHECKIN switch', () => {
       expect(p.checkin && p.checkinDesc, code).toBeTruthy();
       expect(p.checkinDesc, code).toMatch(/TEC Alert/);
     }
+    // It names the monthly review too, not only the weekly reminder.
+    expect(DICTIONARIES.en.life.privacy.checkinDesc).toMatch(/week.*month/);
+    expect(DICTIONARIES.ar.life.privacy.checkinDesc).toMatch(/أسبوع.*شهر/);
+    for (const { code } of LOCALES) {
+    }
   });
 });
 

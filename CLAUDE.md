@@ -23,7 +23,7 @@ referral growth loop wired (C-133). Reference: **C-106 §11b**.
 > (`GET /identity/life/context/:username`) — it sees only the categories the person switched on.
 > `CHECKIN` is the one switch that is not data shared: it allows identity-service's weekly
 > check-in (`modules/life/checkin.sweeper.ts`) to file one TEC Alert a week about a goal with no
-> step for 7 days. A goal's steps live in its description as `- [ ] step` lines (`lib/life/steps.ts`).
+> step for 7 days, and one short review of the month in its first week (`review.ts`). A goal's steps live in its description as `- [ ] step` lines (`lib/life/steps.ts`).
 
 ---
 
