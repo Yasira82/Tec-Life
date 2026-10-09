@@ -59,7 +59,8 @@ export const es = {
     privacy: {
       title: 'Privacidad',
       shareTitle: 'Qué se puede compartir',
-      shareNote: 'Nada lee tus datos de Life todavía. Esto decide qué se permitirá cuando algo lo haga — todo queda apagado hasta que tú lo enciendas.',
+      shareNote: 'TEC AI en el Hub solo lee lo que actives aquí; todo sigue apagado hasta que lo enciendas.',
+      checkin: 'Seguimiento semanal', checkinDesc: 'Si una meta pasa una semana sin un paso, un recordatorio a la semana en TEC Alert.',
       goals: 'Objetivos',
       skills: 'Habilidades',
       preferences: 'Preferencias',

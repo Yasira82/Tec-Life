@@ -19,10 +19,11 @@ preferences · activity · skills · trajectory · intent) plus both privacy P0s
 right to delete). Deployed (Mainnet) · Pi App ID registered · env set · payment live ·
 referral growth loop wired (C-133). Reference: **C-106 §11b**.
 
-> **Nothing reads Life data across the boundary yet.** The consent grants are what the
-> FIRST reader (TEC AI, C-104) must consult, and the Privacy screen says exactly that.
-> The outbound personal-context API is the next step — and it is now unblocked rather
-> than begun, because the gate it must pass through exists.
+> **One reader crosses the boundary: TEC AI in the Hub** (C-104), through the consent door
+> (`GET /identity/life/context/:username`) — it sees only the categories the person switched on.
+> `CHECKIN` is the one switch that is not data shared: it allows identity-service's weekly
+> check-in (`modules/life/checkin.sweeper.ts`) to file one TEC Alert a week about a goal with no
+> step for 7 days. A goal's steps live in its description as `- [ ] step` lines (`lib/life/steps.ts`).
 
 ---
 

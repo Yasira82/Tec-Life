@@ -59,7 +59,8 @@ export const fr = {
     privacy: {
       title: 'Confidentialité',
       shareTitle: 'Ce qui peut être partagé',
-      shareNote: 'Rien ne lit encore vos données Life. Ceci décide de ce qui sera permis le jour où quelque chose les lira — tout reste désactivé tant que vous ne l’activez pas.',
+      shareNote: 'TEC AI dans le Hub ne lit que ce que vous activez ici — tout reste désactivé tant que vous ne l’activez pas.',
+      checkin: 'Point hebdomadaire', checkinDesc: 'Si un objectif reste une semaine sans un pas, un rappel par semaine dans TEC Alert.',
       goals: 'Objectifs',
       skills: 'Compétences',
       preferences: 'Préférences',

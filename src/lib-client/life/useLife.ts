@@ -281,6 +281,8 @@ export function usePreferences() {
 // row for is denied for everybody, automatically.
 export const LIFE_DATA_CATEGORIES = [
   'GOALS', 'SKILLS', 'PREFERENCES', 'ACTIVITY', 'TRAJECTORY', 'INTENT', 'BUDGET',
+  // Not data shared with a reader — permission for the weekly check-in reminder.
+  'CHECKIN',
 ] as const;
 export type LifeDataCategory = (typeof LIFE_DATA_CATEGORIES)[number];
 

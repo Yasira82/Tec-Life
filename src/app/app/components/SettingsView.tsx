@@ -109,11 +109,10 @@ function Toggle({ on, disabled, label, onChange }: {
 // This is where that promise becomes something a person can operate: one
 // grant per data category, and a way to remove everything.
 //
-// The note above the switches is deliberately literal. Nothing reads Life data
-// across the boundary today, and a screen implying an active protection would
-// be claiming more than the system does. Saying "nothing reads this yet, and
-// these decide what will be allowed when something does" is both true now and
-// still true afterwards.
+// The note above the switches is deliberately literal. It used to say nothing
+// reads Life data yet — true until TEC AI in the Hub began reading it through
+// the consent door (2026-10). It now names the one reader there is, and what
+// governs it: these switches, all off until turned on.
 function Privacy() {
   const { t } = useTranslation();
   const p = t.life.privacy;
@@ -125,8 +124,10 @@ function Privacy() {
   const LABEL: Record<string, string> = {
     GOALS: p.goals, SKILLS: p.skills, PREFERENCES: p.preferences,
     ACTIVITY: p.activity, TRAJECTORY: p.trajectory, INTENT: p.intentTitle,
-    BUDGET: p.budget,
+    BUDGET: p.budget, CHECKIN: p.checkin,
   };
+  // A switch that is not about sharing data says what it does instead.
+  const DESC: Record<string, string> = { CHECKIN: p.checkinDesc };
 
   // A signal kind reads as a verb, not a constant: "Logging progress", never
   // PROGRESS_LOGGED. An unknown kind falls through to its raw name rather than
@@ -191,7 +192,7 @@ function Privacy() {
       )}
 
       {(loading ? [] : consent).map((c) => (
-        <Row key={c.category} label={LABEL[c.category] ?? c.category}>
+        <Row key={c.category} label={LABEL[c.category] ?? c.category} desc={DESC[c.category]}>
           <Toggle
             on={c.granted}
             disabled={saving}

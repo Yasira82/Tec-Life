@@ -59,7 +59,8 @@ export const zh = {
     privacy: {
       title: '隐私',
       shareTitle: '可以分享的内容',
-      shareNote: '目前还没有任何东西读取你的 Life 数据。这些决定将来有东西读取时允许什么 — 在你打开之前全部关闭。',
+      shareNote: 'Hub 里的 TEC AI 只读取你在这里打开的内容——每一项在你打开之前都是关闭的。',
+      checkin: '每周回顾', checkinDesc: '如果某个目标一周没有进展，每周在 TEC Alert 里提醒一次。',
       goals: '目标',
       skills: '技能',
       preferences: '偏好',

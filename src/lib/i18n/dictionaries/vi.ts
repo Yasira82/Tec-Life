@@ -59,7 +59,8 @@ export const vi = {
     privacy: {
       title: 'Quyền riêng tư',
       shareTitle: 'Những gì có thể chia sẻ',
-      shareNote: 'Chưa có gì đọc dữ liệu Life của bạn. Đây là những gì sẽ được phép khi có thứ đọc nó — tất cả đều tắt cho đến khi bạn bật.',
+      shareNote: 'TEC AI trong Hub chỉ đọc những gì bạn bật ở đây — mọi mục đều tắt cho đến khi bạn bật.',
+      checkin: 'Nhắc hằng tuần', checkinDesc: 'Nếu một mục tiêu một tuần không có bước nào, một lời nhắc mỗi tuần trong TEC Alert.',
       goals: 'Mục tiêu',
       skills: 'Kỹ năng',
       preferences: 'Tuỳ chọn',

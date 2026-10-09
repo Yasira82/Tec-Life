@@ -66,7 +66,8 @@ export const en = {
     privacy: {
       title: 'Privacy',
       shareTitle: 'What can be shared',
-      shareNote: 'Nothing reads your Life data yet. These decide what will be allowed when something does — every one stays off until you turn it on.',
+      shareNote: 'TEC AI in the Hub reads only what you switch on here — every one stays off until you turn it on.',
+      checkin: 'Weekly check-in', checkinDesc: 'If a goal goes a week without a step, one reminder a week in TEC Alert.',
       goals: 'Goals',
       skills: 'Skills',
       preferences: 'Preferences',

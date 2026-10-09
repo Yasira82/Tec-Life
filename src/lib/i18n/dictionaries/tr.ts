@@ -59,7 +59,8 @@ export const tr = {
     privacy: {
       title: 'Gizlilik',
       shareTitle: 'Neler paylaşılabilir',
-      shareNote: 'Life verilerini henüz hiçbir şey okumuyor. Bunlar, bir gün okuyan olduğunda neye izin verileceğini belirler — sen açana kadar hepsi kapalı.',
+      shareNote: 'Hub’daki TEC AI yalnızca burada açtıklarını okur — sen açana kadar hepsi kapalı kalır.',
+      checkin: 'Haftalık kontrol', checkinDesc: 'Bir hedefte bir hafta adım atılmazsa, TEC Alert’te haftada bir hatırlatma.',
       goals: 'Hedefler',
       skills: 'Beceriler',
       preferences: 'Tercihler',
