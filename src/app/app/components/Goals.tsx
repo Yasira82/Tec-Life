@@ -16,16 +16,21 @@ import { FREE_ACTIVE_GOAL_CAP, STATUS_COLOR, card, fmtPi, goldBtn, inputStyle } 
 import { Overview } from './Overview';
 import { Pace } from './Pace';
 import { type GoalPrefill } from '@/lib/life/prefill';
+import { parseSteps, toggleStep, withSteps } from '@/lib/life/steps';
 
 // One goal row. If it has a π target, shows a progress bar + a compact "log progress"
 // control (the momentum loop). Ownership + clamping/auto-complete are server-side.
 export function GoalItem({
-  goal, first, busy, onToggle, onDelete, onLog,
+  goal, first, busy, onToggle, onDelete, onLog, onSteps,
 }: {
   goal: Goal; first: boolean; busy: boolean;
   onToggle: () => void; onDelete: () => void; onLog: (delta: number) => void;
+  /** Ticking a step rewrites the goal's description (lib/life/steps.ts). */
+  onSteps?: (description: string) => void;
 }) {
   const { t } = useTranslation();
+  const steps = parseSteps(goal.description);
+  const stepsDone = steps.filter((s) => s.done).length;
   const [amt, setAmt] = useState('');
   const hasTarget = typeof goal.target_amount === 'number' && goal.target_amount > 0;
   const pct = hasTarget ? Math.min(100, Math.round(((goal.progress ?? 0) / (goal.target_amount as number)) * 100)) : 0;
@@ -74,6 +79,24 @@ export function GoalItem({
           style={{ background: 'none', border: 'none', color: C.subtext, cursor: 'pointer', fontSize: 16, flexShrink: 0 }}>×</button>
       </div>
 
+      {steps.length > 0 && (
+        <div data-testid={`goal-steps-${goal.id}`} style={{ marginTop: 8, marginLeft: 30 }}>
+          <div style={{ fontSize: 11, color: C.faint, fontWeight: 700, marginBottom: 4 }}>
+            {t.life.goals.stepsDone.replace('{done}', String(stepsDone)).replace('{total}', String(steps.length))}
+          </div>
+          {steps.map((s, i) => (
+            <label key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '3px 0', cursor: onSteps ? 'pointer' : 'default' }}>
+              <input type="checkbox" checked={s.done} disabled={busy || !onSteps || goal.status === 'DONE'}
+                onChange={() => onSteps?.(toggleStep(goal.description, i))}
+                style={{ marginTop: 2, accentColor: C.gold }} />
+              <span dir="auto" style={{ fontSize: 13, color: s.done ? C.subtext : C.text, textDecoration: s.done ? 'line-through' : 'none', lineHeight: 1.4 }}>
+                {s.text}
+              </span>
+            </label>
+          ))}
+        </div>
+      )}
+
       {hasTarget && (
         <div style={{ marginTop: 8, marginLeft: 30 }}>
           <div style={{ height: 6, borderRadius: 999, background: C.bg, overflow: 'hidden' }}>
@@ -117,12 +140,15 @@ export function GoalItem({
 
 export function Goals({ isPro, prefill }: { isPro: boolean; prefill?: GoalPrefill | null }) {
   const { t } = useTranslation();
-  const { goals, loading, error, busy, addGoal, addProgress, setStatus, removeGoal } = useGoals();
+  const { goals, loading, error, busy, addGoal, addProgress, setStatus, setDescription, removeGoal } = useGoals();
   // A3 (C-104 §10.1): a goal TEC AI proposed arrives as text in the form, and
   // nothing is saved until the person taps Add — the same submit as a typed goal.
   const [title,  setTitle]  = useState(prefill?.title ?? '');
   const [target, setTarget] = useState(prefill?.target ?? '');
   const [suggested, setSuggested] = useState(Boolean(prefill));
+  // The steps TEC AI proposed toward it — shown under the form, each removable;
+  // saved with the goal only when the person taps Add.
+  const [steps,  setSteps]  = useState<string[]>(prefill?.steps ?? []);
   const [gate,   setGate]   = useState<string | null>(null);
   const [showDone, setShowDone] = useState(false);
 
@@ -146,10 +172,12 @@ export function Goals({ isPro, prefill }: { isPro: boolean; prefill?: GoalPrefil
     }
     setGate(null);
     const amt = parseFloat(target);
+    const description = steps.length ? withSteps('', steps.map((text) => ({ text, done: false }))) : undefined;
     setTitle('');
     setTarget('');
+    setSteps([]);
     setSuggested(false);
-    await addGoal(t, Number.isFinite(amt) && amt > 0 ? amt : undefined);
+    await addGoal(t, Number.isFinite(amt) && amt > 0 ? amt : undefined, description);
   };
 
   return (
@@ -187,6 +215,20 @@ export function Goals({ isPro, prefill }: { isPro: boolean; prefill?: GoalPrefil
           onClick={submit} disabled={busy || !title.trim()}>{t.life.goals.add}</button>
       </div>
 
+      {steps.length > 0 && (
+        <div data-testid="goal-prefill-steps" style={{ marginTop: 10, padding: '4px 2px' }}>
+          <div style={{ fontSize: 12, color: C.subtext, fontWeight: 700, marginBottom: 4 }}>{t.life.goals.steps}</div>
+          {steps.map((s, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '3px 0' }}>
+              <span style={{ color: C.gold, fontSize: 12, fontWeight: 800, width: 16 }}>{i + 1}.</span>
+              <span dir="auto" style={{ flex: 1, fontSize: 13, color: C.text }}>{s}</span>
+              <button type="button" aria-label={t.life.goals.removeStep} onClick={() => setSteps((v) => v.filter((_, j) => j !== i))}
+                style={{ background: 'none', border: 'none', color: C.subtext, cursor: 'pointer', fontSize: 15 }}>×</button>
+            </div>
+          ))}
+        </div>
+      )}
+
       {error && <p style={{ color: C.error, fontSize: 13, margin: '10px 2px 0' }}>{error}</p>}
       {gate  && <p style={{ color: C.gold,  fontSize: 12, margin: '10px 2px 0' }}>🔒 {gate}</p>}
       {!isPro && !gate && activeCount >= FREE_ACTIVE_GOAL_CAP - 1 && activeCount < FREE_ACTIVE_GOAL_CAP && (
@@ -212,6 +254,7 @@ export function Goals({ isPro, prefill }: { isPro: boolean; prefill?: GoalPrefil
                   onToggle={() => setStatus(g.id, 'DONE')}
                   onDelete={() => removeGoal(g.id)}
                   onLog={(delta) => addProgress(g.id, delta)}
+                  onSteps={(d) => setDescription(g.id, d)}
                 />
               ))}
             </div>

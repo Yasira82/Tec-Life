@@ -53,6 +53,7 @@ export const ko = {
       addPlaceholder: '목표 추가', targetPlaceholder: 'π 목표 (선택)', add: '추가',
       logPlaceholder: '+ π 금액', log: '기록',
       empty: '아직 목표가 없습니다 — 위에서 첫 목표를 추가하세요.',
+      steps: '목표까지의 단계', removeStep: '이 단계 삭제', stepsDone: '{total}단계 중 {done}단계',
       prefill: 'TEC AI의 제안 — 수정하거나 무시하세요. 추가를 누르기 전에는 아무것도 저장되지 않습니다.',
     },
     privacy: {

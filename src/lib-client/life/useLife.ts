@@ -70,11 +70,23 @@ export function useGoals() {
     }
   }, [reload]);
 
-  const addGoal = useCallback((title: string, targetAmount?: number) =>
+  const addGoal = useCallback((title: string, targetAmount?: number, description?: string) =>
     mutate(() => fetch('/api/bff/life/goals', {
       method: 'POST', credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, ...(targetAmount && targetAmount > 0 ? { target_amount: targetAmount } : {}) }),
+      body: JSON.stringify({
+        title,
+        ...(targetAmount && targetAmount > 0 ? { target_amount: targetAmount } : {}),
+        ...(description ? { description } : {}),
+      }),
+    })), [mutate]);
+
+  /** A goal's steps live in its description (lib/life/steps.ts); ticking one rewrites it. */
+  const setDescription = useCallback((id: string, description: string) =>
+    mutate(() => fetch(`/api/bff/life/goals/${id}`, {
+      method: 'PATCH', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ description: description || null }),
     })), [mutate]);
 
   const addProgress = useCallback((id: string, delta: number) =>
@@ -95,7 +107,7 @@ export function useGoals() {
     mutate(() => fetch(`/api/bff/life/goals/${id}`, { method: 'DELETE', credentials: 'include' })),
     [mutate]);
 
-  return { goals, loading, error, busy, reload, addGoal, addProgress, setStatus, removeGoal };
+  return { goals, loading, error, busy, reload, addGoal, addProgress, setStatus, setDescription, removeGoal };
 }
 
 // ── Skills (C-106 §4) ────────────────────────────────────────

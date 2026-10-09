@@ -53,6 +53,7 @@ export const id = {
       addPlaceholder: 'Tambah tujuan', targetPlaceholder: 'target π (opsional)', add: 'Tambah',
       logPlaceholder: '+ jumlah π', log: 'Catat',
       empty: 'Belum ada tujuan — tambahkan yang pertama di atas.',
+      steps: 'Langkah menuju ke sana', removeStep: 'Hapus langkah ini', stepsDone: '{done} dari {total} langkah',
       prefill: 'Disarankan oleh TEC AI — ubah atau abaikan. Tidak ada yang disimpan sampai kamu ketuk Tambah.',
     },
     privacy: {

@@ -53,6 +53,7 @@ export const fr = {
       addPlaceholder: 'Ajouter un objectif', targetPlaceholder: 'cible π (opt.)', add: 'Ajouter',
       logPlaceholder: '+ montant π', log: 'Enregistrer',
       empty: 'Aucun objectif — ajoutez le premier ci-dessus.',
+      steps: 'Les étapes pour y arriver', removeStep: 'Retirer cette étape', stepsDone: '{done} sur {total} étapes',
       prefill: 'Suggéré par TEC AI — modifiez-le ou ignorez-le. Rien n’est enregistré avant que vous touchiez Ajouter.',
     },
     privacy: {
