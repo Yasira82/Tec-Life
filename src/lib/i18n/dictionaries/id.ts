@@ -59,7 +59,8 @@ export const id = {
     privacy: {
       title: 'Privasi',
       shareTitle: 'Apa yang boleh dibagikan',
-      shareNote: 'Belum ada yang membaca data Life kamu. Ini menentukan apa yang boleh saat nanti ada yang membacanya — semuanya mati sampai kamu menyalakannya.',
+      shareNote: 'TEC AI di Hub hanya membaca yang kamu nyalakan di sini — semuanya mati sampai kamu menyalakannya.',
+      checkin: 'Pengingat mingguan', checkinDesc: 'Jika sebuah tujuan seminggu tanpa langkah, satu pengingat seminggu di TEC Alert.',
       goals: 'Tujuan',
       skills: 'Keterampilan',
       preferences: 'Preferensi',

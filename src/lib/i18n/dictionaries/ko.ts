@@ -59,7 +59,8 @@ export const ko = {
     privacy: {
       title: '프라이버시',
       shareTitle: '공유할 수 있는 것',
-      shareNote: '아직 아무것도 당신의 Life 데이터를 읽지 않습니다. 언젠가 읽는 것이 생겼을 때 무엇을 허용할지 여기서 정합니다 — 켜기 전까지는 모두 꺼져 있습니다.',
+      shareNote: 'Hub의 TEC AI는 여기서 켠 항목만 읽어요 — 켜기 전까지는 모두 꺼져 있어요.',
+      checkin: '주간 체크인', checkinDesc: '목표에 일주일 동안 진전이 없으면 TEC Alert에서 주 1회 알려 드려요.',
       goals: '목표',
       skills: '스킬',
       preferences: '환경설정',
