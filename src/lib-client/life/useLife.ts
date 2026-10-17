@@ -283,6 +283,9 @@ export const LIFE_DATA_CATEGORIES = [
   'GOALS', 'SKILLS', 'PREFERENCES', 'ACTIVITY', 'TRAJECTORY', 'INTENT', 'BUDGET',
   // Not data shared with a reader — permission for the weekly check-in reminder.
   'CHECKIN',
+  // Not data shared with a reader — permission to KEEP the summaries the person
+  // confirms (Life memory v1). Turning it off deletes them.
+  'JOURNEY',
 ] as const;
 export type LifeDataCategory = (typeof LIFE_DATA_CATEGORIES)[number];
 

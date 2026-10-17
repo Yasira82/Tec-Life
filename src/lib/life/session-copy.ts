@@ -14,25 +14,32 @@ export interface SessionCopy {
   rolesNote: string; opener: string;
   placeholder: string; send: string; thinking: string; endChat: string;
   you: string; life: string;
-  errUnavailable: string; errBusy: string; errLimit: string;
+  errUnavailable: string; errBusy: string; errLimit: string; errCapacity: string;
   endTitle: string; support: string;
   notSaved: string; copy: string; copied: string;
   clearerQ: string; clearerYes: string; clearerSomewhat: string; clearerNo: string; thanks: string;
   finish: string;
+  memoryNote: string;
+  lastStepQ: string; outDone: string; outPartly: string; outNotYet: string; outThanks: string;
+  keepTitle: string; keepHint: string; keepWrite: string; keepWriting: string; keepSummaryFailed: string;
+  fProblem: string; fUnderstanding: string; fStep: string;
+  keepConsent: string; keepSave: string; keepSaveOn: string; keepSaved: string; keepFailed: string;
+  jTitle: string; jHint: string; jEmpty: string; jOff: string; jStep: string;
+  jDelete: string; jConfirm: string; jDownload: string; jMore: string; jLess: string;
   readingTitle: string; readingHint: string; readingFewer: string; readingResult: Record<string, string>;
   readingStarted: string; readingReached: string; readingClearer: string; readingNo: string; readingWeek: string;
 }
 
 const en: SessionCopy = {
   entryTitle: 'Talk through a problem that keeps happening',
-  entryHint:  'A conversation to help you understand it. Nothing of it is saved.',
+  entryHint:  'A conversation to help you understand it. Only a summary you confirm is ever kept.',
   entryCta:   'Start',
 
   introTitle: 'Before we start',
   introIs:    'You will talk with Life about something that keeps happening and that you would like to change. It asks, and it listens — one step at a time.',
   introIsNot: 'It is not a diagnosis, not a judgement of you, and it gives no advice it cannot ground.',
   introAi:    'To reply, what you write is sent to an AI model (Groq). We do not keep it, and Groq’s retention is switched off for us. Numbers, emails and links are removed before it is sent — but that does not make your words fully anonymous.',
-  introNothingSaved: 'Nothing of the conversation is saved. When you close this page it is gone.',
+  introNothingSaved: 'The conversation itself is not saved — when you close this page it is gone. At the end you may keep a short summary that you read and confirm, only if you choose to.',
   agree:  'I agree — start',
   cancel: 'Not now',
 
@@ -48,10 +55,11 @@ const en: SessionCopy = {
   errUnavailable: 'Life could not reply right now. Try again in a moment.',
   errBusy:        'Many messages in a short time — wait a minute, then try again.',
   errLimit:       'This conversation has reached its length. You can end it and start a new one.',
+  errCapacity:    'Life has reached its limit for now. Try again later — if today’s limit is used up, tomorrow. What you wrote is still in the box.',
 
   endTitle: 'The conversation has ended',
   support:  'If things feel heavy right now, talk to someone you trust, or to a specialised support service where you live.',
-  notSaved: 'Nothing was saved. If you want to keep this conversation, copy it now.',
+  notSaved: 'The conversation was not saved. If you want its full text, copy it now.',
   copy:   'Copy the conversation',
   copied: 'Copied',
 
@@ -62,6 +70,36 @@ const en: SessionCopy = {
   thanks:          'Thank you.',
 
   finish: 'Finish',
+
+  memoryNote: 'Life will read your three most recent kept summaries so it can continue from where you were. They are sent to Groq with your messages.',
+  lastStepQ:  'Last time you chose a small step: “{step}”. Did you try it?',
+  outDone: 'Yes', outPartly: 'Partly', outNotYet: 'Not yet',
+  outThanks: 'Noted. Life will continue from there.',
+
+  keepTitle: 'Keep a summary in My journey',
+  keepHint:  'Life writes a short summary of this conversation. Read it, correct it, and keep it only if it is right. Only the summary is kept — never the conversation.',
+  keepWrite:   'Write the summary',
+  keepWriting: 'Writing the summary…',
+  keepSummaryFailed: 'Life could not write the summary right now. You can write it yourself below.',
+  fProblem:       'What keeps happening',
+  fUnderstanding: 'What became clearer',
+  fStep:          'The small step you chose (optional)',
+  keepConsent: 'Keeping turns on “Keep my journey” in Privacy. You can turn it off there at any time — turning it off deletes everything kept.',
+  keepSave:   'Keep this summary',
+  keepSaveOn: 'Turn on and keep',
+  keepSaved:  'Kept in My journey.',
+  keepFailed: 'It could not be kept right now. Try again in a moment.',
+
+  jTitle:    'My journey',
+  jHint:     'The summaries you chose to keep, newest first. Only you can see them.',
+  jEmpty:    'Nothing kept yet. At the end of a conversation you can keep a summary of it.',
+  jOff:      'Keeping is off — nothing new is kept.',
+  jStep:     'Step',
+  jDelete:   'Delete',
+  jConfirm:  'Tap again to delete',
+  jDownload: 'Download (JSON)',
+  jMore:     'Show all',
+  jLess:     'Show less',
 
   readingTitle:   'First session — reading',
   readingHint:    'Counts only, by week. No person and no text is ever stored. Counts under 5 are hidden.',
@@ -78,14 +116,14 @@ const en: SessionCopy = {
 
 const ar: SessionCopy = {
   entryTitle: 'تحدّث عن مشكلة تتكرر معك',
-  entryHint:  'محادثة تساعدك على فهمها. لا يُحفظ شيء منها.',
+  entryHint:  'محادثة تساعدك على فهمها. لا يُحفظ منها إلا خلاصة تؤكدها أنت.',
   entryCta:   'ابدأ',
 
   introTitle: 'قبل أن نبدأ',
   introIs:    'ستتحدث مع Life عن أمر يتكرر وتريد تغييره. يسألك ويستمع إليك — خطوة بخطوة.',
   introIsNot: 'ليست تشخيصًا، ولا حكمًا عليك، ولا تقدّم نصيحة بلا أساس.',
   introAi:    'لكي يرد عليك، يُرسَل ما تكتبه إلى نموذج ذكاء اصطناعي (Groq). لا نحتفظ به، وقد أُوقف احتفاظ Groq به لدينا. تُحذف الأرقام والبريد والروابط قبل الإرسال — لكن ذلك لا يجعل كلامك مجهول الهوية تمامًا.',
-  introNothingSaved: 'لا يُحفظ شيء من المحادثة. بمجرد إغلاق الصفحة تزول.',
+  introNothingSaved: 'المحادثة نفسها لا تُحفظ — بمجرد إغلاق الصفحة تزول. في النهاية يمكنك أن تحتفظ بخلاصة قصيرة تقرؤها وتؤكدها، إن اخترت ذلك فقط.',
   agree:  'موافق — ابدأ',
   cancel: 'ليس الآن',
 
@@ -101,10 +139,11 @@ const ar: SessionCopy = {
   errUnavailable: 'تعذّر على Life الرد الآن. حاول مرة أخرى بعد قليل.',
   errBusy:        'رسائل كثيرة في وقت قصير — انتظر دقيقة ثم حاول.',
   errLimit:       'بلغت المحادثة حدّها. يمكنك إنهاؤها وبدء محادثة جديدة.',
+  errCapacity:    'بلغ Life حدّه الآن. حاول لاحقًا — وإن نفد حدّ اليوم، فغدًا. ما كتبته ما زال في المربع.',
 
   endTitle: 'انتهت المحادثة',
   support:  'إن شعرت بأن العبء ثقيل عليك الآن، فتحدّث إلى شخص تثق به، أو إلى جهة دعم متخصصة في بلدك.',
-  notSaved: 'لم يُحفظ شيء. إن أردت الاحتفاظ بهذه المحادثة، فانسخها الآن.',
+  notSaved: 'لم تُحفظ المحادثة. إن أردت نصّها كاملًا، فانسخه الآن.',
   copy:   'نسخ المحادثة',
   copied: 'تم النسخ',
 
@@ -115,6 +154,36 @@ const ar: SessionCopy = {
   thanks:          'شكرًا لك.',
 
   finish: 'إنهاء',
+
+  memoryNote: 'سيقرأ Life آخر ثلاث خلاصات احتفظت بها، ليكمل من حيث كنت. تُرسَل إلى Groq مع رسائلك.',
+  lastStepQ:  'في المرة السابقة اخترت خطوة صغيرة: «{step}». هل جرّبتها؟',
+  outDone: 'نعم', outPartly: 'جزئيًا', outNotYet: 'ليس بعد',
+  outThanks: 'سُجِّل ذلك. سيكمل Life من هنا.',
+
+  keepTitle: 'احتفظ بخلاصة في مسيرتي',
+  keepHint:  'يكتب Life خلاصة قصيرة لهذه المحادثة. اقرأها وصحّحها، واحتفظ بها فقط إن كانت صحيحة. تُحفظ الخلاصة وحدها — لا المحادثة.',
+  keepWrite:   'اكتب الخلاصة',
+  keepWriting: 'تُكتب الخلاصة…',
+  keepSummaryFailed: 'تعذّر على Life كتابة الخلاصة الآن. يمكنك كتابتها بنفسك أدناه.',
+  fProblem:       'ما الذي يتكرر',
+  fUnderstanding: 'ما الذي اتّضح',
+  fStep:          'الخطوة الصغيرة التي اخترتها (اختياري)',
+  keepConsent: 'الحفظ يفعّل «الاحتفاظ بمسيرتي» في الخصوصية. يمكنك إيقافه هناك متى شئت — وإيقافه يحذف كل ما حُفظ.',
+  keepSave:   'احتفظ بهذه الخلاصة',
+  keepSaveOn: 'فعّل واحتفظ',
+  keepSaved:  'حُفظت في مسيرتي.',
+  keepFailed: 'تعذّر الحفظ الآن. حاول مرة أخرى بعد قليل.',
+
+  jTitle:    'مسيرتي',
+  jHint:     'الخلاصات التي اخترت الاحتفاظ بها، الأحدث أولًا. لا يراها أحد غيرك.',
+  jEmpty:    'لم يُحفظ شيء بعد. في نهاية المحادثة يمكنك الاحتفاظ بخلاصة لها.',
+  jOff:      'الحفظ متوقف — لا يُحفظ شيء جديد.',
+  jStep:     'الخطوة',
+  jDelete:   'حذف',
+  jConfirm:  'اضغط مرة أخرى للحذف',
+  jDownload: 'تنزيل (JSON)',
+  jMore:     'عرض الكل',
+  jLess:     'عرض أقل',
 
   readingTitle:   'الجلسة الأولى — القراءة',
   readingHint:    'أعداد فقط، حسب الأسبوع. لا يُخزَّن أي شخص ولا أي نص. الأعداد الأقل من 5 مخفية.',

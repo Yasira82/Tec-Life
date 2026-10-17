@@ -18,6 +18,7 @@ import { HomeView } from './components/Home';
 import { SignInGate } from './components/SignInGate';
 import { GoalPrefillReader } from './components/GoalPrefillReader';
 import { ProblemSession, ProblemSessionEntry } from './components/ProblemSession';
+import { JourneyView } from './components/JourneyView';
 import { type GoalPrefill } from '@/lib/life/prefill';
 
 export default function LifeHome() {
@@ -101,6 +102,7 @@ export default function LifeHome() {
             ? <ProblemSession onClose={() => setInSession(false)} />
             : <>
                 <ProblemSessionEntry onStart={() => setInSession(true)} />
+                <JourneyView />
                 <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={setTab} />
               </>)}
           {tab === 'goals'    && <Goals isPro={isPro} prefill={prefill} key={prefill ? `pf:${prefill.title}` : 'goals'} />}
