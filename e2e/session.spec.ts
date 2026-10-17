@@ -1,12 +1,12 @@
 /**
- * G5, browser side — stage 1 "talk it through without saving"
- * (KB First Session Spec §7 G5, §8 stage 1).
+ * G5, browser side — Life's conversation, nothing saved
+ * (KB First Session Spec §7 G5, §8).
  *
- * A marker is typed into every field of the session. Every request the page
- * makes — fetch, XHR, sendBeacon, image/script loads, WebSocket frames — is
- * captured with its URL, headers and body, and none may carry the marker. After
- * Finish, no storage may hold it. One request carrying the text means the path
- * is not local, and stage 1 stops.
+ * A marker is typed into the conversation. Every request the page makes — fetch,
+ * XHR, sendBeacon, image/script loads, WebSocket frames — is captured with its URL,
+ * headers and body. The marker may appear in ONE place: the body of the POST to
+ * Life's own talk route. Anywhere else — or in any storage after Finish — and the
+ * conversation is not as private as the screen says.
  */
 import { test, expect, type Page } from '@playwright/test';
 
@@ -27,6 +27,7 @@ async function fakeBff(page: Page, counted: string[]) {
   await page.route('**/api/bff/**', async (route) => {
     const req = route.request(); const p = new URL(req.url()).pathname;
     if (p === '/api/bff/life/session/count') { counted.push(String((req.postDataJSON() ?? {}).metric)); return route.fulfill(ok({})); }
+    if (p === '/api/bff/life/talk')          return route.fulfill(ok({ reply: 'I hear you. When did it last happen?' }));
     if (p === '/api/bff/life/goals')        return route.fulfill(ok({ goals: [] }));
     if (p === '/api/bff/life/skills')       return route.fulfill(ok({ skills: [] }));
     if (p === '/api/bff/life/trajectory')   return route.fulfill(ok({ projectable: false, reason: 'not_enough_data', goals: [] }));
@@ -39,45 +40,39 @@ async function fakeBff(page: Page, counted: string[]) {
   await page.route('**/api/referral**', (route) => route.fulfill(ok({ code: 'E2E', url: 'http://localhost:3000/?ref=E2E', count: 0 })));
 }
 
-test('stage 1: the person\'s words never leave the page', async ({ page }) => {
-  const seen: string[] = [];
+test('the conversation\'s words go to Life\'s talk route and nowhere else', async ({ page }) => {
+  const seen: { where: string; text: string }[] = [];
   const counted: string[] = [];
   page.on('request', (r) => {
-    seen.push([r.url(), JSON.stringify(r.headers()), r.postData() ?? ''].join('\n'));
+    seen.push({ where: `${r.method()} ${new URL(r.url()).pathname}`, text: [r.url(), JSON.stringify(r.headers()), r.postData() ?? ''].join('\n') });
   });
   page.on('websocket', (ws) => {
-    ws.on('framesent', (f) => seen.push(`ws:${ws.url()}\n${String(f.payload)}`));
+    ws.on('framesent', (f) => seen.push({ where: `ws ${ws.url()}`, text: String(f.payload) }));
   });
 
   await signedIn(page);
   await fakeBff(page, counted);
   await page.goto('/app');
 
-  await page.getByRole('button', { name: 'Start' }).first().click();     // the entry on Home
-  await expect(page.getByText('Nothing you write here will be saved.', { exact: false })).toBeVisible();
-  await page.getByRole('button', { name: 'Start' }).click();             // S1 → S2
+  await page.getByRole('button', { name: 'Start' }).first().click();   // the entry on Home
+  await expect(page.getByText('sent to an AI model (Groq)', { exact: false })).toBeVisible();
+  // Nothing goes anywhere before the person agrees.
+  expect(seen.filter((r) => r.where.includes('/life/talk'))).toEqual([]);
+  await page.getByRole('button', { name: 'I agree — start' }).click();
 
-  const answer = async (text: string) => {
-    await page.locator('textarea').fill(text);
-    await page.getByRole('button', { name: 'Next' }).click();
-  };
-  await answer(`problem ${MARKER}`);
-  await answer(`when one ${MARKER}`);
-  await answer(`did one ${MARKER}`);
-  await page.getByRole('button', { name: 'Yes, a different time' }).click();
-  await answer(`when two ${MARKER}`);
-  await answer(`did two ${MARKER}`);
-  await page.getByRole('button', { name: 'Next' }).click();              // plan → summary
-
-  await expect(page.getByText(`problem ${MARKER}`)).toBeVisible();
+  await page.getByRole('textbox').fill(`problem ${MARKER}`);
+  await page.getByRole('button', { name: 'Send' }).click();
+  await expect(page.getByText('I hear you. When did it last happen?')).toBeVisible();
+  await page.getByRole('button', { name: 'End the conversation' }).click();
   await page.getByRole('button', { name: 'Somewhat' }).click();
   await page.getByRole('button', { name: 'Finish' }).click();
 
   // Let any late beacon or keepalive request go out before reading the log.
   await page.waitForTimeout(500);
 
-  const leaks = seen.filter((r) => r.includes(MARKER));
-  expect(leaks, `requests carrying the person's text:\n${leaks.join('\n---\n')}`).toEqual([]);
+  const carrying = seen.filter((r) => r.text.includes(MARKER));
+  expect(carrying.map((r) => r.where), `requests carrying the person's text:\n${carrying.map((r) => r.where).join('\n')}`)
+    .toEqual(['POST /api/bff/life/talk']);
   expect(counted).toEqual(['s2_started', 's7_reached', 'm6_somewhat']);
 
   const stored = await page.evaluate(() => {
