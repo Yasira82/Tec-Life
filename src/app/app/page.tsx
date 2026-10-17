@@ -17,6 +17,7 @@ import { Activity } from './components/Activity';
 import { HomeView } from './components/Home';
 import { SignInGate } from './components/SignInGate';
 import { GoalPrefillReader } from './components/GoalPrefillReader';
+import { ProblemSession, ProblemSessionEntry } from './components/ProblemSession';
 import { type GoalPrefill } from '@/lib/life/prefill';
 
 export default function LifeHome() {
@@ -28,6 +29,8 @@ export default function LifeHome() {
   const isPro = isProPlan(plan ?? (user as { subscriptionPlan?: string } | null)?.subscriptionPlan);
   const [tab, setTab] = useState<LifeTab>('home');
   const [prefill, setPrefill] = useState<GoalPrefill | null>(null);
+  // Stage 1 session (First Session Spec §8): opened from Home, its words held in its own state only.
+  const [inSession, setInSession] = useState(false);
   const { t } = useTranslation();
 
   return (
@@ -94,12 +97,17 @@ export default function LifeHome() {
 
         <SignInGate>
           <GoalPrefillReader onPrefill={(p) => { setPrefill(p); setTab('goals'); }} />
-          {tab === 'home' && <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={setTab} />}
+          {tab === 'home' && (inSession
+            ? <ProblemSession onClose={() => setInSession(false)} />
+            : <>
+                <ProblemSessionEntry onStart={() => setInSession(true)} />
+                <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={setTab} />
+              </>)}
           {tab === 'goals'    && <Goals isPro={isPro} prefill={prefill} key={prefill ? `pf:${prefill.title}` : 'goals'} />}
           {tab === 'skills'   && <Skills />}
           {tab === 'activity' && <Activity />}
           {tab === 'settings' && <SettingsView isPro={isPro} />}
-          <BottomNav active={tab} onSelect={setTab} />
+          <BottomNav active={tab} onSelect={(t) => { setInSession(false); setTab(t); }} />
         </SignInGate>
       </div>
     </main>
