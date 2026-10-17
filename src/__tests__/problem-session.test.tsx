@@ -75,6 +75,8 @@ describe('nothing the person writes leaves the page', () => {
     expect(screen.getByText(`problem ${MARKER}`)).toBeTruthy();
     expect(screen.getByText(s.notSaved)).toBeTruthy();
     expect(screen.getByText(s.mightExplainBody)).toBeTruthy(); // no explanations in stage 1
+    expect(screen.getByText(s.dontKnowTwo)).toBeTruthy();       // two times told → "two"
+    expect(screen.getByText(s.support)).toBeTruthy();           // the support line, always
   });
 
   it('every text field turns off the browser\'s own ways of moving text', () => {
@@ -98,6 +100,14 @@ describe('the session itself', () => {
     expect(screen.getByText(s.planTitle)).toBeTruthy();
     click(s.next);
     expect(screen.queryByText(`${s.timeLabel} 2:`)).toBeNull();
+    // One time told → the summary says one, never "two".
+    expect(screen.getByText(s.dontKnowOne)).toBeTruthy();
+    expect(screen.queryByText(s.dontKnowTwo)).toBeNull();
+  });
+
+  it('the support line is on the opening screen, before anything is written', () => {
+    render(<ProblemSession onClose={vi.fn()} />);
+    expect(screen.getByText(s.support)).toBeTruthy();
   });
 
   it('M6 is optional and answered once; skipping writes nothing', () => {

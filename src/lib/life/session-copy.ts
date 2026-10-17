@@ -22,7 +22,8 @@ export interface SessionCopy {
   summaryTitle: string;
   toldMe: string; problemLabel: string; timeLabel: string;
   mightExplain: string; mightExplainBody: string;
-  dontKnow: string; dontKnowBody: string;
+  dontKnow: string; dontKnowOne: string; dontKnowTwo: string;
+  support: string;
   notSaved: string; copy: string; copied: string;
   clearerQ: string; clearerYes: string; clearerSomewhat: string; clearerNo: string; thanks: string;
   finish: string;
@@ -43,7 +44,7 @@ const en: SessionCopy = {
   cancel: 'Not now',
 
   problemQ:    'What keeps happening that you would like to change?',
-  problemHint: 'In your own words. One or two sentences is enough.',
+  problemHint: 'In your own words. One or two sentences is enough — for example: “I leave important things until the last minute.”',
 
   rolesNote: 'When you mention other people, describe them by their role — “my manager”, “a friend” — rather than by name.',
 
@@ -72,7 +73,9 @@ const en: SessionCopy = {
   mightExplain:     'What might explain it',
   mightExplainBody: 'This version does not suggest explanations. It only helps you put the problem into words.',
   dontKnow:     'What we don’t know',
-  dontKnowBody: 'Why it happens. Nothing here has guessed — two remembered times are not enough to know.',
+  dontKnowOne:  'Why it happens. Nothing here has guessed — one remembered time is not enough to know.',
+  dontKnowTwo:  'Why it happens. Nothing here has guessed — two remembered times are not enough to know.',
+  support: 'If things feel heavy right now, talk to someone you trust, or to a specialised support service where you live.',
   notSaved: 'Nothing was saved. If you want to keep this, copy it now.',
   copy:   'Copy',
   copied: 'Copied',
@@ -111,7 +114,7 @@ const ar: SessionCopy = {
   cancel: 'مش دلوقتي',
 
   problemQ:    'إيه الحاجة اللي بتتكرر وعايز تغيّرها؟',
-  problemHint: 'بكلامك إنت. جملة أو اتنين كفاية.',
+  problemHint: 'بكلامك إنت. جملة أو اتنين كفاية — مثلًا: «بأجّل الحاجات المهمة لآخر لحظة».',
 
   rolesNote: 'لما تذكر حد، اوصفه بدوره — «مديري»، «صاحبي» — من غير اسمه.',
 
@@ -140,7 +143,9 @@ const ar: SessionCopy = {
   mightExplain:     'إيه اللي ممكن يفسرها',
   mightExplainBody: 'النسخة دي مش بتقترح تفسيرات. هي بس بتساعدك تحط المشكلة في كلام.',
   dontKnow:     'اللي منعرفوش',
-  dontKnowBody: 'ليه بتحصل. محدش خمّن هنا — مرتين من الذاكرة مش كفاية علشان نعرف.',
+  dontKnowOne:  'ليه بتحصل. محدش خمّن هنا — مرة واحدة من الذاكرة مش كفاية علشان نعرف.',
+  dontKnowTwo:  'ليه بتحصل. محدش خمّن هنا — مرتين من الذاكرة مش كفاية علشان نعرف.',
+  support: 'لو حاسس إن الحمل تقيل عليك دلوقتي، كلّم حد بتثق فيه، أو جهة دعم متخصصة في بلدك.',
   notSaved: 'مفيش حاجة اتحفظت. لو عايز تحتفظ بده، انسخه دلوقتي.',
   copy:   'انسخ',
   copied: 'اتنسخ',
