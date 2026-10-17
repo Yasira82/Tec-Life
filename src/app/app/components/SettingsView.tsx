@@ -125,10 +125,10 @@ function Privacy() {
   const LABEL: Record<string, string> = {
     GOALS: p.goals, SKILLS: p.skills, PREFERENCES: p.preferences,
     ACTIVITY: p.activity, TRAJECTORY: p.trajectory, INTENT: p.intentTitle,
-    BUDGET: p.budget, CHECKIN: p.checkin,
+    BUDGET: p.budget, CHECKIN: p.checkin, JOURNEY: p.journey,
   };
   // A switch that is not about sharing data says what it does instead.
-  const DESC: Record<string, string> = { CHECKIN: p.checkinDesc };
+  const DESC: Record<string, string> = { CHECKIN: p.checkinDesc, JOURNEY: p.journeyDesc };
 
   // A signal kind reads as a verb, not a constant: "Logging progress", never
   // PROGRESS_LOGGED. An unknown kind falls through to its raw name rather than

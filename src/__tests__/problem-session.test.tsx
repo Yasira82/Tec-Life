@@ -20,14 +20,30 @@ import { sessionCopy } from '@/lib/life/session-copy';
 const s = sessionCopy('en');
 const MARKER = 'ZQX-private-marker-7781';
 
-let calls: { url: string; body: string }[] = [];
+let calls: { url: string; method: string; body: string }[] = [];
 let talkStatus = 200;
+let journey: unknown = { keeping: false, entries: [] };
+let summary: unknown = { problem: 'You stay up late', understanding: 'It starts with scrolling after 11', step: 'Phone in the kitchen' };
 beforeEach(() => {
   calls = []; talkStatus = 200;
+  journey = { keeping: false, entries: [] };
+  summary = { problem: 'You stay up late', understanding: 'It starts with scrolling after 11', step: 'Phone in the kitchen' };
   localStorage.clear(); sessionStorage.clear();
   vi.stubGlobal('fetch', vi.fn(async (u: RequestInfo | URL, init?: RequestInit) => {
     const url = String(u);
-    calls.push({ url, body: typeof init?.body === 'string' ? init.body : '' });
+    calls.push({ url, method: init?.method ?? 'GET', body: typeof init?.body === 'string' ? init.body : '' });
+    if (url === '/api/bff/life/journey' && (init?.method ?? 'GET') === 'GET') {
+      return { ok: true, status: 200, json: async () => ({ success: true, data: journey }) } as Response;
+    }
+    if (url === '/api/bff/life/journey') {
+      const e = JSON.parse(String(init?.body));
+      return { ok: true, status: 200, json: async () => ({ success: true, data: { entry: { id: 'j9', step_outcome: null, created_at: '2026-10-17T10:00:00.000Z', ...e } } }) } as Response;
+    }
+    if (url === '/api/bff/life/summary') {
+      return summary
+        ? { ok: true, status: 200, json: async () => ({ success: true, data: { summary } }) } as Response
+        : { ok: false, status: 503, json: async () => ({}) } as Response;
+    }
     if (url === '/api/bff/life/talk') {
       return { ok: talkStatus < 400, status: talkStatus, json: async () => ({ success: true, data: { reply: 'I hear you. When did it last happen?' } }) } as Response;
     }
@@ -40,6 +56,7 @@ const click = (name: string) => fireEvent.click(screen.getByRole('button', { nam
 const type = (value: string) => fireEvent.change(screen.getByRole('textbox'), { target: { value } });
 const metrics = () => calls.filter((c) => c.url.endsWith('/session/count')).map((c) => JSON.parse(c.body).metric);
 const talks = () => calls.filter((c) => c.url === '/api/bff/life/talk');
+const writes = () => calls.filter((c) => c.method !== 'GET');
 
 async function converse() {
   render(<ProblemSession onClose={vi.fn()} />);
@@ -55,7 +72,9 @@ describe('consent first', () => {
     expect(screen.getByText(s.introAi)).toBeTruthy();
     expect(s.introAi).toMatch(/Groq/);
     expect(screen.getByText(s.support)).toBeTruthy();
-    expect(calls).toEqual([]);
+    // The one call before agreeing is Life reading the person's own journey from Life.
+    expect(writes()).toEqual([]);
+    expect(calls.every((c) => c.url === '/api/bff/life/journey')).toBe(true);
   });
 
   it('"Not now" closes without sending or counting anything', () => {
@@ -63,7 +82,7 @@ describe('consent first', () => {
     render(<ProblemSession onClose={onClose} />);
     click(s.cancel);
     expect(onClose).toHaveBeenCalled();
-    expect(calls).toEqual([]);
+    expect(writes()).toEqual([]);
   });
 });
 
@@ -72,6 +91,7 @@ describe('the words go to one place only', () => {
     await converse();
     for (const c of calls) {
       expect(c.url).not.toContain(MARKER);
+      if (c.method === 'GET') { expect(c.body).toBe(''); continue; }
       if (c.url !== '/api/bff/life/talk') {
         expect(c.body).not.toContain(MARKER);
         expect(Object.keys(JSON.parse(c.body))).toEqual(['metric']);
@@ -146,14 +166,102 @@ describe('the code keeps the rule', () => {
     expect(file).not.toMatch(/\bfetch\(/);
   });
 
-  it('the talk client sends to Life\'s own route only', () => {
+  it('the talk client sends to Life\'s own routes only — the reply and, on request, the summary', () => {
     const client = readFileSync(join(process.cwd(), 'src/lib-client/life/lifeTalk.ts'), 'utf8');
-    expect(client.match(/fetch\(/g)?.length).toBe(1);
+    expect(client.match(/fetch\(/g)?.length).toBe(2);
     expect(client).toContain("fetch('/api/bff/life/talk'");
+    expect(client).toContain("fetch('/api/bff/life/summary'");
+  });
+
+  it('the journey client sends to Life\'s own routes only', () => {
+    const client = readFileSync(join(process.cwd(), 'src/lib-client/life/journey.ts'), 'utf8');
+    for (const m of client.matchAll(/fetch\(([^,)]+)/g)) expect(m[1]).toMatch(/^[`']\/api\/bff\/life\/(journey|consent)/);
   });
 
   it('Arabic and English copy have the same keys; other locales read English', () => {
     expect(Object.keys(sessionCopy('ar')).sort()).toEqual(Object.keys(sessionCopy('en')).sort());
     expect(sessionCopy('fr')).toBe(sessionCopy('en'));
+  });
+});
+
+// ── Life memory v1: only what the person confirms is kept ─────────────────────
+async function toEnd() {
+  render(<ProblemSession onClose={vi.fn()} />);
+  click(s.agree); type(`my problem ${MARKER}`); click(s.send);
+  await screen.findByText('I hear you. When did it last happen?');
+  click(s.endChat);
+}
+const keeps = () => calls.filter((c) => c.url === '/api/bff/life/journey' && c.method === 'POST');
+const consents = () => calls.filter((c) => c.url === '/api/bff/life/consent');
+
+describe('keeping a summary', () => {
+  it('ending writes no summary and keeps nothing unless the person asks', async () => {
+    await toEnd();
+    await waitFor(() => expect(metrics()).toContain('s7_reached'));
+    expect(calls.some((c) => c.url === '/api/bff/life/summary')).toBe(false);
+    expect(keeps()).toEqual([]);
+    expect(consents()).toEqual([]);
+  });
+
+  it('the person edits the summary; only the three fields are kept, and keeping is turned on by that tap', async () => {
+    await toEnd();
+    click(s.keepWrite);
+    const problem = await screen.findByDisplayValue('You stay up late');
+    fireEvent.change(problem, { target: { value: 'I stay up late on weekdays' } });
+    expect(screen.getByText(s.keepConsent)).toBeTruthy();
+    click(s.keepSaveOn);
+    await screen.findByText(s.keepSaved);
+    expect(JSON.parse(consents()[0]!.body)).toEqual({ consent: { JOURNEY: true } });
+    const kept = JSON.parse(keeps()[0]!.body);
+    expect(kept).toEqual({ problem: 'I stay up late on weekdays', understanding: 'It starts with scrolling after 11', step: 'Phone in the kitchen' });
+    expect(keeps()[0]!.body).not.toContain(MARKER); // the conversation is not what is kept
+  });
+
+  it('already keeping → no consent call, the button says so', async () => {
+    journey = { keeping: true, entries: [] };
+    await toEnd();
+    click(s.keepWrite);
+    await screen.findByDisplayValue('You stay up late');
+    expect(screen.queryByText(s.keepConsent)).toBeNull();
+    click(s.keepSave);
+    await screen.findByText(s.keepSaved);
+    expect(consents()).toEqual([]);
+  });
+
+  it('when Life cannot write it, the person may write it; empty fields keep nothing', async () => {
+    summary = null;
+    await toEnd();
+    click(s.keepWrite);
+    await screen.findByText(s.keepSummaryFailed);
+    const save = screen.getByRole('button', { name: s.keepSaveOn }) as HTMLButtonElement;
+    expect(save.disabled).toBe(true);
+    click(s.keepSaveOn);
+    expect(keeps()).toEqual([]);
+  });
+});
+
+describe('continuing from the last step', () => {
+  const last = { id: 'j1', problem: 'p', understanding: 'u', step: 'Phone in the kitchen', step_outcome: null, created_at: '2026-10-10T09:00:00.000Z' };
+
+  it('asks about the last chosen step once, and records a closed answer', async () => {
+    journey = { keeping: true, entries: [last] };
+    render(<ProblemSession onClose={vi.fn()} />);
+    await screen.findByText(s.memoryNote);
+    click(s.agree);
+    await screen.findByText(s.lastStepQ.replace('{step}', last.step));
+    click(s.outPartly);
+    await screen.findByText(s.outThanks);
+    const patch = calls.find((c) => c.method === 'PATCH')!;
+    expect(patch.url).toBe('/api/bff/life/journey/j1');
+    expect(JSON.parse(patch.body)).toEqual({ step_outcome: 'PARTLY' });
+  });
+
+  it('keeping off → no question and no memory note, even with old entries', async () => {
+    journey = { keeping: false, entries: [last] };
+    render(<ProblemSession onClose={vi.fn()} />);
+    await waitFor(() => expect(calls.length).toBeGreaterThan(0));
+    click(s.agree);
+    expect(screen.queryByText(s.memoryNote)).toBeNull();
+    expect(screen.queryByText(s.lastStepQ.replace('{step}', last.step))).toBeNull();
   });
 });

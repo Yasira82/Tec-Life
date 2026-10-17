@@ -1,6 +1,6 @@
 'use client';
 
-// ── Life's conversation — nothing saved ─────────────────────────────────────
+// ── Life's conversation — only what the person confirms is kept ─────────────
 //
 // KB audits/LIFE_FIRST_SESSION_SPEC_DRAFT_2026-10-17.md §2, §5, §8. Stage 1 asked
 // fixed questions; on the owner's own phone it read as a form ("I want someone to
@@ -15,6 +15,10 @@
 //     which answers from Groq and keeps nothing (tec-core-backend #439).
 //   • `e2e/session.spec.ts` (G5, browser side) fails if a word appears in any other
 //     request, or in any storage.
+//   • Life memory v1 (owner, 2026-10-17): at the end, and only if the person asks,
+//     Life writes a summary (`summarise()`); the person edits it and keeps it — or
+//     not. Keeping needs the JOURNEY permission, turned on by that same tap and
+//     named beside it. The conversation itself is never kept.
 //   • The text field turns off the browser's own ways of moving text:
 //     `autoComplete="off"`, `spellCheck={false}`, and `translate="no"` on everything
 //     that shows the conversation.
@@ -23,7 +27,11 @@ import { C } from '@/lib-client/palette';
 import { useTranslation } from '@/lib/i18n';
 import { sessionCopy } from '@/lib/life/session-copy';
 import { countSession } from '@/lib-client/life/sessionCounter';
-import { talk, type Turn } from '@/lib-client/life/lifeTalk';
+import { talk, summarise, type Turn } from '@/lib-client/life/lifeTalk';
+import {
+  readJourney, keepEntry, turnKeepingOn, setOutcome,
+  type Journey, type JourneyOutcome,
+} from '@/lib-client/life/journey';
 import { card, goldBtn } from './shared';
 
 type Step = 'intro' | 'chat' | 'end';
@@ -54,6 +62,17 @@ export function ProblemSession({ onClose }: { onClose: () => void }) {
   const [clearer, setClearer]   = useState<'yes' | 'somewhat' | 'no' | null>(null);
   const [copied, setCopied]     = useState(false);
   const counted = useRef<{ s2: boolean; s7: boolean }>({ s2: false, s7: false });
+  // Life memory v1 — the person's own journey, read from Life (never from storage).
+  const [journey, setJourney]   = useState<Journey | null>(null);
+  const [answered, setAnswered] = useState(false);
+  const [keep, setKeep] = useState<'idle' | 'writing' | 'editing' | 'saving' | 'saved' | 'failed'>('idle');
+  const [summaryFailed, setSummaryFailed] = useState(false);
+  const [fields, setFields] = useState({ problem: '', understanding: '', step: '' });
+
+  useEffect(() => { void readJourney().then(setJourney); }, []);
+  const last = journey?.keeping ? journey.entries[0] : undefined;
+  const askLastStep = !!last?.step && !last.step_outcome && !answered;
+  const spoke = turns.some((t) => t.role === 'user');
 
   useEffect(() => {
     if (step === 'end' && !counted.current.s7) { counted.current.s7 = true; countSession('s7_reached'); }
@@ -79,7 +98,38 @@ export function ProblemSession({ onClose }: { onClose: () => void }) {
   const finish = () => {
     // Drop every word before leaving, rather than trusting unmount to.
     setTurns([]); setDraft(''); setClearer(null);
+    setFields({ problem: '', understanding: '', step: '' });
     onClose();
+  };
+
+  const answerLastStep = async (o: JourneyOutcome) => {
+    if (!last) return;
+    setAnswered(true);
+    await setOutcome(last.id, o);
+  };
+
+  // The summary is written only when the person asks; if Life cannot write it, the
+  // person may write it themselves — the fields are theirs either way.
+  const writeSummary = async () => {
+    setKeep('writing'); setSummaryFailed(false);
+    const sm = await summarise(turns);
+    if (sm) setFields({ problem: sm.problem, understanding: sm.understanding, step: sm.step ?? '' });
+    else setSummaryFailed(true);
+    setKeep('editing');
+  };
+
+  const canKeep = fields.problem.trim().length > 0 && fields.understanding.trim().length > 0;
+  const keepIt = async () => {
+    if (!canKeep) return;
+    setKeep('saving');
+    // Turning keeping on is the person's tap on "Turn on and keep", named beside it.
+    if (!journey?.keeping && !(await turnKeepingOn())) { setKeep('failed'); return; }
+    const saved = await keepEntry({
+      problem: fields.problem.trim(), understanding: fields.understanding.trim(), step: fields.step.trim() || null,
+    });
+    if (!saved) { setKeep('failed'); return; }
+    setJourney((j) => ({ keeping: true, entries: [saved, ...(j?.entries ?? [])] }));
+    setKeep('saved');
   };
 
   const answerClearer = (v: 'yes' | 'somewhat' | 'no') => {
@@ -118,6 +168,9 @@ export function ProblemSession({ onClose }: { onClose: () => void }) {
           <p style={{ fontSize: 14, color: C.subtext, lineHeight: 1.55, marginBottom: 10 }}>{s.introIsNot}</p>
           <p role="note" style={{ fontSize: 13.5, color: C.text, lineHeight: 1.55, marginBottom: 8 }}>{s.introAi}</p>
           <p role="note" style={{ fontSize: 14, fontWeight: 700, color: C.text, lineHeight: 1.55 }}>{s.introNothingSaved}</p>
+          {journey?.keeping && journey.entries.length > 0 && (
+            <p role="note" style={{ fontSize: 13, color: C.subtext, lineHeight: 1.55, marginTop: 8 }}>{s.memoryNote}</p>
+          )}
           {/* Always shown, never triggered by what was written. */}
           <p style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.5, marginTop: 12 }}>{s.support}</p>
           <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}>
@@ -130,6 +183,24 @@ export function ProblemSession({ onClose }: { onClose: () => void }) {
       {step === 'chat' && (
         <>
           <p style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.5 }}>{s.rolesNote}</p>
+          {last?.step && (askLastStep || answered) && (
+            <div style={{ border: `1px solid ${C.border}`, borderRadius: 12, padding: '10px 12px', marginTop: 10 }}>
+              {askLastStep ? (
+                <>
+                  <div translate="no" style={{ fontSize: 13.5, color: C.text, lineHeight: 1.55, marginBottom: 8 }}>
+                    <bdi>{s.lastStepQ.replace('{step}', last.step)}</bdi>
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <button type="button" style={ghostBtn} onClick={() => void answerLastStep('DONE')}>{s.outDone}</button>
+                    <button type="button" style={ghostBtn} onClick={() => void answerLastStep('PARTLY')}>{s.outPartly}</button>
+                    <button type="button" style={ghostBtn} onClick={() => void answerLastStep('NOT_YET')}>{s.outNotYet}</button>
+                  </div>
+                </>
+              ) : (
+                <div role="status" style={{ fontSize: 13, color: C.subtext }}>{s.outThanks}</div>
+              )}
+            </div>
+          )}
           <div>{turns.map(bubble)}</div>
           {busy && <div role="status" style={{ fontSize: 12.5, color: C.subtext, marginTop: 10 }}>{s.thinking}</div>}
           {error && <div role="alert" style={{ fontSize: 13, color: C.text, marginTop: 10 }}>{error}</div>}
@@ -154,6 +225,42 @@ export function ProblemSession({ onClose }: { onClose: () => void }) {
           <div style={{ marginTop: 10 }}>
             <button type="button" style={ghostBtn} onClick={copy}>{copied ? s.copied : s.copy}</button>
           </div>
+
+          {/* Life memory v1 — only on request, only what the person confirms. */}
+          {spoke && (
+            <div style={{ borderTop: `1px solid ${C.border}`, marginTop: 18, paddingTop: 14 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 6 }}>{s.keepTitle}</div>
+              <p style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.5, marginBottom: 10 }}>{s.keepHint}</p>
+              {keep === 'idle' && <button type="button" style={ghostBtn} onClick={() => void writeSummary()}>{s.keepWrite}</button>}
+              {keep === 'writing' && <div role="status" style={{ fontSize: 12.5, color: C.subtext }}>{s.keepWriting}</div>}
+              {(keep === 'editing' || keep === 'saving' || keep === 'failed') && (
+                <>
+                  {summaryFailed && <div role="alert" style={{ fontSize: 13, color: C.text, marginBottom: 10 }}>{s.keepSummaryFailed}</div>}
+                  {([['problem', s.fProblem, 300], ['understanding', s.fUnderstanding, 800], ['step', s.fStep, 300]] as const).map(([k, label, max]) => (
+                    <label key={k} style={{ display: 'block', marginTop: 10 }}>
+                      <span style={{ display: 'block', fontSize: 12, fontWeight: 700, color: C.subtext, marginBottom: 4 }}>{label}</span>
+                      <textarea
+                        value={fields[k]} maxLength={max} disabled={keep === 'saving'}
+                        onChange={(e) => setFields((f) => ({ ...f, [k]: e.target.value.slice(0, max) }))}
+                        autoComplete="off" spellCheck={false} translate="no" style={{ ...textArea, minHeight: k === 'understanding' ? 88 : 56 }}
+                      />
+                    </label>
+                  ))}
+                  {!journey?.keeping && (
+                    <p role="note" style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.5, marginTop: 10 }}>{s.keepConsent}</p>
+                  )}
+                  {keep === 'failed' && <div role="alert" style={{ fontSize: 13, color: C.text, marginTop: 10 }}>{s.keepFailed}</div>}
+                  <div style={{ marginTop: 10 }}>
+                    <button type="button" style={{ ...goldBtn, opacity: canKeep && keep !== 'saving' ? 1 : 0.5 }}
+                      disabled={!canKeep || keep === 'saving'} onClick={() => void keepIt()}>
+                      {journey?.keeping ? s.keepSave : s.keepSaveOn}
+                    </button>
+                  </div>
+                </>
+              )}
+              {keep === 'saved' && <div role="status" style={{ fontSize: 13.5, fontWeight: 700, color: C.text }}>{s.keepSaved}</div>}
+            </div>
+          )}
 
           {/* M6 — optional; a skipped question writes nothing (§7). */}
           <div style={{ borderTop: `1px solid ${C.border}`, marginTop: 18, paddingTop: 14 }}>
