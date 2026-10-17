@@ -1,32 +1,21 @@
-// The words of the stage 1 session. The Arabic is Modern Standard Arabic, not a
-// dialect (owner, 2026-10-17) — the same register as the rest of Life's Arabic.
+// The words of Life's conversation (KB audits/LIFE_FIRST_SESSION_SPEC_DRAFT_2026-10-17.md
+// §2, §5, §8). The Arabic is Modern Standard Arabic, not a dialect (owner, 2026-10-17) —
+// the same register as the rest of Life's Arabic.
 //
-// The stage 1 session — "talk it through without saving"
-// (KB audits/LIFE_FIRST_SESSION_SPEC_DRAFT_2026-10-17.md §2, §8 stage 1).
-//
-// Arabic and English only, on purpose: the spec's first reading is in those two
-// languages (§8 Q7), and a question about a person's own life, machine-translated
-// into ten more, is a worse question. Every other locale reads the English. These
-// live apart from the twelve-language dictionaries so a stage that may be
-// redesigned after its first reading does not have to be rewritten twelve times.
+// Arabic and English only: the first reading is in those two languages (§8 Q7), and a
+// conversation about a person's own life, machine-translated into ten more, is a worse
+// conversation. Every other locale reads the English.
 import type { Locale } from '@/lib/i18n';
 
 export interface SessionCopy {
   entryTitle: string; entryHint: string; entryCta: string;
-  introTitle: string; introIs: string; introIsNot: string; introNothingSaved: string; start: string; cancel: string;
-  problemQ: string; problemHint: string;
-  rolesNote: string;
-  whenWhatQ: string; whenWhatHint: string;
-  didFollowedQ: string; didFollowedHint: string;
-  anotherQ: string; anotherYes: string; anotherSame: string; anotherNone: string;
-  secondWhenWhatQ: string; secondDidFollowedQ: string;
-  next: string; back: string; skip: string;
-  planTitle: string; planIntro: string; planItems: string[]; planNote: string;
-  summaryTitle: string;
-  toldMe: string; problemLabel: string; timeLabel: string;
-  mightExplain: string; mightExplainBody: string;
-  dontKnow: string; dontKnowOne: string; dontKnowTwo: string;
-  support: string;
+  introTitle: string; introIs: string; introIsNot: string; introAi: string; introNothingSaved: string;
+  agree: string; cancel: string;
+  rolesNote: string; opener: string;
+  placeholder: string; send: string; thinking: string; endChat: string;
+  you: string; life: string;
+  errUnavailable: string; errBusy: string; errLimit: string;
+  endTitle: string; support: string;
   notSaved: string; copy: string; copied: string;
   clearerQ: string; clearerYes: string; clearerSomewhat: string; clearerNo: string; thanks: string;
   finish: string;
@@ -35,52 +24,35 @@ export interface SessionCopy {
 }
 
 const en: SessionCopy = {
-  entryTitle: 'Understand a problem that keeps happening',
-  entryHint:  'A few questions to put it into words. Nothing you write is saved.',
+  entryTitle: 'Talk through a problem that keeps happening',
+  entryHint:  'A conversation to help you understand it. Nothing of it is saved.',
   entryCta:   'Start',
 
   introTitle: 'Before we start',
-  introIs:    'This helps you describe something that keeps happening and that you would like to change — in your own words, step by step.',
+  introIs:    'You will talk with Life about something that keeps happening and that you would like to change. It asks, and it listens — one step at a time.',
   introIsNot: 'It is not a diagnosis, not a judgement of you, and it gives no advice it cannot ground.',
-  introNothingSaved: 'Nothing you write here will be saved. When you close this page it is gone.',
-  start:  'Start',
+  introAi:    'To reply, what you write is sent to an AI model (Groq). We do not keep it, and Groq’s retention is switched off for us. Numbers, emails and links are removed before it is sent — but that does not make your words fully anonymous.',
+  introNothingSaved: 'Nothing of the conversation is saved. When you close this page it is gone.',
+  agree:  'I agree — start',
   cancel: 'Not now',
 
-  problemQ:    'What keeps happening that you would like to change?',
-  problemHint: 'In your own words. One or two sentences is enough — for example: “I leave important things until the last minute.”',
-
   rolesNote: 'When you mention other people, describe them by their role — “my manager”, “a friend” — rather than by name.',
+  opener:    'What keeps happening that you would like to change? Tell me in your own words — for example: “I leave important things until the last minute.”',
 
-  whenWhatQ:    'Think of the last time it happened. Roughly when was it, and what was going on — where you were, who was there, any pressure you were under?',
-  whenWhatHint: 'Only what feels relevant. “About two weeks ago” is fine.',
-  didFollowedQ:    'What did you do, and what happened after?',
-  didFollowedHint: 'What you did, and what followed — as it was, not as it should have been.',
-  anotherQ:    'Can you think of another time it happened — a different time from that one?',
-  anotherYes:  'Yes, a different time',
-  anotherSame: 'No — that was the same time',
-  anotherNone: 'I can’t remember another',
-  secondWhenWhatQ:    'That other time — roughly when, and what was going on?',
-  secondDidFollowedQ: 'And that time — what did you do, and what happened after?',
+  placeholder: 'Write here…',
+  send:        'Send',
+  thinking:    'Life is writing…',
+  endChat:     'End the conversation',
+  you:  'You',
+  life: 'Life',
+  errUnavailable: 'Life could not reply right now. Try again in a moment.',
+  errBusy:        'Many messages in a short time — wait a minute, then try again.',
+  errLimit:       'This conversation has reached its length. You can end it and start a new one.',
 
-  next: 'Next', back: 'Back', skip: 'Skip',
-
-  planTitle: 'One small step, if you want it',
-  planIntro: 'Next time it happens, try to note three things — for yourself, wherever you keep notes:',
-  planItems: ['When it was.', 'Where you were, and who was there.', 'What you were waiting for at that moment.'],
-  planNote:  'Two descriptions are a start. A few more, noted close to the moment, show more than memory does.',
-
-  summaryTitle: 'What came out of this',
-  toldMe:       'What you told me',
-  problemLabel: 'The problem',
-  timeLabel:    'Time',
-  mightExplain:     'What might explain it',
-  mightExplainBody: 'This version does not suggest explanations. It only helps you put the problem into words.',
-  dontKnow:     'What we don’t know',
-  dontKnowOne:  'Why it happens. Nothing here has guessed — one remembered time is not enough to know.',
-  dontKnowTwo:  'Why it happens. Nothing here has guessed — two remembered times are not enough to know.',
-  support: 'If things feel heavy right now, talk to someone you trust, or to a specialised support service where you live.',
-  notSaved: 'Nothing was saved. If you want to keep this, copy it now.',
-  copy:   'Copy',
+  endTitle: 'The conversation has ended',
+  support:  'If things feel heavy right now, talk to someone you trust, or to a specialised support service where you live.',
+  notSaved: 'Nothing was saved. If you want to keep this conversation, copy it now.',
+  copy:   'Copy the conversation',
   copied: 'Copied',
 
   clearerQ:        'Do you see the problem more clearly than before?',
@@ -105,52 +77,35 @@ const en: SessionCopy = {
 };
 
 const ar: SessionCopy = {
-  entryTitle: 'افهم مشكلة تتكرر معك',
-  entryHint:  'بضعة أسئلة تساعدك على وصفها بكلماتك. لا يُحفظ شيء مما تكتبه.',
+  entryTitle: 'تحدّث عن مشكلة تتكرر معك',
+  entryHint:  'محادثة تساعدك على فهمها. لا يُحفظ شيء منها.',
   entryCta:   'ابدأ',
 
   introTitle: 'قبل أن نبدأ',
-  introIs:    'تساعدك هذه الجلسة على وصف أمر يتكرر وتريد تغييره — بكلماتك أنت، خطوة بخطوة.',
+  introIs:    'ستتحدث مع Life عن أمر يتكرر وتريد تغييره. يسألك ويستمع إليك — خطوة بخطوة.',
   introIsNot: 'ليست تشخيصًا، ولا حكمًا عليك، ولا تقدّم نصيحة بلا أساس.',
-  introNothingSaved: 'لا يُحفظ شيء مما تكتبه هنا. بمجرد إغلاق الصفحة يزول كل شيء.',
-  start:  'ابدأ',
+  introAi:    'لكي يرد عليك، يُرسَل ما تكتبه إلى نموذج ذكاء اصطناعي (Groq). لا نحتفظ به، وقد أُوقف احتفاظ Groq به لدينا. تُحذف الأرقام والبريد والروابط قبل الإرسال — لكن ذلك لا يجعل كلامك مجهول الهوية تمامًا.',
+  introNothingSaved: 'لا يُحفظ شيء من المحادثة. بمجرد إغلاق الصفحة تزول.',
+  agree:  'موافق — ابدأ',
   cancel: 'ليس الآن',
 
-  problemQ:    'ما الأمر الذي يتكرر وتريد تغييره؟',
-  problemHint: 'بكلماتك أنت. تكفي جملة أو جملتان — مثلًا: «أؤجّل الأمور المهمة إلى آخر لحظة».',
-
   rolesNote: 'عندما تذكر شخصًا، صِفه بدوره — «مديري»، «صديقي» — دون ذكر اسمه.',
+  opener:    'ما الأمر الذي يتكرر وتريد تغييره؟ احكِ لي بكلماتك — مثلًا: «أؤجّل الأمور المهمة إلى آخر لحظة».',
 
-  whenWhatQ:    'تذكّر آخر مرة حدث فيها ذلك. متى كان تقريبًا، وماذا كان يجري — أين كنت، ومن كان حاضرًا، وهل كنت تحت ضغط؟',
-  whenWhatHint: 'ما تراه مهمًا فقط. يكفي أن تقول «منذ أسبوعين تقريبًا».',
-  didFollowedQ:    'ماذا فعلت، وماذا حدث بعد ذلك؟',
-  didFollowedHint: 'ما فعلته وما تلاه — كما حدث، لا كما كان ينبغي أن يحدث.',
-  anotherQ:    'هل تتذكر مرة أخرى حدث فيها ذلك — مرة مختلفة عن هذه؟',
-  anotherYes:  'نعم، مرة مختلفة',
-  anotherSame: 'لا — كانت المرة نفسها',
-  anotherNone: 'لا أتذكر مرة أخرى',
-  secondWhenWhatQ:    'تلك المرة الأخرى — متى كانت تقريبًا، وماذا كان يجري؟',
-  secondDidFollowedQ: 'وفي تلك المرة — ماذا فعلت، وماذا حدث بعد ذلك؟',
+  placeholder: 'اكتب هنا…',
+  send:        'إرسال',
+  thinking:    'Life يكتب…',
+  endChat:     'إنهاء المحادثة',
+  you:  'أنت',
+  life: 'Life',
+  errUnavailable: 'تعذّر على Life الرد الآن. حاول مرة أخرى بعد قليل.',
+  errBusy:        'رسائل كثيرة في وقت قصير — انتظر دقيقة ثم حاول.',
+  errLimit:       'بلغت المحادثة حدّها. يمكنك إنهاؤها وبدء محادثة جديدة.',
 
-  next: 'التالي', back: 'رجوع', skip: 'تخطٍّ',
-
-  planTitle: 'خطوة صغيرة، إن أردت',
-  planIntro: 'في المرة القادمة التي يحدث فيها ذلك، حاول أن تدوّن لنفسك ثلاثة أشياء — في أي مكان تدوّن فيه ملاحظاتك:',
-  planItems: ['متى حدث.', 'أين كنت، ومن كان حاضرًا.', 'ما الذي كنت تنتظره في تلك اللحظة.'],
-  planNote:  'وصف مرتين بداية. ومرات أخرى قليلة، تُدوَّن قريبًا من وقت حدوثها، توضّح أكثر مما تفعله الذاكرة.',
-
-  summaryTitle: 'ما خرجت به الجلسة',
-  toldMe:       'ما أخبرتني به',
-  problemLabel: 'المشكلة',
-  timeLabel:    'المرة',
-  mightExplain:     'ما الذي قد يفسّرها',
-  mightExplainBody: 'لا تقترح هذه النسخة تفسيرات. إنها تساعدك فقط على التعبير عن المشكلة بالكلمات.',
-  dontKnow:     'ما لا نعرفه',
-  dontKnowOne:  'لماذا يحدث ذلك. لم يُخمَّن شيء هنا — مرة واحدة من الذاكرة لا تكفي لنعرف.',
-  dontKnowTwo:  'لماذا يحدث ذلك. لم يُخمَّن شيء هنا — مرتان من الذاكرة لا تكفيان لنعرف.',
-  support: 'إن شعرت بأن العبء ثقيل عليك الآن، فتحدّث إلى شخص تثق به، أو إلى جهة دعم متخصصة في بلدك.',
-  notSaved: 'لم يُحفظ شيء. إن أردت الاحتفاظ بهذا، فانسخه الآن.',
-  copy:   'نسخ',
+  endTitle: 'انتهت المحادثة',
+  support:  'إن شعرت بأن العبء ثقيل عليك الآن، فتحدّث إلى شخص تثق به، أو إلى جهة دعم متخصصة في بلدك.',
+  notSaved: 'لم يُحفظ شيء. إن أردت الاحتفاظ بهذه المحادثة، فانسخها الآن.',
+  copy:   'نسخ المحادثة',
   copied: 'تم النسخ',
 
   clearerQ:        'هل ترى المشكلة بوضوح أكبر من قبل؟',
