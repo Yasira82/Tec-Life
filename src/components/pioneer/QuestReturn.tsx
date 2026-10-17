@@ -96,12 +96,12 @@ const RETURN_TO: Record<string, { path: string; en: [string, string]; ar: [strin
   '1': {
     path: '/pioneers',
     en: ['Back to the Quest',   'Founding 100'],
-    ar: ['ارجع للمهمة',          'المئة المؤسِّسة'],
+    ar: ['عد إلى المهمة',          'المئة المؤسِّسة'],
   },
   '2': {
     path: '/hub/campaign',
     en: ['Back to the campaign', 'Pioneer reward'],
-    ar: ['ارجع للحملة',           'مكافأة الرواد'],
+    ar: ['عد إلى الحملة',           'مكافأة الرواد'],
   },
 };
 

@@ -77,12 +77,18 @@ export function ProblemSession({ onClose }: { onClose: () => void }) {
     countSession(v === 'yes' ? 'm6_yes' : v === 'somewhat' ? 'm6_somewhat' : 'm6_no');
   };
 
+  const told = occ.filter((o) => o.when.trim() || o.did.trim());
+  // Says how many times were actually told — "two" after one would be a small untruth.
+  const dontKnowBody = told.length > 1 ? s.dontKnowTwo : s.dontKnowOne;
+  const first  = occ[0] ?? { when: '', did: '' };
+  const second = occ[1];
+
   const summaryText = () => {
     const lines = [`${s.problemLabel}: ${problem.trim()}`];
     occ.filter((o) => o.when.trim() || o.did.trim()).forEach((o, i) => {
       lines.push(`${s.timeLabel} ${i + 1}: ${o.when.trim()}${o.did.trim() ? ` — ${o.did.trim()}` : ''}`);
     });
-    lines.push('', `${s.dontKnow}: ${s.dontKnowBody}`, '', s.planIntro, ...s.planItems.map((p) => `• ${p}`));
+    lines.push('', `${s.dontKnow}: ${dontKnowBody}`, '', s.planIntro, ...s.planItems.map((p) => `• ${p}`));
     return lines.join('\n');
   };
 
@@ -110,9 +116,6 @@ export function ProblemSession({ onClose }: { onClose: () => void }) {
     </div>
   );
 
-  const told = occ.filter((o) => o.when.trim() || o.did.trim());
-  const first  = occ[0] ?? { when: '', did: '' };
-  const second = occ[1];
 
   return (
     <section aria-live="polite" style={{ ...card, marginTop: 16 }}>
@@ -122,6 +125,9 @@ export function ProblemSession({ onClose }: { onClose: () => void }) {
           <p style={{ fontSize: 14, color: C.text, lineHeight: 1.55, marginBottom: 8 }}>{s.introIs}</p>
           <p style={{ fontSize: 14, color: C.subtext, lineHeight: 1.55, marginBottom: 12 }}>{s.introIsNot}</p>
           <p role="note" style={{ fontSize: 14, fontWeight: 700, color: C.text, lineHeight: 1.55 }}>{s.introNothingSaved}</p>
+          {/* Always shown, never triggered by what was written: the session reads nothing
+              into anyone's words (§5.3), but it does not leave a person with nowhere to turn. */}
+          <p style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.5, marginTop: 12 }}>{s.support}</p>
           <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
             <button type="button" style={goldBtn} onClick={() => setStep('problem')}>{s.start}</button>
             <button type="button" style={ghostBtn} onClick={finish}>{s.cancel}</button>
@@ -210,7 +216,9 @@ export function ProblemSession({ onClose }: { onClose: () => void }) {
           <p style={{ fontSize: 14, color: C.text, lineHeight: 1.55, marginBottom: 14 }}>{s.mightExplainBody}</p>
 
           <h3 style={{ fontSize: 13, fontWeight: 800, color: C.subtext, letterSpacing: 0.4, marginBottom: 6 }}>{s.dontKnow}</h3>
-          <p style={{ fontSize: 14, color: C.text, lineHeight: 1.55, marginBottom: 14 }}>{s.dontKnowBody}</p>
+          <p style={{ fontSize: 14, color: C.text, lineHeight: 1.55, marginBottom: 14 }}>{dontKnowBody}</p>
+
+          <p style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.5, marginBottom: 14 }}>{s.support}</p>
 
           <p role="note" style={{ fontSize: 13.5, fontWeight: 700, color: C.text, lineHeight: 1.5 }}>{s.notSaved}</p>
           <div style={{ marginTop: 10 }}>

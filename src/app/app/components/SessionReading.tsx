@@ -47,13 +47,21 @@ export function SessionReading() {
       <div role="status" style={{ fontSize: 14, fontWeight: 700, color: C.gold, marginBottom: 6 }}>
         {s.readingResult[report.stage1.result] ?? report.stage1.result}
       </div>
-      <div style={{ fontSize: 13, color: C.text, marginBottom: 12 }}>
-        M1 {pct(report.stage1.m1)} · M6 {s.readingClearer} {pct(report.stage1.m6_clearer)} · {s.readingNo} {pct(report.stage1.m6_no)}
-      </div>
+      {/* One figure per line, each value isolated with <bdi>: "M1", "%" and "—" are
+          left-to-right, and run together on one Arabic line they reorder into noise. */}
+      <dl style={{ fontSize: 13, color: C.text, marginBottom: 12, display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '4px 12px' }}>
+        <dt>M1</dt><dd><bdi>{pct(report.stage1.m1)}</bdi></dd>
+        <dt>M6 · {s.readingClearer}</dt><dd><bdi>{pct(report.stage1.m6_clearer)}</bdi></dd>
+        <dt>M6 · {s.readingNo}</dt><dd><bdi>{pct(report.stage1.m6_no)}</bdi></dd>
+      </dl>
 
       {report.weeks.map((w) => (
-        <div key={w.week_start} style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.6, borderTop: `1px solid ${C.border}`, paddingTop: 6, marginTop: 6 }}>
-          <strong style={{ color: C.text }}>{s.readingWeek} {w.week_start}</strong> — {s.readingStarted}: {n(w.counts.s2_started)} · {s.readingReached}: {n(w.counts.s7_reached)} · {s.readingClearer}: {n(clearerCount(w.counts))} · {s.readingNo}: {n(w.counts.m6_no)}
+        <div key={w.week_start} style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.7, borderTop: `1px solid ${C.border}`, paddingTop: 6, marginTop: 6 }}>
+          <div style={{ color: C.text, fontWeight: 700 }}>{s.readingWeek} <bdi>{w.week_start}</bdi></div>
+          <div>{s.readingStarted}: <bdi>{n(w.counts.s2_started)}</bdi></div>
+          <div>{s.readingReached}: <bdi>{n(w.counts.s7_reached)}</bdi></div>
+          <div>{s.readingClearer}: <bdi>{n(clearerCount(w.counts))}</bdi></div>
+          <div>{s.readingNo}: <bdi>{n(w.counts.m6_no)}</bdi></div>
         </div>
       ))}
     </section>
