@@ -14,7 +14,7 @@ export interface SessionCopy {
   rolesNote: string; opener: string;
   placeholder: string; send: string; thinking: string; endChat: string;
   you: string; life: string;
-  errUnavailable: string; errBusy: string; errLimit: string;
+  errUnavailable: string; errBusy: string; errLimit: string; errCapacity: string;
   endTitle: string; support: string;
   notSaved: string; copy: string; copied: string;
   clearerQ: string; clearerYes: string; clearerSomewhat: string; clearerNo: string; thanks: string;
@@ -55,6 +55,7 @@ const en: SessionCopy = {
   errUnavailable: 'Life could not reply right now. Try again in a moment.',
   errBusy:        'Many messages in a short time — wait a minute, then try again.',
   errLimit:       'This conversation has reached its length. You can end it and start a new one.',
+  errCapacity:    'Life has reached its limit for now. Try again later — if today’s limit is used up, tomorrow. What you wrote is still in the box.',
 
   endTitle: 'The conversation has ended',
   support:  'If things feel heavy right now, talk to someone you trust, or to a specialised support service where you live.',
@@ -138,6 +139,7 @@ const ar: SessionCopy = {
   errUnavailable: 'تعذّر على Life الرد الآن. حاول مرة أخرى بعد قليل.',
   errBusy:        'رسائل كثيرة في وقت قصير — انتظر دقيقة ثم حاول.',
   errLimit:       'بلغت المحادثة حدّها. يمكنك إنهاؤها وبدء محادثة جديدة.',
+  errCapacity:    'بلغ Life حدّه الآن. حاول لاحقًا — وإن نفد حدّ اليوم، فغدًا. ما كتبته ما زال في المربع.',
 
   endTitle: 'انتهت المحادثة',
   support:  'إن شعرت بأن العبء ثقيل عليك الآن، فتحدّث إلى شخص تثق به، أو إلى جهة دعم متخصصة في بلدك.',

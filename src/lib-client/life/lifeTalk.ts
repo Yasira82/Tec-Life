@@ -7,7 +7,7 @@ export interface Turn { role: 'user' | 'assistant'; content: string }
 
 export type TalkResult =
   | { ok: true; reply: string }
-  | { ok: false; reason: 'busy' | 'limit' | 'unavailable' };
+  | { ok: false; reason: 'busy' | 'limit' | 'capacity' | 'unavailable' };
 
 export async function talk(messages: Turn[]): Promise<TalkResult> {
   try {
@@ -18,7 +18,11 @@ export async function talk(messages: Turn[]): Promise<TalkResult> {
     });
     if (res.status === 429) return { ok: false, reason: 'busy' };
     if (res.status === 400) return { ok: false, reason: 'limit' };
-    if (!res.ok) return { ok: false, reason: 'unavailable' };
+    if (!res.ok) {
+      // The AI service says `capacity` when Groq's free daily budget is spent.
+      const body = await res.json().catch(() => ({})) as { error?: unknown };
+      return { ok: false, reason: body?.error === 'capacity' ? 'capacity' : 'unavailable' };
+    }
     const json = await res.json() as { data?: { reply?: unknown } };
     const reply = json?.data?.reply;
     return typeof reply === 'string' && reply.trim() ? { ok: true, reply } : { ok: false, reason: 'unavailable' };

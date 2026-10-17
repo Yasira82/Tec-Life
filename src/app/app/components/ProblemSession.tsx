@@ -92,7 +92,7 @@ export function ProblemSession({ onClose }: { onClose: () => void }) {
     if (out.ok) { setTurns([...next, { role: 'assistant', content: out.reply }]); return; }
     // Not answered: take the message back into the box so nothing the person wrote is lost.
     setTurns(turns); setDraft(text);
-    setError(out.reason === 'busy' ? s.errBusy : out.reason === 'limit' ? s.errLimit : s.errUnavailable);
+    setError(out.reason === 'busy' ? s.errBusy : out.reason === 'limit' ? s.errLimit : out.reason === 'capacity' ? s.errCapacity : s.errUnavailable);
   };
 
   const finish = () => {

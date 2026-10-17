@@ -265,3 +265,19 @@ describe('continuing from the last step', () => {
     expect(screen.queryByText(s.lastStepQ.replace('{step}', last.step))).toBeNull();
   });
 });
+
+describe('the free plan running out', () => {
+  it('says Life reached its limit — not "unavailable" — and keeps the message', async () => {
+    talkStatus = 503;
+    const realFetch = globalThis.fetch as unknown as ReturnType<typeof vi.fn>;
+    realFetch.mockImplementation(async (u: RequestInfo | URL, init?: RequestInit) => {
+      calls.push({ url: String(u), method: init?.method ?? 'GET', body: typeof init?.body === 'string' ? init.body : '' });
+      if (String(u) === '/api/bff/life/talk') return { ok: false, status: 503, json: async () => ({ error: 'capacity' }) } as Response;
+      return { ok: true, status: 200, json: async () => ({ success: true, data: { keeping: false, entries: [] } }) } as Response;
+    });
+    render(<ProblemSession onClose={vi.fn()} />);
+    click(s.agree); type('hello'); click(s.send);
+    await screen.findByText(s.errCapacity);
+    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toBe('hello');
+  });
+});
