@@ -27,7 +27,7 @@ import { C } from '@/lib-client/palette';
 import { useTranslation } from '@/lib/i18n';
 import { sessionCopy } from '@/lib/life/session-copy';
 import { countSession } from '@/lib-client/life/sessionCounter';
-import { talk, summarise, type Turn } from '@/lib-client/life/lifeTalk';
+import { talk, summarise, MAX_MESSAGES, type Turn } from '@/lib-client/life/lifeTalk';
 import {
   readJourney, keepEntry, turnKeepingOn, setOutcome,
   type Journey, type JourneyOutcome,
@@ -37,8 +37,6 @@ import { card, goldBtn } from './shared';
 type Step = 'intro' | 'chat' | 'end';
 
 const MAX_CHARS = 1000;
-/** The AI service accepts 40 messages; the opener is one of them. */
-const MAX_MESSAGES = 40;
 
 const textArea = {
   width: '100%', minHeight: 72, resize: 'vertical' as const,

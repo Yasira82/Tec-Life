@@ -5,6 +5,13 @@
 // the component holds state and this file holds the one network door.
 export interface Turn { role: 'user' | 'assistant'; content: string }
 
+/**
+ * The conversation lasts until the person ends it (owner, 2026-10-18). 400 messages is
+ * only the AI service's guard against an unbounded body — hours of talk. The cost of
+ * each reply stays flat there: Life sees the first message and the most recent part.
+ */
+export const MAX_MESSAGES = 400;
+
 export type TalkResult =
   | { ok: true; reply: string }
   | { ok: false; reason: 'busy' | 'limit' | 'capacity' | 'unavailable' };
