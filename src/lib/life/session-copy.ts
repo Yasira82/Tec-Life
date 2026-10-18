@@ -26,7 +26,7 @@ export interface SessionCopy {
   keepConsent: string; keepSave: string; keepSaveOn: string; keepSaved: string; keepFailed: string;
   fullOn: string; fullOff: string; fullTurnOn: string; fullTurnOnNote: string; fullSaveFailed: string; fullKeptEnd: string;
   cTitle: string; cHint: string; cEmpty: string; cContinue: string; cOpenFailed: string; continueLast: string; startNew: string; cMessages: string; cUnreadable: string; cDownload: string; cLoading: string;
-  jTitle: string; jHint: string; jEmpty: string; jOff: string; jStep: string;
+  jTitle: string; jSummaries: string; jHint: string; jEmpty: string; jOff: string; jStep: string;
   jDelete: string; jConfirm: string; jDownload: string; jMore: string; jLess: string;
   readingTitle: string; readingHint: string; readingFewer: string; readingResult: Record<string, string>;
   readingStarted: string; readingReached: string; readingClearer: string; readingNo: string; readingWeek: string;
@@ -112,6 +112,7 @@ const en: SessionCopy = {
   cLoading: 'Opening…',
 
   jTitle:    'My journey',
+  jSummaries: 'Summaries',
   jHint:     'The summaries you chose to keep, newest first. Only you can see them.',
   jEmpty:    'Nothing kept yet. At the end of a conversation you can keep a summary of it.',
   jOff:      'Keeping is off — nothing new is kept.',
@@ -215,6 +216,7 @@ const ar: SessionCopy = {
   cLoading: 'تُفتح…',
 
   jTitle:    'مسيرتي',
+  jSummaries: 'الخلاصات',
   jHint:     'الخلاصات التي اخترت الاحتفاظ بها، الأحدث أولًا. لا يراها أحد غيرك.',
   jEmpty:    'لم يُحفظ شيء بعد. في نهاية المحادثة يمكنك الاحتفاظ بخلاصة لها.',
   jOff:      'الحفظ متوقف — لا يُحفظ شيء جديد.',

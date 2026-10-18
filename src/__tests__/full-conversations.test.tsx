@@ -33,6 +33,11 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
+/** My journey → the conversations tab → the row of the kept conversation. */
+const openKept = async () => {
+  fireEvent.click(await screen.findByRole('tab', { name: new RegExp(s.cTitle) }));
+  fireEvent.click(await screen.findByRole('button', { name: /I worry about the future/ }));
+};
 const saves = () => calls.filter((c) => c.method === 'PUT' && c.url.startsWith('/api/bff/life/conversations/'));
 const say = async (text: string, n: number) => {
   fireEvent.change(screen.getByRole('textbox'), { target: { value: text } });
@@ -78,7 +83,8 @@ describe('on', () => {
     convs = { keeping: true, configured: true, conversations: [KEPT] };
     const onContinue = vi.fn();
     render(<JourneyView onContinue={onContinue} />);
-    fireEvent.click(await screen.findByRole('button', { name: s.cContinue }));
+    await openKept();
+    fireEvent.click(screen.getByRole('button', { name: s.cContinue }));
     await waitFor(() => expect(onContinue).toHaveBeenCalled());
     const r = onContinue.mock.calls[0]![0];
     expect(r.id).toBe(KEPT.id);
@@ -93,9 +99,8 @@ describe('on', () => {
   it('deleting a kept conversation takes two taps', async () => {
     convs = { keeping: true, configured: true, conversations: [KEPT] };
     render(<JourneyView onContinue={vi.fn()} />);
-    await screen.findByText('I worry about the future');
-    const del = screen.getAllByRole('button', { name: s.jDelete });
-    fireEvent.click(del[del.length - 1]!);
+    await openKept();
+    fireEvent.click(screen.getByRole('button', { name: s.jDelete }));
     expect(calls.filter((c) => c.method === 'DELETE')).toEqual([]);
     fireEvent.click(screen.getByRole('button', { name: s.jConfirm }));
     await waitFor(() => expect(screen.queryByText('I worry about the future')).toBeNull());
@@ -112,7 +117,8 @@ describe('a conversation that cannot be opened says so', () => {
       : ok({ keeping: false, entries: [] }));
     const onContinue = vi.fn();
     render(<JourneyView onContinue={onContinue} />);
-    fireEvent.click(await screen.findByRole('button', { name: s.cContinue }));
+    await openKept();
+    fireEvent.click(screen.getByRole('button', { name: s.cContinue }));
     await screen.findByText(s.cOpenFailed);
     expect(onContinue).not.toHaveBeenCalled();
   });

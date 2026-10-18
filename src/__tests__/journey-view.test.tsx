@@ -24,20 +24,22 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 describe('My journey', () => {
-  it('shows the kept summaries newest first, with the step and its outcome', async () => {
+  it('one line per summary, newest first; tapping one opens its details', async () => {
     render(<JourneyView />);
     await screen.findByText('Newer problem');
     const items = screen.getAllByRole('listitem').map((li) => li.textContent ?? '');
     expect(items[0]).toContain('Newer problem');
-    expect(items[0]).toContain('Walk after lunch');
     expect(items[0]).toContain(s.outDone);
     expect(items[1]).toContain('Older problem');
+    expect(screen.queryByText('Walk after lunch')).toBeNull();      // details closed
+    fireEvent.click(screen.getByRole('button', { name: /Newer problem/ }));
+    expect(screen.getByText('Walk after lunch')).toBeTruthy();       // and now open
   });
 
   it('deletes one entry on the second tap only', async () => {
     render(<JourneyView />);
-    await screen.findByText('Older problem');
-    fireEvent.click(screen.getAllByRole('button', { name: s.jDelete })[1]!);
+    fireEvent.click(await screen.findByRole('button', { name: /Older problem/ }));
+    fireEvent.click(screen.getByRole('button', { name: s.jDelete }));
     expect(calls.filter((c) => c.method === 'DELETE')).toEqual([]);
     fireEvent.click(screen.getByRole('button', { name: s.jConfirm }));
     await waitFor(() => expect(screen.queryByText('Older problem')).toBeNull());
