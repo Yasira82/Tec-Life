@@ -34,7 +34,7 @@ function saveFile(name: string, data: unknown) {
   URL.revokeObjectURL(url);
 }
 
-export function JourneyView({ onContinue }: { onContinue?: (r: Resume) => void }) {
+export function JourneyView({ onContinue, embedded = false }: { onContinue?: (r: Resume) => void; embedded?: boolean }) {
   const { locale } = useTranslation();
   const s = sessionCopy(locale);
   const [journey, setJourney] = useState<Journey | null>(null);
@@ -109,8 +109,8 @@ export function JourneyView({ onContinue }: { onContinue?: (r: Resume) => void }
   );
 
   return (
-    <section style={{ ...card, marginTop: 16 }} aria-label={s.jTitle}>
-      <div style={{ fontSize: 15, fontWeight: 800, color: C.text, marginBottom: 10 }}>{s.jTitle}</div>
+    <section style={embedded ? undefined : { ...card, marginTop: 16 }} aria-label={s.jTitle}>
+      {!embedded && <div style={{ fontSize: 15, fontWeight: 800, color: C.text, marginBottom: 10 }}>{s.jTitle}</div>}
       {showConvTab && (
         <div role="tablist" style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
           {tabBtn('summaries', s.jSummaries, entries.length)}

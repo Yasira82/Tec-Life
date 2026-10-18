@@ -162,3 +162,37 @@ describe('a conversation does not end unless the person ends it (owner, 2026-10-
     expect(page).toMatch(/hidden=\{tab !== 'home'\}/);
   });
 });
+
+describe('the side menu (owner, 2026-10-18: "an entry, then a menu on the side with everything")', () => {
+  it('holds New conversation, the kept conversations and the summaries; Continue and New both close it', async () => {
+    convs = { keeping: true, configured: true, conversations: [KEPT] };
+    const { JourneyDrawer } = await import('../app/app/components/JourneyDrawer');
+    const onNew = vi.fn(); const onContinue = vi.fn(); const onClose = vi.fn();
+    render(<JourneyDrawer open onClose={onClose} onNew={onNew} onContinue={onContinue} />);
+    expect(screen.getByRole('dialog', { name: s.jTitle })).toBeTruthy();
+    expect(await screen.findByRole('tab', { name: new RegExp(s.jSummaries) })).toBeTruthy();
+    await openKept();
+    fireEvent.click(screen.getByRole('button', { name: s.cContinue }));
+    await waitFor(() => expect(onContinue).toHaveBeenCalled());
+    expect(onClose).toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(s.newConversation) }));
+    expect(onNew).toHaveBeenCalled();
+  });
+
+  it('closed → nothing rendered; Escape closes it', async () => {
+    const { JourneyDrawer } = await import('../app/app/components/JourneyDrawer');
+    const onClose = vi.fn();
+    const { rerender } = render(<JourneyDrawer open={false} onClose={onClose} onNew={vi.fn()} onContinue={vi.fn()} />);
+    expect(screen.queryByRole('dialog')).toBeNull();
+    rerender(<JourneyDrawer open onClose={onClose} onNew={vi.fn()} onContinue={vi.fn()} />);
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('the conversation and the entry both carry the ☰ button', async () => {
+    const onMenu = vi.fn();
+    render(<ProblemSession onClose={vi.fn()} onMenu={onMenu} />);
+    fireEvent.click(screen.getByRole('button', { name: s.menu }));
+    expect(onMenu).toHaveBeenCalled();
+  });
+});

@@ -40,6 +40,7 @@ import {
   type ConversationListing,
 } from '@/lib-client/life/conversations';
 import { card, goldBtn } from './shared';
+import { MenuButton } from './JourneyDrawer';
 
 type Step = 'intro' | 'chat' | 'end';
 
@@ -58,7 +59,7 @@ const ghostBtn = {
 /** A kept conversation to continue: its id and its messages so far. */
 export interface Resume { id: string; messages: Turn[] }
 
-export function ProblemSession({ onClose, resume }: { onClose: () => void; resume?: Resume }) {
+export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => void; resume?: Resume; onMenu?: () => void }) {
   const { locale } = useTranslation();
   const s = sessionCopy(locale);
 
@@ -192,6 +193,11 @@ export function ProblemSession({ onClose, resume }: { onClose: () => void; resum
 
   return (
     <section aria-live="polite" style={{ ...card, marginTop: 16 }}>
+      {onMenu && (
+        <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 10 }}>
+          <MenuButton onClick={onMenu} />
+        </div>
+      )}
       {step === 'intro' && (
         <>
           <h2 style={{ fontSize: 18, fontWeight: 800, color: C.gold, marginBottom: 10 }}>{s.introTitle}</h2>
@@ -338,7 +344,7 @@ export function ProblemSession({ onClose, resume }: { onClose: () => void; resum
  * conversations, the last one is offered first — a page that closed (Pi Browser does)
  * should not mean starting over.
  */
-export function ProblemSessionEntry({ onStart, onContinue }: { onStart: () => void; onContinue?: (r: Resume) => void }) {
+export function ProblemSessionEntry({ onStart, onContinue, onMenu }: { onStart: () => void; onContinue?: (r: Resume) => void; onMenu?: () => void }) {
   const { locale } = useTranslation();
   const s = sessionCopy(locale);
   const [last, setLast] = useState<ConversationListing | null>(null);
@@ -358,7 +364,10 @@ export function ProblemSessionEntry({ onStart, onContinue }: { onStart: () => vo
   };
   return (
     <section style={{ ...card, marginTop: 16 }}>
-      <div style={{ fontSize: 15, fontWeight: 800, color: C.text, marginBottom: 4 }}>{s.entryTitle}</div>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 4 }}>
+        <div style={{ fontSize: 15, fontWeight: 800, color: C.text, flex: 1 }}>{s.entryTitle}</div>
+        {onMenu && <MenuButton onClick={onMenu} />}
+      </div>
       <div style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.5, marginBottom: 12 }}>{s.entryHint}</div>
       {last && (
         <div style={{ marginBottom: 12 }}>
