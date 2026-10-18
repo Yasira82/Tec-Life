@@ -36,7 +36,7 @@ import {
   type Journey, type JourneyOutcome,
 } from '@/lib-client/life/journey';
 import {
-  listConversations, readConversation, saveConversation, turnConversationsOn, newConversationId,
+  listConversations, readConversation, saveConversation, turnConversationsOn, newConversationId, onConversationDeleted,
   type ConversationListing,
 } from '@/lib-client/life/conversations';
 import { card, goldBtn } from './shared';
@@ -133,6 +133,11 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
     setFields({ problem: '', understanding: '', step: '' });
     onClose();
   };
+  // Deleting the conversation that is open here closes it: its words leave the screen and
+  // it is not written back by the next reply (owner, 2026-10-18).
+  const finishRef = useRef(finish); finishRef.current = finish;
+  useEffect(() => onConversationDeleted((id) => { if (id === convId.current) finishRef.current(); }), []);
+
 
   const answerLastStep = async (o: JourneyOutcome) => {
     if (!last) return;

@@ -44,6 +44,7 @@ export function JourneyView({ onContinue, embedded = false }: { onContinue?: (r:
   const [armed, setArmed]     = useState<string | null>(null);   // the item one tap from deletion
   const [opening, setOpening] = useState<string | null>(null);
   const [openFailed, setOpenFailed] = useState<string | null>(null);
+  const [deleteFailed, setDeleteFailed] = useState<string | null>(null);
 
   useEffect(() => { void readJourney().then(setJourney); }, []);
   useEffect(() => { void listConversations().then(setConvs); }, []);
@@ -71,7 +72,9 @@ export function JourneyView({ onContinue, embedded = false }: { onContinue?: (r:
   const removeConv = async (id: string) => {
     if (armed !== id) { setArmed(id); return; }
     setArmed(null);
+    setDeleteFailed(null);
     if (await deleteConversation(id)) setConvs((c) => c && { ...c, conversations: c.conversations.filter((x) => x.id !== id) });
+    else setDeleteFailed(id);
   };
   const continueConv = async (id: string) => {
     setOpening(id); setOpenFailed(null);
@@ -172,6 +175,7 @@ export function JourneyView({ onContinue, embedded = false }: { onContinue?: (r:
                           {armed === c.id ? s.jConfirm : s.jDelete}
                         </button>
                         {openFailed === c.id && <span role="alert" style={{ fontSize: 12, color: C.text, alignSelf: 'center' }}>{s.cOpenFailed}</span>}
+                        {deleteFailed === c.id && <span role="alert" style={{ fontSize: 12, color: C.text, alignSelf: 'center' }}>{s.cDeleteFailed}</span>}
                       </div>
                     )}
                   </li>

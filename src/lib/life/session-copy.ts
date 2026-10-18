@@ -25,7 +25,7 @@ export interface SessionCopy {
   fProblem: string; fUnderstanding: string; fStep: string;
   keepConsent: string; keepSave: string; keepSaveOn: string; keepSaved: string; keepFailed: string;
   fullOn: string; fullOff: string; fullTurnOn: string; fullTurnOnNote: string; fullSaveFailed: string; fullKeptEnd: string;
-  cTitle: string; cHint: string; cEmpty: string; cContinue: string; cOpenFailed: string; continueLast: string; startNew: string; menu: string; closeMenu: string; newConversation: string; cMessages: string; cUnreadable: string; cDownload: string; cLoading: string;
+  cTitle: string; cHint: string; cEmpty: string; cContinue: string; cOpenFailed: string; cDeleteFailed: string; continueLast: string; startNew: string; menu: string; closeMenu: string; newConversation: string; cMessages: string; cUnreadable: string; cDownload: string; cLoading: string;
   jTitle: string; jSummaries: string; jHint: string; jEmpty: string; jOff: string; jStep: string;
   jDelete: string; jConfirm: string; jDownload: string; jMore: string; jLess: string;
   readingTitle: string; readingHint: string; readingFewer: string; readingResult: Record<string, string>;
@@ -109,6 +109,7 @@ const en: SessionCopy = {
   closeMenu: 'Close',
   newConversation: 'New conversation',
   cOpenFailed: 'It could not be opened right now. Try again in a moment.',
+  cDeleteFailed: 'It could not be deleted right now. Try again in a moment.',
   cMessages: '{n} messages',
   cUnreadable: 'This conversation cannot be read.',
   cDownload: 'Download conversations (JSON)',
@@ -216,6 +217,7 @@ const ar: SessionCopy = {
   closeMenu: 'إغلاق',
   newConversation: 'محادثة جديدة',
   cOpenFailed: 'تعذّر فتحها الآن. حاول مرة أخرى بعد قليل.',
+  cDeleteFailed: 'تعذّر حذفها الآن. حاول مرة أخرى بعد قليل.',
   cMessages: '{n} رسالة',
   cUnreadable: 'تعذّرت قراءة هذه المحادثة.',
   cDownload: 'تنزيل المحادثات (JSON)',

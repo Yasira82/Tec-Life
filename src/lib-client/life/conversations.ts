@@ -44,7 +44,19 @@ export async function readConversation(id: string): Promise<Turn[] | null> {
   }
 }
 
+// A conversation deleted in this tab stays deleted: the chat that still holds it must not
+// write it back on its next reply (owner, 2026-10-18: "I delete it and it isn't deleted").
+const deleted = new Set<string>();
+const onDelete = new Set<(id: string) => void>();
+
+/** Called with the id of every conversation deleted here, so an open chat can close it. */
+export function onConversationDeleted(cb: (id: string) => void): () => void {
+  onDelete.add(cb);
+  return () => { onDelete.delete(cb); };
+}
+
 export async function saveConversation(id: string, messages: Turn[]): Promise<boolean> {
+  if (deleted.has(id)) return false;
   try {
     const res = await fetch(path(id), { method: 'PUT', credentials: 'include', headers: json, body: JSON.stringify({ messages }) });
     return res.ok;
@@ -55,9 +67,14 @@ export async function saveConversation(id: string, messages: Turn[]): Promise<bo
 
 export async function deleteConversation(id: string): Promise<boolean> {
   try {
+    deleted.add(id);
     const res = await fetch(path(id), { method: 'DELETE', credentials: 'include' });
-    return res.ok;
+    // Not there is gone too — the same thing for the person.
+    if (!res.ok && res.status !== 404) { deleted.delete(id); return false; }
+    onDelete.forEach((cb) => cb(id));
+    return true;
   } catch {
+    deleted.delete(id);
     return false;
   }
 }
