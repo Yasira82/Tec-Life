@@ -108,6 +108,36 @@ describe('on', () => {
   });
 });
 
+describe('a deleted conversation stays deleted (owner, 2026-10-18: "I delete it and it is not deleted")', () => {
+  const OPEN = { ...KEPT, id: '7a1c2e3f-5b6d-4e7f-9a0b-1c2d3e4f5a6b' };
+
+  it('deleting the conversation that is open closes it, and its next reply does not write it back', async () => {
+    convs = { keeping: true, configured: true, conversations: [OPEN] };
+    const onClose = vi.fn();
+    const resume = { id: OPEN.id, messages: [{ role: 'assistant' as const, content: 'opener' }, { role: 'user' as const, content: 'I worry about the future' }, { role: 'assistant' as const, content: 'Tell me more.' }] };
+    render(<><ProblemSession onClose={onClose} resume={resume} /><JourneyView onContinue={vi.fn()} /></>);
+    await openKept();
+    fireEvent.click(screen.getByRole('button', { name: s.jDelete }));
+    fireEvent.click(screen.getByRole('button', { name: s.jConfirm }));
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
+    expect(saves()).toEqual([]);
+  });
+
+  it('a delete that fails says so, and the conversation stays listed', async () => {
+    const FAIL = { ...KEPT, id: '9b8a7c6d-1e2f-4a3b-8c4d-5e6f7a8b9c0d' };
+    convs = { keeping: true, configured: true, conversations: [FAIL] };
+    const base = vi.mocked(fetch).getMockImplementation()!;
+    vi.mocked(fetch).mockImplementation(async (u, init) =>
+      init?.method === 'DELETE' ? ({ ok: false, status: 502, json: async () => ({}) } as Response) : base(u, init));
+    render(<JourneyView onContinue={vi.fn()} />);
+    await openKept();
+    fireEvent.click(screen.getByRole('button', { name: s.jDelete }));
+    fireEvent.click(screen.getByRole('button', { name: s.jConfirm }));
+    expect(await screen.findByText(s.cDeleteFailed)).toBeTruthy();
+    expect(screen.getAllByText('I worry about the future').length).toBeGreaterThan(0);
+  });
+});
+
 describe('a conversation that cannot be opened says so', () => {
   it('Continue on an unreadable conversation shows a message, not nothing', async () => {
     convs = { keeping: true, configured: true, conversations: [KEPT] };
