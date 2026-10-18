@@ -56,6 +56,16 @@ describe('forwardLife', () => {
     expect(JSON.stringify(init)).not.toContain(process.env.INTERNAL_SECRET);
   });
 
+  it('a DELETE carries no JSON content type — Fastify 400s an empty JSON body (owner, 2026-10-18)', async () => {
+    await forwardLife(req({ tec_access_token: 'tok' }), 'DELETE', '/api/identity/life/conversations/x');
+    const [, del] = (fetch as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    expect(Object.keys(del.headers as Record<string, string>).map((k) => k.toLowerCase())).not.toContain('content-type');
+    expect(del.body).toBeUndefined();
+    await forwardLife(req({ tec_access_token: 'tok' }), 'PUT', '/api/identity/life/conversations/x', { messages: [] });
+    const [, put] = (fetch as unknown as ReturnType<typeof vi.fn>).mock.calls[1] as [string, RequestInit];
+    expect((put.headers as Record<string, string>)['Content-Type']).toBe('application/json');
+  });
+
   it('a signed-in user without the tec_user cookie is not turned away', async () => {
     const res = await forwardLife(req({ tec_access_token: 'tok' }), 'GET', '/api/identity/life/goals');
     expect(res.status).toBe(200);

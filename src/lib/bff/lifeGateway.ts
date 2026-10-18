@@ -59,13 +59,15 @@ export async function forwardLife(
   if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
     Authorization:  `Bearer ${token}`,
     'x-request-id': crypto.randomUUID(),
   };
 
   const init: RequestInit = { method, headers, cache: 'no-store' };
-  if (body !== undefined) init.body = JSON.stringify(body);
+  // A JSON content type only with a JSON body: tec-life-service (Fastify) refuses an
+  // EMPTY body that claims to be JSON with a 400 — every DELETE failed that way
+  // (owner, 2026-10-18: "I delete the conversation and it isn't deleted").
+  if (body !== undefined) { headers['Content-Type'] = 'application/json'; init.body = JSON.stringify(body); }
 
   try {
     const res  = await fetch(`${GW}${gatewayPath}`, init);
