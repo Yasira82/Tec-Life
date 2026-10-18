@@ -25,7 +25,7 @@ export interface SessionCopy {
   fProblem: string; fUnderstanding: string; fStep: string;
   keepConsent: string; keepSave: string; keepSaveOn: string; keepSaved: string; keepFailed: string;
   fullOn: string; fullOff: string; fullTurnOn: string; fullTurnOnNote: string; fullSaveFailed: string; fullKeptEnd: string;
-  cTitle: string; cHint: string; cEmpty: string; cContinue: string; cMessages: string; cUnreadable: string; cDownload: string; cLoading: string;
+  cTitle: string; cHint: string; cEmpty: string; cContinue: string; cOpenFailed: string; cMessages: string; cUnreadable: string; cDownload: string; cLoading: string;
   jTitle: string; jHint: string; jEmpty: string; jOff: string; jStep: string;
   jDelete: string; jConfirm: string; jDownload: string; jMore: string; jLess: string;
   readingTitle: string; readingHint: string; readingFewer: string; readingResult: Record<string, string>;
@@ -103,6 +103,7 @@ const en: SessionCopy = {
   cHint: 'The full conversations you chose to keep, encrypted. Only you can see them.',
   cEmpty: 'No conversation kept yet.',
   cContinue: 'Continue',
+  cOpenFailed: 'It could not be opened right now. Try again in a moment.',
   cMessages: '{n} messages',
   cUnreadable: 'This conversation cannot be read.',
   cDownload: 'Download conversations (JSON)',
@@ -203,6 +204,7 @@ const ar: SessionCopy = {
   cHint: 'المحادثات الكاملة التي اخترت الاحتفاظ بها، مشفّرة. لا يراها أحد غيرك.',
   cEmpty: 'لم تُحفظ أي محادثة بعد.',
   cContinue: 'أكمِل',
+  cOpenFailed: 'تعذّر فتحها الآن. حاول مرة أخرى بعد قليل.',
   cMessages: '{n} رسالة',
   cUnreadable: 'تعذّرت قراءة هذه المحادثة.',
   cDownload: 'تنزيل المحادثات (JSON)',

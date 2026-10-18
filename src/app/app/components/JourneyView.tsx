@@ -33,6 +33,7 @@ export function JourneyView({ onContinue }: { onContinue?: (r: Resume) => void }
   useEffect(() => { void readJourney().then(setJourney); }, []);
   const [convs, setConvs] = useState<Conversations | null>(null);
   const [opening, setOpening] = useState<string | null>(null);
+  const [openFailed, setOpenFailed] = useState<string | null>(null);
   useEffect(() => { void listConversations().then(setConvs); }, []);
   useEffect(() => {
     if (!armed) return;
@@ -49,10 +50,13 @@ export function JourneyView({ onContinue }: { onContinue?: (r: Resume) => void }
   };
 
   const continueConv = async (id: string) => {
-    setOpening(id);
+    setOpening(id); setOpenFailed(null);
     const messages = await readConversation(id);
     setOpening(null);
-    if (messages && onContinue) onContinue({ id, messages });
+    // A conversation that cannot be opened says so — a button that does nothing
+    // reads as "the conversation is gone" (owner, 2026-10-18).
+    if (!messages || messages.length === 0) { setOpenFailed(id); return; }
+    onContinue?.({ id, messages });
   };
 
   // The person's own file, on their own device: every kept conversation, read back.
@@ -89,6 +93,7 @@ export function JourneyView({ onContinue }: { onContinue?: (r: Resume) => void }
                       {opening === c.id ? s.cLoading : s.cContinue}
                     </button>
                   )}
+                  {openFailed === c.id && <span role="alert" style={{ fontSize: 12, color: C.text, alignSelf: 'center' }}>{s.cOpenFailed}</span>}
                   <button type="button" style={smallBtn} onClick={() => void removeConv(c.id)}>
                     {armed === c.id ? s.jConfirm : s.jDelete}
                   </button>

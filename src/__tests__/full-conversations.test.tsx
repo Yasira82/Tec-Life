@@ -102,3 +102,18 @@ describe('on', () => {
     expect(calls.find((c) => c.method === 'DELETE')!.url).toBe(`/api/bff/life/conversations/${KEPT.id}`);
   });
 });
+
+describe('a conversation that cannot be opened says so', () => {
+  it('Continue on an unreadable conversation shows a message, not nothing', async () => {
+    convs = { keeping: true, configured: true, conversations: [KEPT] };
+    (globalThis.fetch as unknown as ReturnType<typeof vi.fn>).mockImplementation(async (u: RequestInfo | URL) =>
+      String(u) === '/api/bff/life/conversations' ? ok(convs)
+      : String(u).startsWith('/api/bff/life/conversations/') ? ({ ok: false, status: 503, json: async () => ({}) } as Response)
+      : ok({ keeping: false, entries: [] }));
+    const onContinue = vi.fn();
+    render(<JourneyView onContinue={onContinue} />);
+    fireEvent.click(await screen.findByRole('button', { name: s.cContinue }));
+    await screen.findByText(s.cOpenFailed);
+    expect(onContinue).not.toHaveBeenCalled();
+  });
+});
