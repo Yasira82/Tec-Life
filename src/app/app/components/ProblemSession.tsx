@@ -37,8 +37,8 @@ import { card, goldBtn } from './shared';
 type Step = 'intro' | 'chat' | 'end';
 
 const MAX_CHARS = 1000;
-/** The AI service accepts 24 messages; the opener is one of them. */
-const MAX_MESSAGES = 24;
+/** The AI service accepts 40 messages; the opener is one of them. */
+const MAX_MESSAGES = 40;
 
 const textArea = {
   width: '100%', minHeight: 72, resize: 'vertical' as const,
@@ -204,6 +204,11 @@ export function ProblemSession({ onClose }: { onClose: () => void }) {
           <div>{turns.map(bubble)}</div>
           {busy && <div role="status" style={{ fontSize: 12.5, color: C.subtext, marginTop: 10 }}>{s.thinking}</div>}
           {error && <div role="alert" style={{ fontSize: 13, color: C.text, marginTop: 10 }}>{error}</div>}
+          {/* At the length cap, the way on is the summary — one tap to end and write it. */}
+          {error === s.errLimit && spoke && (
+            <button type="button" style={{ ...goldBtn, marginTop: 10 }}
+              onClick={() => { setError(null); setStep('end'); void writeSummary(); }}>{s.endAndKeep}</button>
+          )}
           <textarea
             value={draft} onChange={(e) => setDraft(e.target.value.slice(0, MAX_CHARS))} maxLength={MAX_CHARS}
             placeholder={s.placeholder} aria-label={s.placeholder} disabled={busy}

@@ -281,3 +281,22 @@ describe('the free plan running out', () => {
     expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toBe('hello');
   });
 });
+
+describe('the length cap leads to the summary', () => {
+  it('at 40 messages: no more sending, and one tap ends the conversation and writes the summary', async () => {
+    render(<ProblemSession onClose={vi.fn()} />);
+    click(s.agree);
+    for (let i = 0; i < 20; i++) {
+      type(`m${i}`); click(s.send);
+      await waitFor(() => expect(talks().length).toBe(i + 1));
+      await screen.findAllByText('I hear you. When did it last happen?');
+    }
+    // 1 opener + 20 × (person + Life) = 41 > 40 would be the next — refused locally.
+    type('one more'); click(s.send);
+    await screen.findByText(s.errLimit);
+    expect(talks()).toHaveLength(20);
+    click(s.endAndKeep);
+    await screen.findByDisplayValue('You stay up late');
+    expect(calls.some((c) => c.url === '/api/bff/life/summary')).toBe(true);
+  });
+});
