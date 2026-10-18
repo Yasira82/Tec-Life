@@ -72,9 +72,10 @@ describe('consent first', () => {
     expect(screen.getByText(s.introAi)).toBeTruthy();
     expect(s.introAi).toMatch(/Groq/);
     expect(screen.getByText(s.support)).toBeTruthy();
-    // The one call before agreeing is Life reading the person's own journey from Life.
+    // The only calls before agreeing are Life reading the person's own journey and
+    // kept-conversation setting from Life — reads, with no body.
     expect(writes()).toEqual([]);
-    expect(calls.every((c) => c.url === '/api/bff/life/journey')).toBe(true);
+    expect(calls.every((c) => ['/api/bff/life/journey', '/api/bff/life/conversations'].includes(c.url))).toBe(true);
   });
 
   it('"Not now" closes without sending or counting anything', () => {
@@ -280,4 +281,18 @@ describe('the free plan running out', () => {
     await screen.findByText(s.errCapacity);
     expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toBe('hello');
   });
+});
+
+describe('the conversation lasts until the person ends it', () => {
+  it('goes past 24 and 40 messages without stopping', async () => {
+    render(<ProblemSession onClose={vi.fn()} />);
+    click(s.agree);
+    for (let i = 0; i < 25; i++) {
+      type(`m${i}`); click(s.send);
+      await waitFor(() => expect(talks().length).toBe(i + 1));
+      await waitFor(() => expect(screen.getAllByText('I hear you. When did it last happen?').length).toBe(i + 1));
+    }
+    expect(screen.queryByText(s.errLimit)).toBeNull();
+    expect(JSON.parse(talks().at(-1)!.body).messages).toHaveLength(50); // the page keeps it whole
+  }, 30_000);
 });

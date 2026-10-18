@@ -21,9 +21,11 @@ export interface SessionCopy {
   finish: string;
   memoryNote: string;
   lastStepQ: string; outDone: string; outPartly: string; outNotYet: string; outThanks: string;
-  keepTitle: string; keepHint: string; keepWrite: string; keepWriting: string; keepSummaryFailed: string;
+  keepTitle: string; endAndKeep: string; keepHint: string; keepWrite: string; keepWriting: string; keepSummaryFailed: string;
   fProblem: string; fUnderstanding: string; fStep: string;
   keepConsent: string; keepSave: string; keepSaveOn: string; keepSaved: string; keepFailed: string;
+  fullOn: string; fullOff: string; fullTurnOn: string; fullTurnOnNote: string; fullSaveFailed: string; fullKeptEnd: string;
+  cTitle: string; cHint: string; cEmpty: string; cContinue: string; cMessages: string; cUnreadable: string; cDownload: string; cLoading: string;
   jTitle: string; jHint: string; jEmpty: string; jOff: string; jStep: string;
   jDelete: string; jConfirm: string; jDownload: string; jMore: string; jLess: string;
   readingTitle: string; readingHint: string; readingFewer: string; readingResult: Record<string, string>;
@@ -54,7 +56,7 @@ const en: SessionCopy = {
   life: 'Life',
   errUnavailable: 'Life could not reply right now. Try again in a moment.',
   errBusy:        'Many messages in a short time — wait a minute, then try again.',
-  errLimit:       'This conversation has reached its length. You can end it and start a new one.',
+  errLimit:       'This conversation has reached its length. End it and keep a short summary — Life will continue from it next time.',
   errCapacity:    'Life has reached its limit for now. Try again later — if today’s limit is used up, tomorrow. What you wrote is still in the box.',
 
   endTitle: 'The conversation has ended',
@@ -77,6 +79,7 @@ const en: SessionCopy = {
   outThanks: 'Noted. Life will continue from there.',
 
   keepTitle: 'Keep a summary in My journey',
+  endAndKeep: 'End and write the summary',
   keepHint:  'Life writes a short summary of this conversation. Read it, correct it, and keep it only if it is right. Only the summary is kept — never the conversation.',
   keepWrite:   'Write the summary',
   keepWriting: 'Writing the summary…',
@@ -89,6 +92,21 @@ const en: SessionCopy = {
   keepSaveOn: 'Turn on and keep',
   keepSaved:  'Kept in My journey.',
   keepFailed: 'It could not be kept right now. Try again in a moment.',
+
+  fullOn:  'Your full conversation is kept, encrypted, in My journey — you can continue it later or delete it.',
+  fullOff: 'Want to keep the whole conversation, so you can come back to it?',
+  fullTurnOn: 'Keep my full conversations',
+  fullTurnOnNote: 'This turns on “Keep my full conversations” in Privacy. The words are encrypted before they are stored. Turning it off deletes every kept conversation.',
+  fullSaveFailed: 'The last message could not be kept. The conversation goes on; it will be kept with the next one.',
+  fullKeptEnd: 'This conversation is kept in My journey. You can continue it or delete it there.',
+  cTitle: 'My conversations',
+  cHint: 'The full conversations you chose to keep, encrypted. Only you can see them.',
+  cEmpty: 'No conversation kept yet.',
+  cContinue: 'Continue',
+  cMessages: '{n} messages',
+  cUnreadable: 'This conversation cannot be read.',
+  cDownload: 'Download conversations (JSON)',
+  cLoading: 'Opening…',
 
   jTitle:    'My journey',
   jHint:     'The summaries you chose to keep, newest first. Only you can see them.',
@@ -138,7 +156,7 @@ const ar: SessionCopy = {
   life: 'Life',
   errUnavailable: 'تعذّر على Life الرد الآن. حاول مرة أخرى بعد قليل.',
   errBusy:        'رسائل كثيرة في وقت قصير — انتظر دقيقة ثم حاول.',
-  errLimit:       'بلغت المحادثة حدّها. يمكنك إنهاؤها وبدء محادثة جديدة.',
+  errLimit:       'بلغت المحادثة حدّها. أنهِها واحتفظ بخلاصة قصيرة لها — وسيكمل Life منها في المرة القادمة.',
   errCapacity:    'بلغ Life حدّه الآن. حاول لاحقًا — وإن نفد حدّ اليوم، فغدًا. ما كتبته ما زال في المربع.',
 
   endTitle: 'انتهت المحادثة',
@@ -161,6 +179,7 @@ const ar: SessionCopy = {
   outThanks: 'سُجِّل ذلك. سيكمل Life من هنا.',
 
   keepTitle: 'احتفظ بخلاصة في مسيرتي',
+  endAndKeep: 'أنهِ واكتب الخلاصة',
   keepHint:  'يكتب Life خلاصة قصيرة لهذه المحادثة. اقرأها وصحّحها، واحتفظ بها فقط إن كانت صحيحة. تُحفظ الخلاصة وحدها — لا المحادثة.',
   keepWrite:   'اكتب الخلاصة',
   keepWriting: 'تُكتب الخلاصة…',
@@ -173,6 +192,21 @@ const ar: SessionCopy = {
   keepSaveOn: 'فعّل واحتفظ',
   keepSaved:  'حُفظت في مسيرتي.',
   keepFailed: 'تعذّر الحفظ الآن. حاول مرة أخرى بعد قليل.',
+
+  fullOn:  'تُحفظ محادثتك كاملة، مشفّرة، في مسيرتي — يمكنك إكمالها لاحقًا أو حذفها.',
+  fullOff: 'هل تريد الاحتفاظ بالمحادثة كاملة لتعود إليها؟',
+  fullTurnOn: 'احتفظ بمحادثاتي كاملة',
+  fullTurnOnNote: 'هذا يفعّل «الاحتفاظ بمحادثاتي كاملة» في الخصوصية. يُشفَّر الكلام قبل حفظه. وإيقافه يحذف كل المحادثات المحفوظة.',
+  fullSaveFailed: 'تعذّر حفظ الرسالة الأخيرة. المحادثة مستمرة، وستُحفظ مع الرسالة التالية.',
+  fullKeptEnd: 'هذه المحادثة محفوظة في مسيرتي. يمكنك إكمالها أو حذفها من هناك.',
+  cTitle: 'محادثاتي',
+  cHint: 'المحادثات الكاملة التي اخترت الاحتفاظ بها، مشفّرة. لا يراها أحد غيرك.',
+  cEmpty: 'لم تُحفظ أي محادثة بعد.',
+  cContinue: 'أكمِل',
+  cMessages: '{n} رسالة',
+  cUnreadable: 'تعذّرت قراءة هذه المحادثة.',
+  cDownload: 'تنزيل المحادثات (JSON)',
+  cLoading: 'تُفتح…',
 
   jTitle:    'مسيرتي',
   jHint:     'الخلاصات التي اخترت الاحتفاظ بها، الأحدث أولًا. لا يراها أحد غيرك.',
