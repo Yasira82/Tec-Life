@@ -17,7 +17,7 @@ import { Activity } from './components/Activity';
 import { HomeView } from './components/Home';
 import { SignInGate } from './components/SignInGate';
 import { GoalPrefillReader } from './components/GoalPrefillReader';
-import { ProblemSession, ProblemSessionEntry } from './components/ProblemSession';
+import { ProblemSession, ProblemSessionEntry, type Resume } from './components/ProblemSession';
 import { JourneyView } from './components/JourneyView';
 import { type GoalPrefill } from '@/lib/life/prefill';
 
@@ -32,6 +32,7 @@ export default function LifeHome() {
   const [prefill, setPrefill] = useState<GoalPrefill | null>(null);
   // Stage 1 session (First Session Spec §8): opened from Home, its words held in its own state only.
   const [inSession, setInSession] = useState(false);
+  const [resume, setResume] = useState<Resume | undefined>(undefined);
   const { t } = useTranslation();
 
   return (
@@ -99,10 +100,10 @@ export default function LifeHome() {
         <SignInGate>
           <GoalPrefillReader onPrefill={(p) => { setPrefill(p); setTab('goals'); }} />
           {tab === 'home' && (inSession
-            ? <ProblemSession onClose={() => setInSession(false)} />
+            ? <ProblemSession resume={resume} onClose={() => { setInSession(false); setResume(undefined); }} />
             : <>
                 <ProblemSessionEntry onStart={() => setInSession(true)} />
-                <JourneyView />
+                <JourneyView onContinue={(r) => { setResume(r); setInSession(true); }} />
                 <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={setTab} />
               </>)}
           {tab === 'goals'    && <Goals isPro={isPro} prefill={prefill} key={prefill ? `pf:${prefill.title}` : 'goals'} />}

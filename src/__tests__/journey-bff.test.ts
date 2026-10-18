@@ -88,3 +88,30 @@ describe('the JOURNEY switch', () => {
     expect(DICTIONARIES.ar.life.privacy.journeyDesc).toMatch(/يحذفها/);
   });
 });
+
+describe('/api/bff/life/conversations/:id', () => {
+  const ID = '3f2b8c1e-4d5a-4b6c-8d7e-9f0a1b2c3d4e';
+  it('PUT forwards only the messages — an owner in the body goes nowhere', async () => {
+    const spy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(ok({ data: {} }));
+    const { PUT } = await import('@/app/api/bff/life/conversations/[id]/route');
+    await PUT(makeReq('PUT', session, { messages: [{ role: 'user', content: 'x' }], user_id: 'u2' }), { params: Promise.resolve({ id: ID }) });
+    expect(String(spy.mock.calls[0]?.[0])).toBe(`${GW}/api/identity/life/conversations/${ID}`);
+    expect(JSON.parse(String(spy.mock.calls[0]?.[1]?.body))).toEqual({ messages: [{ role: 'user', content: 'x' }] });
+  });
+
+  it('refuses an id that is not a UUID, before any call', async () => {
+    const spy = vi.spyOn(globalThis, 'fetch');
+    const { GET, DELETE } = await import('@/app/api/bff/life/conversations/[id]/route');
+    expect((await GET(makeReq('GET', session), { params: Promise.resolve({ id: '../journey' }) })).status).toBe(400);
+    expect((await DELETE(makeReq('DELETE', session), { params: Promise.resolve({ id: 'x' }) })).status).toBe(400);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('the CONVERSATIONS switch is named, explained and says it deletes, in every language', () => {
+    expect(LIFE_DATA_CATEGORIES).toContain('CONVERSATIONS');
+    for (const { code } of LOCALES) {
+      const p = DICTIONARIES[code].life.privacy as Record<string, string>;
+      expect(p.conversations && p.conversationsDesc, code).toBeTruthy();
+    }
+  });
+});

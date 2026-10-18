@@ -54,7 +54,7 @@ describe('My journey', () => {
   it('a journey it could not read shows nothing — not "nothing kept"', async () => {
     read = { ok: false, status: 503, json: async () => ({}) } as Response;
     const { container } = render(<JourneyView />);
-    await waitFor(() => expect(calls.length).toBe(1));
+    await waitFor(() => expect(calls.length).toBe(2)); // the journey and the conversations, both unreadable
     expect(container.textContent).toBe('');
   });
 });

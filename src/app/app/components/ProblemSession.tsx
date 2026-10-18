@@ -19,6 +19,9 @@
 //     Life writes a summary (`summarise()`); the person edits it and keeps it — or
 //     not. Keeping needs the JOURNEY permission, turned on by that same tap and
 //     named beside it. The conversation itself is never kept.
+//   • Full conversations (owner, 2026-10-18) are kept ONLY when the person turned
+//     "Keep my full conversations" on — then each answered turn is saved, encrypted
+//     by tec-life-service, so a closed page loses nothing and it can be continued.
 //   • The text field turns off the browser's own ways of moving text:
 //     `autoComplete="off"`, `spellCheck={false}`, and `translate="no"` on everything
 //     that shows the conversation.
@@ -32,6 +35,9 @@ import {
   readJourney, keepEntry, turnKeepingOn, setOutcome,
   type Journey, type JourneyOutcome,
 } from '@/lib-client/life/journey';
+import {
+  listConversations, saveConversation, turnConversationsOn, newConversationId,
+} from '@/lib-client/life/conversations';
 import { card, goldBtn } from './shared';
 
 type Step = 'intro' | 'chat' | 'end';
@@ -48,12 +54,15 @@ const ghostBtn = {
   padding: '10px 14px', fontSize: 14, cursor: 'pointer',
 };
 
-export function ProblemSession({ onClose }: { onClose: () => void }) {
+/** A kept conversation to continue: its id and its messages so far. */
+export interface Resume { id: string; messages: Turn[] }
+
+export function ProblemSession({ onClose, resume }: { onClose: () => void; resume?: Resume }) {
   const { locale } = useTranslation();
   const s = sessionCopy(locale);
 
-  const [step, setStep]         = useState<Step>('intro');
-  const [turns, setTurns]       = useState<Turn[]>([]);
+  const [step, setStep]         = useState<Step>(resume ? 'chat' : 'intro');
+  const [turns, setTurns]       = useState<Turn[]>(resume?.messages ?? []);
   const [draft, setDraft]       = useState('');
   const [busy, setBusy]         = useState(false);
   const [error, setError]       = useState<string | null>(null);
@@ -68,6 +77,23 @@ export function ProblemSession({ onClose }: { onClose: () => void }) {
   const [fields, setFields] = useState({ problem: '', understanding: '', step: '' });
 
   useEffect(() => { void readJourney().then(setJourney); }, []);
+  // Full conversations: kept only while the person has turned it on.
+  const convId = useRef<string>(resume?.id ?? newConversationId());
+  const [keepingFull, setKeepingFull] = useState(!!resume);
+  const [fullAvailable, setFullAvailable] = useState(false);
+  const [fullSaveFailed, setFullSaveFailed] = useState(false);
+  useEffect(() => {
+    void listConversations().then((c) => {
+      if (!c) return;
+      setFullAvailable(c.configured);
+      if (c.keeping && c.configured) setKeepingFull(true);
+    });
+  }, []);
+  const turnFullOn = async () => { if (await turnConversationsOn()) setKeepingFull(true); };
+  const keepFull = async (all: Turn[]) => {
+    if (!keepingFull) return;
+    setFullSaveFailed(!(await saveConversation(convId.current, all)));
+  };
   const last = journey?.keeping ? journey.entries[0] : undefined;
   const askLastStep = !!last?.step && !last.step_outcome && !answered;
   const spoke = turns.some((t) => t.role === 'user');
@@ -87,7 +113,12 @@ export function ProblemSession({ onClose }: { onClose: () => void }) {
     setTurns(next); setDraft(''); setBusy(true); setError(null);
     const out = await talk(next);
     setBusy(false);
-    if (out.ok) { setTurns([...next, { role: 'assistant', content: out.reply }]); return; }
+    if (out.ok) {
+      const all: Turn[] = [...next, { role: 'assistant', content: out.reply }];
+      setTurns(all);
+      void keepFull(all);
+      return;
+    }
     // Not answered: take the message back into the box so nothing the person wrote is lost.
     setTurns(turns); setDraft(text);
     setError(out.reason === 'busy' ? s.errBusy : out.reason === 'limit' ? s.errLimit : out.reason === 'capacity' ? s.errCapacity : s.errUnavailable);
@@ -165,7 +196,16 @@ export function ProblemSession({ onClose }: { onClose: () => void }) {
           <p style={{ fontSize: 14, color: C.text, lineHeight: 1.55, marginBottom: 8 }}>{s.introIs}</p>
           <p style={{ fontSize: 14, color: C.subtext, lineHeight: 1.55, marginBottom: 10 }}>{s.introIsNot}</p>
           <p role="note" style={{ fontSize: 13.5, color: C.text, lineHeight: 1.55, marginBottom: 8 }}>{s.introAi}</p>
-          <p role="note" style={{ fontSize: 14, fontWeight: 700, color: C.text, lineHeight: 1.55 }}>{s.introNothingSaved}</p>
+          <p role="note" style={{ fontSize: 14, fontWeight: 700, color: C.text, lineHeight: 1.55 }}>
+            {keepingFull ? s.fullOn : s.introNothingSaved}
+          </p>
+          {!keepingFull && fullAvailable && (
+            <div style={{ marginTop: 10 }}>
+              <div style={{ fontSize: 13, color: C.text, marginBottom: 6 }}>{s.fullOff}</div>
+              <button type="button" style={ghostBtn} onClick={() => void turnFullOn()}>{s.fullTurnOn}</button>
+              <p role="note" style={{ fontSize: 12, color: C.subtext, lineHeight: 1.5, marginTop: 6 }}>{s.fullTurnOnNote}</p>
+            </div>
+          )}
           {journey?.keeping && journey.entries.length > 0 && (
             <p role="note" style={{ fontSize: 13, color: C.subtext, lineHeight: 1.55, marginTop: 8 }}>{s.memoryNote}</p>
           )}
@@ -202,6 +242,7 @@ export function ProblemSession({ onClose }: { onClose: () => void }) {
           <div>{turns.map(bubble)}</div>
           {busy && <div role="status" style={{ fontSize: 12.5, color: C.subtext, marginTop: 10 }}>{s.thinking}</div>}
           {error && <div role="alert" style={{ fontSize: 13, color: C.text, marginTop: 10 }}>{error}</div>}
+          {fullSaveFailed && <div role="status" style={{ fontSize: 12, color: C.subtext, marginTop: 6 }}>{s.fullSaveFailed}</div>}
           {/* At the length cap, the way on is the summary — one tap to end and write it. */}
           {error === s.errLimit && spoke && (
             <button type="button" style={{ ...goldBtn, marginTop: 10 }}
@@ -224,7 +265,9 @@ export function ProblemSession({ onClose }: { onClose: () => void }) {
         <>
           <h2 style={{ fontSize: 18, fontWeight: 800, color: C.gold, marginBottom: 12 }}>{s.endTitle}</h2>
           <p style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.5, marginBottom: 12 }}>{s.support}</p>
-          <p role="note" style={{ fontSize: 13.5, fontWeight: 700, color: C.text, lineHeight: 1.5 }}>{s.notSaved}</p>
+          <p role="note" style={{ fontSize: 13.5, fontWeight: 700, color: C.text, lineHeight: 1.5 }}>
+            {keepingFull && spoke ? s.fullKeptEnd : s.notSaved}
+          </p>
           <div style={{ marginTop: 10 }}>
             <button type="button" style={ghostBtn} onClick={copy}>{copied ? s.copied : s.copy}</button>
           </div>

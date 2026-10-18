@@ -72,9 +72,10 @@ describe('consent first', () => {
     expect(screen.getByText(s.introAi)).toBeTruthy();
     expect(s.introAi).toMatch(/Groq/);
     expect(screen.getByText(s.support)).toBeTruthy();
-    // The one call before agreeing is Life reading the person's own journey from Life.
+    // The only calls before agreeing are Life reading the person's own journey and
+    // kept-conversation setting from Life — reads, with no body.
     expect(writes()).toEqual([]);
-    expect(calls.every((c) => c.url === '/api/bff/life/journey')).toBe(true);
+    expect(calls.every((c) => ['/api/bff/life/journey', '/api/bff/life/conversations'].includes(c.url))).toBe(true);
   });
 
   it('"Not now" closes without sending or counting anything', () => {

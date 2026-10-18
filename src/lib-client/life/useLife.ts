@@ -286,6 +286,9 @@ export const LIFE_DATA_CATEGORIES = [
   // Not data shared with a reader — permission to KEEP the summaries the person
   // confirms (Life memory v1). Turning it off deletes them.
   'JOURNEY',
+  // Permission to keep FULL conversations, encrypted (owner, 2026-10-18). Off until
+  // turned on; turning it off deletes them.
+  'CONVERSATIONS',
 ] as const;
 export type LifeDataCategory = (typeof LIFE_DATA_CATEGORIES)[number];
 

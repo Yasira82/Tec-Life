@@ -24,6 +24,8 @@ export interface SessionCopy {
   keepTitle: string; endAndKeep: string; keepHint: string; keepWrite: string; keepWriting: string; keepSummaryFailed: string;
   fProblem: string; fUnderstanding: string; fStep: string;
   keepConsent: string; keepSave: string; keepSaveOn: string; keepSaved: string; keepFailed: string;
+  fullOn: string; fullOff: string; fullTurnOn: string; fullTurnOnNote: string; fullSaveFailed: string; fullKeptEnd: string;
+  cTitle: string; cHint: string; cEmpty: string; cContinue: string; cMessages: string; cUnreadable: string; cDownload: string; cLoading: string;
   jTitle: string; jHint: string; jEmpty: string; jOff: string; jStep: string;
   jDelete: string; jConfirm: string; jDownload: string; jMore: string; jLess: string;
   readingTitle: string; readingHint: string; readingFewer: string; readingResult: Record<string, string>;
@@ -90,6 +92,21 @@ const en: SessionCopy = {
   keepSaveOn: 'Turn on and keep',
   keepSaved:  'Kept in My journey.',
   keepFailed: 'It could not be kept right now. Try again in a moment.',
+
+  fullOn:  'Your full conversation is kept, encrypted, in My journey — you can continue it later or delete it.',
+  fullOff: 'Want to keep the whole conversation, so you can come back to it?',
+  fullTurnOn: 'Keep my full conversations',
+  fullTurnOnNote: 'This turns on “Keep my full conversations” in Privacy. The words are encrypted before they are stored. Turning it off deletes every kept conversation.',
+  fullSaveFailed: 'The last message could not be kept. The conversation goes on; it will be kept with the next one.',
+  fullKeptEnd: 'This conversation is kept in My journey. You can continue it or delete it there.',
+  cTitle: 'My conversations',
+  cHint: 'The full conversations you chose to keep, encrypted. Only you can see them.',
+  cEmpty: 'No conversation kept yet.',
+  cContinue: 'Continue',
+  cMessages: '{n} messages',
+  cUnreadable: 'This conversation cannot be read.',
+  cDownload: 'Download conversations (JSON)',
+  cLoading: 'Opening…',
 
   jTitle:    'My journey',
   jHint:     'The summaries you chose to keep, newest first. Only you can see them.',
@@ -175,6 +192,21 @@ const ar: SessionCopy = {
   keepSaveOn: 'فعّل واحتفظ',
   keepSaved:  'حُفظت في مسيرتي.',
   keepFailed: 'تعذّر الحفظ الآن. حاول مرة أخرى بعد قليل.',
+
+  fullOn:  'تُحفظ محادثتك كاملة، مشفّرة، في مسيرتي — يمكنك إكمالها لاحقًا أو حذفها.',
+  fullOff: 'هل تريد الاحتفاظ بالمحادثة كاملة لتعود إليها؟',
+  fullTurnOn: 'احتفظ بمحادثاتي كاملة',
+  fullTurnOnNote: 'هذا يفعّل «الاحتفاظ بمحادثاتي كاملة» في الخصوصية. يُشفَّر الكلام قبل حفظه. وإيقافه يحذف كل المحادثات المحفوظة.',
+  fullSaveFailed: 'تعذّر حفظ الرسالة الأخيرة. المحادثة مستمرة، وستُحفظ مع الرسالة التالية.',
+  fullKeptEnd: 'هذه المحادثة محفوظة في مسيرتي. يمكنك إكمالها أو حذفها من هناك.',
+  cTitle: 'محادثاتي',
+  cHint: 'المحادثات الكاملة التي اخترت الاحتفاظ بها، مشفّرة. لا يراها أحد غيرك.',
+  cEmpty: 'لم تُحفظ أي محادثة بعد.',
+  cContinue: 'أكمِل',
+  cMessages: '{n} رسالة',
+  cUnreadable: 'تعذّرت قراءة هذه المحادثة.',
+  cDownload: 'تنزيل المحادثات (JSON)',
+  cLoading: 'تُفتح…',
 
   jTitle:    'مسيرتي',
   jHint:     'الخلاصات التي اخترت الاحتفاظ بها، الأحدث أولًا. لا يراها أحد غيرك.',

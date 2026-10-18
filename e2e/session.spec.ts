@@ -30,6 +30,7 @@ async function fakeBff(page: Page, counted: string[]) {
     if (p === '/api/bff/life/talk')          return route.fulfill(ok({ reply: 'I hear you. When did it last happen?' }));
     if (p === '/api/bff/life/summary')       return route.fulfill(ok({ summary: { problem: 'You stay up late', understanding: 'It starts with scrolling', step: null } }));
     if (p === '/api/bff/life/journey' && req.method() === 'GET') return route.fulfill(ok({ keeping: false, entries: [] }));
+    if (p === '/api/bff/life/conversations') return route.fulfill(ok({ keeping: false, configured: true, conversations: [] }));
     if (p === '/api/bff/life/journey')       return route.fulfill(ok({ entry: { id: 'j1', step_outcome: null, created_at: '2026-10-17T10:00:00.000Z', ...(req.postDataJSON() ?? {}) } }));
     if (p === '/api/bff/life/goals')        return route.fulfill(ok({ goals: [] }));
     if (p === '/api/bff/life/skills')       return route.fulfill(ok({ skills: [] }));
@@ -125,6 +126,32 @@ test('keeping a summary: the conversation goes to talk and summary only; what is
   expect(seen.filter((r) => r.where === 'PUT /api/bff/life/consent').map((r) => r.text.split('\n').at(-1)))
     .toEqual([JSON.stringify({ consent: { JOURNEY: true } })]);
 
+  const stored = await page.evaluate(() => {
+    const dump = (st: Storage) => Array.from({ length: st.length }, (_, i) => `${st.key(i)}=${st.getItem(st.key(i)!)}`).join('|');
+    return `${dump(localStorage)}\n${dump(sessionStorage)}\n${document.cookie}\n${location.href}`;
+  });
+  expect(stored).not.toContain(MARKER);
+});
+
+test('keeping full conversations: only after the tap, and only to Life\'s own conversation route', async ({ page }) => {
+  const seen: { where: string; text: string }[] = [];
+  page.on('request', (r) => seen.push({ where: `${r.method()} ${new URL(r.url()).pathname.replace(/[0-9a-f-]{36}$/, ':id')}`, text: [r.url(), JSON.stringify(r.headers()), r.postData() ?? ''].join('\n') }));
+  page.on('websocket', (ws) => ws.on('framesent', (f) => seen.push({ where: `ws ${ws.url()}`, text: String(f.payload) })));
+
+  await signedIn(page);
+  await fakeBff(page, []);
+  await page.goto('/app');
+  await page.getByRole('button', { name: 'Start' }).first().click();
+  await page.getByRole('button', { name: 'Keep my full conversations' }).click();
+  await expect(page.getByText('Your full conversation is kept', { exact: false })).toBeVisible();
+  await page.getByRole('button', { name: 'I agree — start' }).click();
+  await page.getByRole('textbox').fill(`problem ${MARKER}`);
+  await page.getByRole('button', { name: 'Send' }).click();
+  await expect(page.getByText('I hear you. When did it last happen?')).toBeVisible();
+  await page.waitForTimeout(500);
+
+  const carrying = [...new Set(seen.filter((r) => r.text.includes(MARKER)).map((r) => r.where))];
+  expect(carrying.sort()).toEqual(['POST /api/bff/life/talk', 'PUT /api/bff/life/conversations/:id']);
   const stored = await page.evaluate(() => {
     const dump = (st: Storage) => Array.from({ length: st.length }, (_, i) => `${st.key(i)}=${st.getItem(st.key(i)!)}`).join('|');
     return `${dump(localStorage)}\n${dump(sessionStorage)}\n${document.cookie}\n${location.href}`;
