@@ -25,8 +25,8 @@ export interface SessionCopy {
   fProblem: string; fUnderstanding: string; fStep: string;
   keepConsent: string; keepSave: string; keepSaveOn: string; keepSaved: string; keepFailed: string;
   fullOn: string; fullOff: string; fullTurnOn: string; fullTurnOnNote: string; fullSaveFailed: string; fullKeptEnd: string;
-  cTitle: string; cHint: string; cEmpty: string; cContinue: string; cMessages: string; cUnreadable: string; cDownload: string; cLoading: string;
-  jTitle: string; jHint: string; jEmpty: string; jOff: string; jStep: string;
+  cTitle: string; cHint: string; cEmpty: string; cContinue: string; cOpenFailed: string; continueLast: string; startNew: string; menu: string; closeMenu: string; newConversation: string; cMessages: string; cUnreadable: string; cDownload: string; cLoading: string;
+  jTitle: string; jSummaries: string; jHint: string; jEmpty: string; jOff: string; jStep: string;
   jDelete: string; jConfirm: string; jDownload: string; jMore: string; jLess: string;
   readingTitle: string; readingHint: string; readingFewer: string; readingResult: Record<string, string>;
   readingStarted: string; readingReached: string; readingClearer: string; readingNo: string; readingWeek: string;
@@ -103,12 +103,19 @@ const en: SessionCopy = {
   cHint: 'The full conversations you chose to keep, encrypted. Only you can see them.',
   cEmpty: 'No conversation kept yet.',
   cContinue: 'Continue',
+  continueLast: 'Continue my last conversation',
+  startNew: 'Start a new one',
+  menu: 'My journey — conversations and summaries',
+  closeMenu: 'Close',
+  newConversation: 'New conversation',
+  cOpenFailed: 'It could not be opened right now. Try again in a moment.',
   cMessages: '{n} messages',
   cUnreadable: 'This conversation cannot be read.',
   cDownload: 'Download conversations (JSON)',
   cLoading: 'Opening…',
 
   jTitle:    'My journey',
+  jSummaries: 'Summaries',
   jHint:     'The summaries you chose to keep, newest first. Only you can see them.',
   jEmpty:    'Nothing kept yet. At the end of a conversation you can keep a summary of it.',
   jOff:      'Keeping is off — nothing new is kept.',
@@ -203,12 +210,19 @@ const ar: SessionCopy = {
   cHint: 'المحادثات الكاملة التي اخترت الاحتفاظ بها، مشفّرة. لا يراها أحد غيرك.',
   cEmpty: 'لم تُحفظ أي محادثة بعد.',
   cContinue: 'أكمِل',
+  continueLast: 'أكمِل محادثتي الأخيرة',
+  startNew: 'ابدأ محادثة جديدة',
+  menu: 'مسيرتي — المحادثات والخلاصات',
+  closeMenu: 'إغلاق',
+  newConversation: 'محادثة جديدة',
+  cOpenFailed: 'تعذّر فتحها الآن. حاول مرة أخرى بعد قليل.',
   cMessages: '{n} رسالة',
   cUnreadable: 'تعذّرت قراءة هذه المحادثة.',
   cDownload: 'تنزيل المحادثات (JSON)',
   cLoading: 'تُفتح…',
 
   jTitle:    'مسيرتي',
+  jSummaries: 'الخلاصات',
   jHint:     'الخلاصات التي اخترت الاحتفاظ بها، الأحدث أولًا. لا يراها أحد غيرك.',
   jEmpty:    'لم يُحفظ شيء بعد. في نهاية المحادثة يمكنك الاحتفاظ بخلاصة لها.',
   jOff:      'الحفظ متوقف — لا يُحفظ شيء جديد.',

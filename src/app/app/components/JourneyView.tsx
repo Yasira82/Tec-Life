@@ -1,11 +1,12 @@
 'use client';
 
-// ── My journey — Life memory v1 (owner, 2026-10-17) ──────────────────────────
+// ── My journey — one compact list (owner, 2026-10-18: "all of this should be one list") ──
 //
-// "Building the human" needs the person to see their own stages. This is them: the
-// summaries the person read, edited and chose to keep, newest first — never a
-// conversation. Each can be deleted here; all of them can be downloaded as a file
-// on the person's own device. Turning "Keep my journey" off in Privacy deletes them.
+// "Building the human" needs the person to see their own stages. One card holds both
+// halves of the memory — the summaries they confirmed, and the full conversations they
+// chose to keep — behind two tabs. Each item is one line (date · title); tapping it
+// opens its details and its actions. Nothing is a conversation unless the person kept
+// it; deleting takes two taps; download saves on the person's own device.
 import { useEffect, useState } from 'react';
 import { C } from '@/lib-client/palette';
 import { useTranslation } from '@/lib/i18n';
@@ -17,22 +18,34 @@ import {
 import type { Resume } from './ProblemSession';
 import { card } from './shared';
 
-const SHOWN = 3;
 const smallBtn = {
   background: 'transparent', color: C.subtext, border: `1px solid ${C.border}`, borderRadius: 8,
   padding: '6px 10px', fontSize: 12.5, cursor: 'pointer',
 };
+const oneLine = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const };
 
-export function JourneyView({ onContinue }: { onContinue?: (r: Resume) => void }) {
+type Tab = 'summaries' | 'conversations';
+
+function saveFile(name: string, data: unknown) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.click();
+  URL.revokeObjectURL(url);
+}
+
+export function JourneyView({ onContinue, embedded = false }: { onContinue?: (r: Resume) => void; embedded?: boolean }) {
   const { locale } = useTranslation();
   const s = sessionCopy(locale);
   const [journey, setJourney] = useState<Journey | null>(null);
-  const [all, setAll]         = useState(false);
-  const [armed, setArmed]     = useState<string | null>(null);
+  const [convs, setConvs]     = useState<Conversations | null>(null);
+  const [tab, setTab]         = useState<Tab>('summaries');
+  const [open, setOpen]       = useState<string | null>(null);   // the item whose details show
+  const [armed, setArmed]     = useState<string | null>(null);   // the item one tap from deletion
+  const [opening, setOpening] = useState<string | null>(null);
+  const [openFailed, setOpenFailed] = useState<string | null>(null);
 
   useEffect(() => { void readJourney().then(setJourney); }, []);
-  const [convs, setConvs] = useState<Conversations | null>(null);
-  const [opening, setOpening] = useState<string | null>(null);
   useEffect(() => { void listConversations().then(setConvs); }, []);
   useEffect(() => {
     if (!armed) return;
@@ -41,127 +54,134 @@ export function JourneyView({ onContinue }: { onContinue?: (r: Resume) => void }
   }, [armed]);
 
   const date = (iso: string) => new Date(iso).toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
+  const outcome = (e: JourneyEntry) =>
+    e.step_outcome === 'DONE' ? s.outDone : e.step_outcome === 'PARTLY' ? s.outPartly : e.step_outcome === 'NOT_YET' ? s.outNotYet : null;
 
+  const entries = journey?.entries ?? [];
+  const kept = convs?.conversations ?? [];
+  const showConvTab = !!convs && (convs.keeping || kept.length > 0);
+  // Unreadable is not the same as empty: with nothing readable, show nothing at all.
+  if (!journey && !showConvTab) return null;
+
+  const removeEntry = async (id: string) => {
+    if (armed !== id) { setArmed(id); return; }
+    setArmed(null);
+    if (await deleteEntry(id)) setJourney((j) => j && { ...j, entries: j.entries.filter((e) => e.id !== id) });
+  };
   const removeConv = async (id: string) => {
     if (armed !== id) { setArmed(id); return; }
     setArmed(null);
     if (await deleteConversation(id)) setConvs((c) => c && { ...c, conversations: c.conversations.filter((x) => x.id !== id) });
   };
-
   const continueConv = async (id: string) => {
-    setOpening(id);
+    setOpening(id); setOpenFailed(null);
     const messages = await readConversation(id);
     setOpening(null);
-    if (messages && onContinue) onContinue({ id, messages });
+    // A conversation that cannot be opened says so — a button that does nothing
+    // reads as "the conversation is gone" (owner, 2026-10-18).
+    if (!messages || messages.length === 0) { setOpenFailed(id); return; }
+    onContinue?.({ id, messages });
   };
-
-  // The person's own file, on their own device: every kept conversation, read back.
   const downloadConvs = async () => {
-    if (!convs) return;
     const all = [];
-    for (const c of convs.conversations) all.push({ id: c.id, created_at: c.created_at, updated_at: c.updated_at, messages: await readConversation(c.id) });
-    const blob = new Blob([JSON.stringify(all, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'tec-life-conversations.json'; a.click();
-    URL.revokeObjectURL(url);
+    for (const c of kept) all.push({ id: c.id, created_at: c.created_at, updated_at: c.updated_at, messages: await readConversation(c.id) });
+    saveFile('tec-life-conversations.json', all);
   };
 
-  const showConvs = !!convs && (convs.keeping || convs.conversations.length > 0);
-  const convSection = showConvs && convs && (
-    <section style={{ ...card, marginTop: 16 }} aria-label={s.cTitle}>
-      <div style={{ fontSize: 15, fontWeight: 800, color: C.text, marginBottom: 4 }}>{s.cTitle}</div>
-      <div style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.5 }}>{s.cHint}</div>
-      {convs.conversations.length === 0 ? (
-        <div style={{ fontSize: 13, color: C.subtext, marginTop: 10 }}>{s.cEmpty}</div>
-      ) : (
-        <>
-          <ul style={{ listStyle: 'none', padding: 0, margin: '12px 0 0' }}>
-            {convs.conversations.map((c) => (
-              <li key={c.id} translate="no" style={{ borderTop: `1px solid ${C.border}`, padding: '10px 0' }}>
-                <div style={{ fontSize: 11, color: C.faint }}>{date(c.updated_at)} · {s.cMessages.replace('{n}', String(c.message_count))}</div>
-                <div style={{ fontSize: 13.5, color: C.text, marginTop: 2 }}>
-                  {c.readable ? <bdi>{c.preview ?? ''}</bdi> : s.cUnreadable}
-                </div>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
-                  {c.readable && onContinue && (
-                    <button type="button" style={smallBtn} disabled={opening === c.id} onClick={() => void continueConv(c.id)}>
-                      {opening === c.id ? s.cLoading : s.cContinue}
-                    </button>
-                  )}
-                  <button type="button" style={smallBtn} onClick={() => void removeConv(c.id)}>
-                    {armed === c.id ? s.jConfirm : s.jDelete}
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-          <button type="button" style={{ ...smallBtn, marginTop: 8 }} onClick={() => void downloadConvs()}>{s.cDownload}</button>
-        </>
-      )}
-    </section>
+  const row = (id: string, when: string, title: string, meta?: string) => (
+    <button type="button" onClick={() => setOpen(open === id ? null : id)} aria-expanded={open === id}
+      style={{ display: 'flex', width: '100%', alignItems: 'center', gap: 10, background: 'transparent', border: 'none',
+        padding: '10px 0', cursor: 'pointer', color: C.text, textAlign: 'start' }}>
+      <span style={{ fontSize: 11, color: C.faint, flexShrink: 0 }}>{when}</span>
+      <span translate="no" style={{ fontSize: 13.5, flex: 1, minWidth: 0, ...oneLine }}><bdi>{title}</bdi></span>
+      {meta && <span style={{ fontSize: 11, color: C.faint, flexShrink: 0 }}>{meta}</span>}
+      <span aria-hidden style={{ fontSize: 11, color: C.faint, flexShrink: 0 }}>{open === id ? '▴' : '▾'}</span>
+    </button>
   );
 
-  // Unreadable is not the same as empty: show nothing rather than "nothing kept".
-  if (!journey) return convSection || null;
-
-  const outcome = (e: JourneyEntry) =>
-    e.step_outcome === 'DONE' ? s.outDone : e.step_outcome === 'PARTLY' ? s.outPartly : e.step_outcome === 'NOT_YET' ? s.outNotYet : null;
-
-  const remove = async (id: string) => {
-    if (armed !== id) { setArmed(id); return; }
-    setArmed(null);
-    if (await deleteEntry(id)) setJourney((j) => j && { ...j, entries: j.entries.filter((e) => e.id !== id) });
-  };
-
-  // The person's own file, on their own device — nothing leaves for anywhere else.
-  const download = () => {
-    const blob = new Blob([JSON.stringify(journey.entries, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'tec-life-journey.json'; a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const shown = all ? journey.entries : journey.entries.slice(0, SHOWN);
+  const tabBtn = (t: Tab, label: string, n: number) => (
+    <button type="button" role="tab" aria-selected={tab === t} onClick={() => { setTab(t); setOpen(null); }}
+      style={{ flex: 1, padding: '8px 10px', fontSize: 13, fontWeight: 700, cursor: 'pointer', borderRadius: 8,
+        background: tab === t ? C.surface2 : 'transparent', color: tab === t ? C.text : C.subtext,
+        border: `1px solid ${tab === t ? C.border : 'transparent'}` }}>
+      {label} <span style={{ color: C.faint, fontWeight: 600 }}>({n})</span>
+    </button>
+  );
 
   return (
-    <>
-    <section style={{ ...card, marginTop: 16 }} aria-label={s.jTitle}>
-      <div style={{ fontSize: 15, fontWeight: 800, color: C.text, marginBottom: 4 }}>{s.jTitle}</div>
-      <div style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.5 }}>{s.jHint}</div>
-      {!journey.keeping && <div style={{ fontSize: 12.5, color: C.subtext, marginTop: 6 }}>{s.jOff}</div>}
-      {journey.entries.length === 0 ? (
-        <div style={{ fontSize: 13, color: C.subtext, marginTop: 10 }}>{s.jEmpty}</div>
-      ) : (
-        <>
-          <ol style={{ listStyle: 'none', padding: 0, margin: '12px 0 0' }}>
-            {shown.map((e) => (
-              <li key={e.id} translate="no" style={{ borderTop: `1px solid ${C.border}`, padding: '10px 0' }}>
-                <div style={{ fontSize: 11, color: C.faint }}>{date(e.created_at)}</div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: C.text, marginTop: 2 }}><bdi>{e.problem}</bdi></div>
-                <div style={{ fontSize: 13, color: C.text, lineHeight: 1.55, marginTop: 4, whiteSpace: 'pre-wrap' }}><bdi>{e.understanding}</bdi></div>
-                {e.step && (
-                  <div style={{ fontSize: 12.5, color: C.subtext, marginTop: 4 }}>
-                    {s.jStep}: <bdi>{e.step}</bdi>{outcome(e) && <> — {outcome(e)}</>}
-                  </div>
-                )}
-                <button type="button" style={{ ...smallBtn, marginTop: 8 }} onClick={() => void remove(e.id)}>
-                  {armed === e.id ? s.jConfirm : s.jDelete}
-                </button>
-              </li>
-            ))}
-          </ol>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
-            {journey.entries.length > SHOWN && (
-              <button type="button" style={smallBtn} onClick={() => setAll((v) => !v)}>{all ? s.jLess : s.jMore}</button>
-            )}
-            <button type="button" style={smallBtn} onClick={download}>{s.jDownload}</button>
-          </div>
-        </>
+    <section style={embedded ? undefined : { ...card, marginTop: 16 }} aria-label={s.jTitle}>
+      {!embedded && <div style={{ fontSize: 15, fontWeight: 800, color: C.text, marginBottom: 10 }}>{s.jTitle}</div>}
+      {showConvTab && (
+        <div role="tablist" style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
+          {tabBtn('summaries', s.jSummaries, entries.length)}
+          {tabBtn('conversations', s.cTitle, kept.length)}
+        </div>
+      )}
+
+      {tab === 'summaries' && (
+        <div role={showConvTab ? 'tabpanel' : undefined}>
+          {journey && !journey.keeping && <div style={{ fontSize: 12, color: C.subtext, marginTop: 4 }}>{s.jOff}</div>}
+          {entries.length === 0 ? (
+            <div style={{ fontSize: 13, color: C.subtext, marginTop: 8 }}>{s.jEmpty}</div>
+          ) : (
+            <>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {entries.map((e) => (
+                  <li key={e.id} style={{ borderTop: `1px solid ${C.border}` }}>
+                    {row(e.id, date(e.created_at), e.problem, outcome(e) ?? undefined)}
+                    {open === e.id && (
+                      <div translate="no" style={{ paddingBottom: 10 }}>
+                        <div style={{ fontSize: 13, color: C.text, lineHeight: 1.55, whiteSpace: 'pre-wrap' }}><bdi>{e.understanding}</bdi></div>
+                        {e.step && (
+                          <div style={{ fontSize: 12.5, color: C.subtext, marginTop: 4 }}>
+                            {s.jStep}: <bdi>{e.step}</bdi>{outcome(e) && <> — {outcome(e)}</>}
+                          </div>
+                        )}
+                        <button type="button" style={{ ...smallBtn, marginTop: 8 }} onClick={() => void removeEntry(e.id)}>
+                          {armed === e.id ? s.jConfirm : s.jDelete}
+                        </button>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              <button type="button" style={{ ...smallBtn, marginTop: 8 }} onClick={() => saveFile('tec-life-journey.json', entries)}>{s.jDownload}</button>
+            </>
+          )}
+        </div>
+      )}
+
+      {tab === 'conversations' && showConvTab && (
+        <div role="tabpanel">
+          {kept.length === 0 ? (
+            <div style={{ fontSize: 13, color: C.subtext, marginTop: 8 }}>{s.cEmpty}</div>
+          ) : (
+            <>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {kept.map((c) => (
+                  <li key={c.id} style={{ borderTop: `1px solid ${C.border}` }}>
+                    {row(c.id, date(c.updated_at), c.readable ? (c.preview ?? '') : s.cUnreadable, s.cMessages.replace('{n}', String(c.message_count)))}
+                    {open === c.id && (
+                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', paddingBottom: 10 }}>
+                        {c.readable && onContinue && (
+                          <button type="button" style={smallBtn} disabled={opening === c.id} onClick={() => void continueConv(c.id)}>
+                            {opening === c.id ? s.cLoading : s.cContinue}
+                          </button>
+                        )}
+                        <button type="button" style={smallBtn} onClick={() => void removeConv(c.id)}>
+                          {armed === c.id ? s.jConfirm : s.jDelete}
+                        </button>
+                        {openFailed === c.id && <span role="alert" style={{ fontSize: 12, color: C.text, alignSelf: 'center' }}>{s.cOpenFailed}</span>}
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              <button type="button" style={{ ...smallBtn, marginTop: 8 }} onClick={() => void downloadConvs()}>{s.cDownload}</button>
+            </>
+          )}
+        </div>
       )}
     </section>
-    {convSection}
-    </>
   );
 }

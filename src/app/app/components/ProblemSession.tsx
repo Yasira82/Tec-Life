@@ -36,9 +36,11 @@ import {
   type Journey, type JourneyOutcome,
 } from '@/lib-client/life/journey';
 import {
-  listConversations, saveConversation, turnConversationsOn, newConversationId,
+  listConversations, readConversation, saveConversation, turnConversationsOn, newConversationId,
+  type ConversationListing,
 } from '@/lib-client/life/conversations';
 import { card, goldBtn } from './shared';
+import { MenuButton } from './JourneyDrawer';
 
 type Step = 'intro' | 'chat' | 'end';
 
@@ -57,7 +59,7 @@ const ghostBtn = {
 /** A kept conversation to continue: its id and its messages so far. */
 export interface Resume { id: string; messages: Turn[] }
 
-export function ProblemSession({ onClose, resume }: { onClose: () => void; resume?: Resume }) {
+export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => void; resume?: Resume; onMenu?: () => void }) {
   const { locale } = useTranslation();
   const s = sessionCopy(locale);
 
@@ -95,7 +97,8 @@ export function ProblemSession({ onClose, resume }: { onClose: () => void; resum
     setFullSaveFailed(!(await saveConversation(convId.current, all)));
   };
   const last = journey?.keeping ? journey.entries[0] : undefined;
-  const askLastStep = !!last?.step && !last.step_outcome && !answered;
+  // Not when continuing a kept conversation: the person is already back in it.
+  const askLastStep = !resume && !!last?.step && !last.step_outcome && !answered;
   const spoke = turns.some((t) => t.role === 'user');
 
   useEffect(() => {
@@ -190,6 +193,11 @@ export function ProblemSession({ onClose, resume }: { onClose: () => void; resum
 
   return (
     <section aria-live="polite" style={{ ...card, marginTop: 16 }}>
+      {onMenu && (
+        <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 10 }}>
+          <MenuButton onClick={onMenu} />
+        </div>
+      )}
       {step === 'intro' && (
         <>
           <h2 style={{ fontSize: 18, fontWeight: 800, color: C.gold, marginBottom: 10 }}>{s.introTitle}</h2>
@@ -221,7 +229,7 @@ export function ProblemSession({ onClose, resume }: { onClose: () => void; resum
       {step === 'chat' && (
         <>
           <p style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.5 }}>{s.rolesNote}</p>
-          {last?.step && (askLastStep || answered) && (
+          {!resume && last?.step && (askLastStep || answered) && (
             <div style={{ border: `1px solid ${C.border}`, borderRadius: 12, padding: '10px 12px', marginTop: 10 }}>
               {askLastStep ? (
                 <>
@@ -331,15 +339,46 @@ export function ProblemSession({ onClose, resume }: { onClose: () => void; resum
   );
 }
 
-/** The entry on Home: a door into the conversation, nothing more. */
-export function ProblemSessionEntry({ onStart }: { onStart: () => void }) {
+/**
+ * The entry on Home: a door into the conversation. When the person keeps full
+ * conversations, the last one is offered first — a page that closed (Pi Browser does)
+ * should not mean starting over.
+ */
+export function ProblemSessionEntry({ onStart, onContinue, onMenu }: { onStart: () => void; onContinue?: (r: Resume) => void; onMenu?: () => void }) {
   const { locale } = useTranslation();
   const s = sessionCopy(locale);
+  const [last, setLast] = useState<ConversationListing | null>(null);
+  const [opening, setOpening] = useState(false);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    if (!onContinue) return;
+    void listConversations().then((c) => setLast(c?.conversations.find((x) => x.readable) ?? null));
+  }, [onContinue]);
+  const continueLast = async () => {
+    if (!last || !onContinue) return;
+    setOpening(true); setFailed(false);
+    const messages = await readConversation(last.id);
+    setOpening(false);
+    if (messages && messages.length > 0) onContinue({ id: last.id, messages });
+    else setFailed(true);
+  };
   return (
     <section style={{ ...card, marginTop: 16 }}>
-      <div style={{ fontSize: 15, fontWeight: 800, color: C.text, marginBottom: 4 }}>{s.entryTitle}</div>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 4 }}>
+        <div style={{ fontSize: 15, fontWeight: 800, color: C.text, flex: 1 }}>{s.entryTitle}</div>
+        {onMenu && <MenuButton onClick={onMenu} />}
+      </div>
       <div style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.5, marginBottom: 12 }}>{s.entryHint}</div>
-      <button type="button" style={goldBtn} onClick={onStart}>{s.entryCta}</button>
+      {last && (
+        <div style={{ marginBottom: 12 }}>
+          <button type="button" style={goldBtn} disabled={opening} onClick={() => void continueLast()}>
+            {opening ? s.cLoading : s.continueLast}
+          </button>
+          {last.preview && <div translate="no" style={{ fontSize: 12, color: C.subtext, marginTop: 6 }}><bdi>{last.preview}</bdi></div>}
+          {failed && <div role="alert" style={{ fontSize: 12, color: C.text, marginTop: 6 }}>{s.cOpenFailed}</div>}
+        </div>
+      )}
+      <button type="button" style={last ? ghostBtn : goldBtn} onClick={onStart}>{last ? s.startNew : s.entryCta}</button>
     </section>
   );
 }

@@ -18,7 +18,7 @@ import { HomeView } from './components/Home';
 import { SignInGate } from './components/SignInGate';
 import { GoalPrefillReader } from './components/GoalPrefillReader';
 import { ProblemSession, ProblemSessionEntry, type Resume } from './components/ProblemSession';
-import { JourneyView } from './components/JourneyView';
+import { JourneyDrawer } from './components/JourneyDrawer';
 import { type GoalPrefill } from '@/lib/life/prefill';
 
 export default function LifeHome() {
@@ -33,6 +33,10 @@ export default function LifeHome() {
   // Stage 1 session (First Session Spec §8): opened from Home, its words held in its own state only.
   const [inSession, setInSession] = useState(false);
   const [resume, setResume] = useState<Resume | undefined>(undefined);
+  // The side menu, and a key that makes "open another conversation" a fresh session.
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [sessionKey, setSessionKey] = useState(0);
+  const openSession = (r?: Resume) => { setResume(r); setSessionKey((k) => k + 1); setInSession(true); setTab('home'); };
   const { t } = useTranslation();
 
   return (
@@ -99,18 +103,27 @@ export default function LifeHome() {
 
         <SignInGate>
           <GoalPrefillReader onPrefill={(p) => { setPrefill(p); setTab('goals'); }} />
-          {tab === 'home' && (inSession
-            ? <ProblemSession resume={resume} onClose={() => { setInSession(false); setResume(undefined); }} />
-            : <>
-                <ProblemSessionEntry onStart={() => setInSession(true)} />
-                <JourneyView onContinue={(r) => { setResume(r); setInSession(true); }} />
-                <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={setTab} />
-              </>)}
+          {/* The conversation stays alive while the person looks at another tab: it is
+              hidden, not closed. Only Finish (or Not now) ends it — owner, 2026-10-18:
+              "the conversation ends and I want to go on". */}
+          {inSession && (
+            <div hidden={tab !== 'home'}>
+              <ProblemSession key={sessionKey} resume={resume} onMenu={() => setMenuOpen(true)}
+                onClose={() => { setInSession(false); setResume(undefined); }} />
+            </div>
+          )}
+          {tab === 'home' && !inSession && (
+            <>
+              <ProblemSessionEntry onStart={() => openSession()} onContinue={openSession} onMenu={() => setMenuOpen(true)} />
+              <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={setTab} />
+            </>
+          )}
+          <JourneyDrawer open={menuOpen} onClose={() => setMenuOpen(false)} onNew={() => openSession()} onContinue={openSession} />
           {tab === 'goals'    && <Goals isPro={isPro} prefill={prefill} key={prefill ? `pf:${prefill.title}` : 'goals'} />}
           {tab === 'skills'   && <Skills />}
           {tab === 'activity' && <Activity />}
           {tab === 'settings' && <SettingsView isPro={isPro} />}
-          <BottomNav active={tab} onSelect={(t) => { setInSession(false); setTab(t); }} />
+          <BottomNav active={tab} onSelect={setTab} />
         </SignInGate>
       </div>
     </main>
