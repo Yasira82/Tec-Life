@@ -99,18 +99,29 @@ export default function LifeHome() {
 
         <SignInGate>
           <GoalPrefillReader onPrefill={(p) => { setPrefill(p); setTab('goals'); }} />
-          {tab === 'home' && (inSession
-            ? <ProblemSession resume={resume} onClose={() => { setInSession(false); setResume(undefined); }} />
-            : <>
-                <ProblemSessionEntry onStart={() => setInSession(true)} />
-                <JourneyView onContinue={(r) => { setResume(r); setInSession(true); }} />
-                <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={setTab} />
-              </>)}
+          {/* The conversation stays alive while the person looks at another tab: it is
+              hidden, not closed. Only Finish (or Not now) ends it — owner, 2026-10-18:
+              "the conversation ends and I want to go on". */}
+          {inSession && (
+            <div hidden={tab !== 'home'}>
+              <ProblemSession resume={resume} onClose={() => { setInSession(false); setResume(undefined); }} />
+            </div>
+          )}
+          {tab === 'home' && !inSession && (
+            <>
+              <ProblemSessionEntry
+                onStart={() => { setResume(undefined); setInSession(true); }}
+                onContinue={(r) => { setResume(r); setInSession(true); }}
+              />
+              <JourneyView onContinue={(r) => { setResume(r); setInSession(true); }} />
+              <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={setTab} />
+            </>
+          )}
           {tab === 'goals'    && <Goals isPro={isPro} prefill={prefill} key={prefill ? `pf:${prefill.title}` : 'goals'} />}
           {tab === 'skills'   && <Skills />}
           {tab === 'activity' && <Activity />}
           {tab === 'settings' && <SettingsView isPro={isPro} />}
-          <BottomNav active={tab} onSelect={(t) => { setInSession(false); setTab(t); }} />
+          <BottomNav active={tab} onSelect={setTab} />
         </SignInGate>
       </div>
     </main>

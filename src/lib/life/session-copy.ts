@@ -25,7 +25,7 @@ export interface SessionCopy {
   fProblem: string; fUnderstanding: string; fStep: string;
   keepConsent: string; keepSave: string; keepSaveOn: string; keepSaved: string; keepFailed: string;
   fullOn: string; fullOff: string; fullTurnOn: string; fullTurnOnNote: string; fullSaveFailed: string; fullKeptEnd: string;
-  cTitle: string; cHint: string; cEmpty: string; cContinue: string; cOpenFailed: string; cMessages: string; cUnreadable: string; cDownload: string; cLoading: string;
+  cTitle: string; cHint: string; cEmpty: string; cContinue: string; cOpenFailed: string; continueLast: string; startNew: string; cMessages: string; cUnreadable: string; cDownload: string; cLoading: string;
   jTitle: string; jHint: string; jEmpty: string; jOff: string; jStep: string;
   jDelete: string; jConfirm: string; jDownload: string; jMore: string; jLess: string;
   readingTitle: string; readingHint: string; readingFewer: string; readingResult: Record<string, string>;
@@ -103,6 +103,8 @@ const en: SessionCopy = {
   cHint: 'The full conversations you chose to keep, encrypted. Only you can see them.',
   cEmpty: 'No conversation kept yet.',
   cContinue: 'Continue',
+  continueLast: 'Continue my last conversation',
+  startNew: 'Start a new one',
   cOpenFailed: 'It could not be opened right now. Try again in a moment.',
   cMessages: '{n} messages',
   cUnreadable: 'This conversation cannot be read.',
@@ -204,6 +206,8 @@ const ar: SessionCopy = {
   cHint: 'المحادثات الكاملة التي اخترت الاحتفاظ بها، مشفّرة. لا يراها أحد غيرك.',
   cEmpty: 'لم تُحفظ أي محادثة بعد.',
   cContinue: 'أكمِل',
+  continueLast: 'أكمِل محادثتي الأخيرة',
+  startNew: 'ابدأ محادثة جديدة',
   cOpenFailed: 'تعذّر فتحها الآن. حاول مرة أخرى بعد قليل.',
   cMessages: '{n} رسالة',
   cUnreadable: 'تعذّرت قراءة هذه المحادثة.',

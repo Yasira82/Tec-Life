@@ -117,3 +117,42 @@ describe('a conversation that cannot be opened says so', () => {
     expect(onContinue).not.toHaveBeenCalled();
   });
 });
+
+describe('a conversation does not end unless the person ends it (owner, 2026-10-18)', () => {
+  it('Home offers to continue the last kept conversation, and opens it', async () => {
+    convs = { keeping: true, configured: true, conversations: [KEPT] };
+    const onContinue = vi.fn();
+    const { ProblemSessionEntry } = await import('../app/app/components/ProblemSession');
+    render(<ProblemSessionEntry onStart={vi.fn()} onContinue={onContinue} />);
+    fireEvent.click(await screen.findByRole('button', { name: s.continueLast }));
+    await waitFor(() => expect(onContinue).toHaveBeenCalled());
+    expect(onContinue.mock.calls[0]![0].id).toBe(KEPT.id);
+    expect(screen.getByRole('button', { name: s.startNew })).toBeTruthy();
+  });
+
+  it('nothing kept → only the usual Start', async () => {
+    const { ProblemSessionEntry } = await import('../app/app/components/ProblemSession');
+    render(<ProblemSessionEntry onStart={vi.fn()} onContinue={vi.fn()} />);
+    await waitFor(() => expect(calls.some((c) => c.url === '/api/bff/life/conversations')).toBe(true));
+    expect(screen.queryByRole('button', { name: s.continueLast })).toBeNull();
+    expect(screen.getByRole('button', { name: s.entryCta })).toBeTruthy();
+  });
+
+  it('a continued conversation does not ask about the last step', async () => {
+    (globalThis.fetch as unknown as ReturnType<typeof vi.fn>).mockImplementation(async (u: RequestInfo | URL) =>
+      String(u) === '/api/bff/life/journey'
+        ? ok({ keeping: true, entries: [{ id: 'j1', problem: 'p', understanding: 'u', step: 'Phone in the kitchen', step_outcome: null, created_at: '2026-10-10T09:00:00.000Z' }] })
+        : ok(convs));
+    render(<ProblemSession onClose={vi.fn()} resume={{ id: KEPT.id, messages: [{ role: 'assistant', content: 'opener' }, { role: 'user', content: 'hi' }, { role: 'assistant', content: 'Tell me more.' }] }} />);
+    expect(screen.getByText('Tell me more.')).toBeTruthy();
+    await new Promise((r) => setTimeout(r, 50)); // let the journey read land
+    expect(screen.queryByText(s.lastStepQ.replace('{step}', 'Phone in the kitchen'))).toBeNull();
+  });
+
+  it('switching tabs does not close the conversation — only hides it', async () => {
+    const { readFileSync } = await import('node:fs');
+    const page = readFileSync('src/app/app/page.tsx', 'utf8');
+    expect(page).toMatch(/<BottomNav active=\{tab\} onSelect=\{setTab\} \/>/);
+    expect(page).toMatch(/hidden=\{tab !== 'home'\}/);
+  });
+});
