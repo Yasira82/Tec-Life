@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 const APP     = 'TEC Life';
 const DOMAIN  = 'life.tecosystem.app';
-const UPDATED = '3 July 2026';
+const UPDATED = '19 October 2026';
 
 export const metadata: Metadata = {
   title:       `Privacy Policy — ${APP}`,
@@ -52,6 +52,7 @@ export default function PrivacyPage() {
 
       <h2 style={h2}>7. Data Retention</h2>
       <p>We retain transaction and account records as long as needed to provide the service and to meet legal, accounting, and security obligations.</p>
+      <p>When you delete something in {APP} — a goal, a summary, a kept conversation, a category you switch off, or all of your Life data — it is removed from our live database at once. Our encrypted nightly backups keep a copy for up to 8 weeks, then expire. Every deletion is also recorded, by its id only and never its content, in a separate ledger; if a backup is ever restored, your deletions are applied again before {APP} serves anyone, so a restore cannot bring them back.</p>
 
       <h2 style={h2}>8. Your Rights</h2>
       <ul>
