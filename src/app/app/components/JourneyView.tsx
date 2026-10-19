@@ -35,7 +35,9 @@ function saveFile(name: string, data: unknown) {
   URL.revokeObjectURL(url);
 }
 
-export function JourneyView({ onContinue, embedded = false }: { onContinue?: (r: Resume) => void; embedded?: boolean }) {
+export function JourneyView({ onContinue, onMakeGoal, embedded = false }: {
+  onContinue?: (r: Resume) => void; onMakeGoal?: (step: string) => void; embedded?: boolean;
+}) {
   const { locale } = useTranslation();
   const s = sessionCopy(locale);
   const [journey, setJourney] = useState<Journey | null>(null);
@@ -140,6 +142,11 @@ export function JourneyView({ onContinue, embedded = false }: { onContinue?: (r:
                           <div style={{ fontSize: 12.5, color: C.subtext, marginTop: 4 }}>
                             {s.jStep}: <bdi>{e.step}</bdi>{outcome(e) && <> — {outcome(e)}</>}
                           </div>
+                        )}
+                        {e.step && onMakeGoal && (
+                          // One tap from a step to a goal (owner, 2026-10-18). Nothing is saved
+                          // here: the Goals tab opens with the step in its Add field, editable.
+                          <button type="button" style={{ ...smallBtn, marginTop: 8 }} onClick={() => onMakeGoal(e.step!)}>{s.jMakeGoal}</button>
                         )}
                         <JourneyMeasure entry={e} keeping={!!journey?.keeping} s={s} date={date}
                           onUpdate={(n) => setJourney((j) => j && { ...j, entries: j.entries.map((x) => (x.id === n.id ? { ...x, ...n } : x)) })} />

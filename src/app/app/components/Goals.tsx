@@ -16,6 +16,7 @@ import { FREE_ACTIVE_GOAL_CAP, STATUS_COLOR, card, fmtPi, goldBtn, inputStyle } 
 import { Overview } from './Overview';
 import { Pace } from './Pace';
 import { type GoalPrefill } from '@/lib/life/prefill';
+import { sessionCopy } from '@/lib/life/session-copy';
 import { parseSteps, toggleStep, withSteps } from '@/lib/life/steps';
 
 // One goal row. If it has a π target, shows a progress bar + a compact "log progress"
@@ -139,7 +140,7 @@ export function GoalItem({
 
 
 export function Goals({ isPro, prefill }: { isPro: boolean; prefill?: GoalPrefill | null }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { goals, loading, error, busy, addGoal, addProgress, setStatus, setDescription, removeGoal } = useGoals();
   // A3 (C-104 §10.1): a goal TEC AI proposed arrives as text in the form, and
   // nothing is saved until the person taps Add — the same submit as a typed goal.
@@ -191,7 +192,7 @@ export function Goals({ isPro, prefill }: { isPro: boolean; prefill?: GoalPrefil
           in a panel made it look like content rather than a control. */}
       {suggested && (
         <p data-testid="goal-prefill-note" style={{ color: C.gold, fontSize: 12, margin: '14px 2px 0', lineHeight: 1.5 }}>
-          {t.life.goals.prefill}
+          {prefill?.from === 'journey' ? sessionCopy(locale).jGoalNote : t.life.goals.prefill}
         </p>
       )}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: suggested ? 8 : 14 }}>

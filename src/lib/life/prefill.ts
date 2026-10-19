@@ -16,7 +16,14 @@ const TARGET_MAX = 1_000_000_000;            // the BFF's CreateGoalSchema bound
 import { STEP_MAX, cleanStep } from './steps';
 
 /** `steps` — the steps TEC AI proposed toward the goal, `;`-separated; at most five. */
-export interface GoalPrefill { title: string; target?: string; steps?: string[] }
+/** `from: 'journey'` — the step of a summary in My journey, sent by the person's own tap. */
+export interface GoalPrefill { title: string; target?: string; steps?: string[]; from?: 'journey' }
+
+/** A journey step as a goal title: one line, at the field's own limit — still editable. */
+export function stepAsGoal(step: string): GoalPrefill | null {
+  const title = step.replace(/\s+/g, ' ').trim().slice(0, GOAL_TITLE_MAX).trim();
+  return title ? { title, from: 'journey' } : null;
+}
 
 export function readGoalPrefill(search: string): GoalPrefill | null {
   let q: URLSearchParams;

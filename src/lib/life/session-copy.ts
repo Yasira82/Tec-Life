@@ -31,7 +31,7 @@ export interface SessionCopy {
   mAdd: string; mHint: string; mLabel: string; mLabelPh: string; mKindNumber: string; mKindRating: string;
   mPerDay: string; mPerWeek: string; mPerMonth: string; mValueNow: string; mSave: string; mSkip: string; mFailed: string;
   mBefore: string; mAfter: string; mFollowCta: string; mUnknown: string; mNotMeasured: string;
-  mChange: string; mClaim: string; mRemove: string; mEdit: string; mOutOf5: string;
+  mChange: string; mClaim: string; mRemove: string; mEdit: string; mOutOf5: string; jMakeGoal: string; jGoalNote: string;
   readingTitle: string; readingHint: string; readingFewer: string; readingResult: Record<string, string>;
   readingStarted: string; readingReached: string; readingClearer: string; readingNo: string; readingWeek: string;
 }
@@ -140,6 +140,8 @@ const en: SessionCopy = {
   mChange: 'From {a} to {b}, between {d1} and {d2}.',
   mClaim:  'A change you recorded — not proof that the step alone caused it.',
   mRemove: 'Remove the measure', mEdit: 'Edit', mOutOf5: '{n} of 5',
+  jMakeGoal: 'Make it a goal',
+  jGoalNote: 'Your step from My journey — edit it or ignore it. Nothing is saved until you tap Add.',
   jDelete:   'Delete',
   jConfirm:  'Tap again to delete',
   jDownload: 'Download (JSON)',
@@ -263,6 +265,8 @@ const ar: SessionCopy = {
   mChange: 'من {a} إلى {b}، بين {d1} و{d2}.',
   mClaim:  'تغيير سجّلته أنت، وليس دليلًا على أن الخطوة وحدها سببته.',
   mRemove: 'إزالة القياس', mEdit: 'تعديل', mOutOf5: '{n} من 5',
+  jMakeGoal: 'اجعلها هدفًا',
+  jGoalNote: 'خطوتك من مسيرتك — عدّلها أو تجاهلها. لا شيء يُحفظ قبل أن تضغط إضافة.',
   jDelete:   'حذف',
   jConfirm:  'اضغط مرة أخرى للحذف',
   jDownload: 'تنزيل (JSON)',
