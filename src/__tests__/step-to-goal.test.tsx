@@ -31,7 +31,7 @@ describe('My journey → Make it a goal', () => {
     { id: 'j2', problem: 'Late nights', understanding: 'u', step: null, step_outcome: null, created_at: '2026-10-17T09:00:00.000Z' },
   ];
   const stub = () => {
-    const f = vi.fn(async (u: RequestInfo | URL) => String(u) === '/api/bff/life/journey'
+    const f = vi.fn(async (u: RequestInfo | URL, _init?: RequestInit) => String(u) === '/api/bff/life/journey'
       ? ok({ keeping: true, entries }) : ok({ keeping: false, configured: false, conversations: [] }));
     vi.stubGlobal('fetch', f);
     return f;
@@ -43,7 +43,7 @@ describe('My journey → Make it a goal', () => {
     fireEvent.click(await screen.findByRole('button', { name: /Smoking/ }));
     fireEvent.click(screen.getByRole('button', { name: s.jMakeGoal }));
     expect(onMakeGoal).toHaveBeenCalledWith('Set a quit date this week');
-    expect(f.mock.calls.filter(([, init]) => (init as RequestInit | undefined)?.method && (init as RequestInit).method !== 'GET')).toEqual([]);
+    expect(f.mock.calls.filter(([, init]) => init?.method && init.method !== 'GET')).toEqual([]);
   });
 
   it('a summary with no step offers no button', async () => {
