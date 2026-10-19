@@ -64,10 +64,13 @@ describe('Goals opened from a step', () => {
     expect(screen.getByTestId('goal-prefill-note').textContent).toBe(s.jGoalNote);
     expect(screen.getByTestId('goal-prefill-note').textContent).not.toBe(DICTIONARIES.en.life.goals.prefill);
     expect(f.mock.calls.some(([, init]) => init?.method === 'POST')).toBe(false);
+    // a habit, not a sum: no π target field, and none is sent
+    expect(screen.queryByPlaceholderText(DICTIONARIES.en.life.goals.targetPlaceholder)).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: DICTIONARIES.en.life.goals.add }));
     await waitFor(() => expect(f.mock.calls.some(([, init]) => init?.method === 'POST')).toBe(true));
     const post = f.mock.calls.find(([, init]) => init?.method === 'POST')!;
     expect(String(post[0])).toBe('/api/bff/life/goals');
     expect(JSON.parse(String(post[1]!.body)).title).toBe('Set a quit date this week');
+    expect(JSON.parse(String(post[1]!.body))).not.toHaveProperty('target_amount');
   });
 });

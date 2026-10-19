@@ -204,14 +204,16 @@ export function Goals({ isPro, prefill }: { isPro: boolean; prefill?: GoalPrefil
           placeholder={t.life.goals.addPlaceholder}
           maxLength={200}
         />
-        <input
+        {/* A step from My journey is a habit, not a sum: no π field (owner, 2026-10-19 —
+            "quit smoking, and set a goal in π?"). The goal is ticked when done. */}
+        {!(suggested && prefill?.from === 'journey') && <input
           style={{ ...inputStyle, background: C.surface, borderRadius: 12, padding: '11px 13px', flex: '0 0 120px' }}
           value={target}
           onChange={(e) => setTarget(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
           inputMode="decimal"
           placeholder={t.life.goals.targetPlaceholder}
-        />
+        />}
         <button style={{ ...goldBtn, borderRadius: 12, padding: '11px 18px', opacity: busy || !title.trim() ? 0.55 : 1 }}
           onClick={submit} disabled={busy || !title.trim()}>{t.life.goals.add}</button>
       </div>
