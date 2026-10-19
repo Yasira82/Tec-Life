@@ -76,7 +76,7 @@ export function GoalItem({
             {t.life.goals.askAi} →
           </a>
         )}
-        <button onClick={onDelete} title="Delete"
+        <button onClick={onDelete} title={t.life.goals.deleteGoal} aria-label={t.life.goals.deleteGoal}
           style={{ background: 'none', border: 'none', color: C.subtext, cursor: 'pointer', fontSize: 16, flexShrink: 0 }}>×</button>
       </div>
 
@@ -121,14 +121,14 @@ export function GoalItem({
                 onChange={(e) => setAmt(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') log(); }}
                 inputMode="decimal"
-                placeholder="+ π amount"
+                placeholder={t.life.goals.logPlaceholder}
               />
               <button
                 onClick={log}
                 disabled={busy}
                 style={{ background: 'transparent', color: C.gold, border: `1px solid ${goldA(0.333)}`,
                          borderRadius: 10, padding: '7px 14px', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: busy ? 0.6 : 1 }}>
-                Log
+                {t.life.goals.log}
               </button>
             </div>
           )}
@@ -165,10 +165,10 @@ export function Goals({ isPro, prefill, onPrefillUsed }: { isPro: boolean; prefi
   // like the one before it.
 
   const submit = async () => {
-    const t = title.trim();
-    if (!t) return;
+    const name = title.trim();
+    if (!name) return;
     if (atFreeCap) {
-      setGate(`Free plan is limited to ${FREE_ACTIVE_GOAL_CAP} active goals. Upgrade to Life Pro for unlimited.`);
+      setGate(t.life.goals.freeCap.replace('{n}', String(FREE_ACTIVE_GOAL_CAP)));
       return;
     }
     setGate(null);
@@ -178,7 +178,7 @@ export function Goals({ isPro, prefill, onPrefillUsed }: { isPro: boolean; prefi
     setTarget('');
     setSteps([]);
     setSuggested(false);
-    await addGoal(t, Number.isFinite(amt) && amt > 0 ? amt : undefined, description);
+    await addGoal(name, Number.isFinite(amt) && amt > 0 ? amt : undefined, description);
     // Only after the goal is saved: clearing the prefill remounts this form (empty), and
     // the remount reads the list again — with the new goal in it.
     if (suggested) onPrefillUsed?.();
