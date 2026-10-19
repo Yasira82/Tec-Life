@@ -37,6 +37,10 @@ export default function LifeHome() {
   // The side menu, and a key that makes "open another conversation" a fresh session.
   const [menuOpen, setMenuOpen] = useState(false);
   const [sessionKey, setSessionKey] = useState(0);
+  // A proposed goal is offered ONCE: after Add, or when the person moves to another tab, it
+  // is gone — coming back to Goals shows an empty form, not the same step again (owner,
+  // 2026-10-19: the step was still in the field after it had been added).
+  const goTo = (t: LifeTab) => { if (t !== 'goals') setPrefill(null); setTab(t); };
   const openSession = (r?: Resume) => { setResume(r); setSessionKey((k) => k + 1); setInSession(true); setTab('home'); };
   const { t } = useTranslation();
 
@@ -116,16 +120,16 @@ export default function LifeHome() {
           {tab === 'home' && !inSession && (
             <>
               <ProblemSessionEntry onStart={() => openSession()} onContinue={openSession} onMenu={() => setMenuOpen(true)} />
-              <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={setTab} />
+              <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={goTo} />
             </>
           )}
           <JourneyDrawer open={menuOpen} onClose={() => setMenuOpen(false)} onNew={() => openSession()} onContinue={openSession}
             onMakeGoal={(step) => { const p = stepAsGoal(step); if (!p) return; setPrefill(p); setPrefillN((n) => n + 1); setTab('goals'); }} />
-          {tab === 'goals'    && <Goals isPro={isPro} prefill={prefill} key={prefill ? `pf:${prefillN}:${prefill.title}` : 'goals'} />}
+          {tab === 'goals'    && <Goals isPro={isPro} prefill={prefill} onPrefillUsed={() => setPrefill(null)} key={prefill ? `pf:${prefillN}:${prefill.title}` : 'goals'} />}
           {tab === 'skills'   && <Skills />}
           {tab === 'activity' && <Activity />}
           {tab === 'settings' && <SettingsView isPro={isPro} />}
-          <BottomNav active={tab} onSelect={setTab} />
+          <BottomNav active={tab} onSelect={goTo} />
         </SignInGate>
       </div>
     </main>
