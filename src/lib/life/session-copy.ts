@@ -28,6 +28,10 @@ export interface SessionCopy {
   cTitle: string; cHint: string; cEmpty: string; cContinue: string; cOpenFailed: string; cDeleteFailed: string; continueLast: string; startNew: string; menu: string; closeMenu: string; newConversation: string; cMessages: string; cUnreadable: string; cDownload: string; cLoading: string;
   jTitle: string; jSummaries: string; jHint: string; jEmpty: string; jOff: string; jStep: string;
   jDelete: string; jConfirm: string; jDownload: string; jMore: string; jLess: string;
+  mAdd: string; mHint: string; mLabel: string; mLabelPh: string; mKindNumber: string; mKindRating: string;
+  mPerDay: string; mPerWeek: string; mPerMonth: string; mValueNow: string; mSave: string; mSkip: string; mFailed: string;
+  mBefore: string; mAfter: string; mFollowCta: string; mUnknown: string; mNotMeasured: string;
+  mChange: string; mClaim: string; mRemove: string; mEdit: string; mOutOf5: string;
   readingTitle: string; readingHint: string; readingFewer: string; readingResult: Record<string, string>;
   readingStarted: string; readingReached: string; readingClearer: string; readingNo: string; readingWeek: string;
 }
@@ -121,6 +125,21 @@ const en: SessionCopy = {
   jEmpty:    'Nothing kept yet. At the end of a conversation you can keep a summary of it.',
   jOff:      'Keeping is off — nothing new is kept.',
   jStep:     'Step',
+  mAdd:        '+ Record a measure (optional)',
+  mHint:       'If you like, write down one thing you can count now, and count it again later. Only you type the value, and you can skip.',
+  mLabel:      'What will you count?',
+  mLabelPh:    'e.g. cigarettes',
+  mKindNumber: 'A number',
+  mKindRating: 'A rating from 1 to 5',
+  mPerDay: 'a day', mPerWeek: 'a week', mPerMonth: 'a month',
+  mValueNow:   'Your value now',
+  mSave: 'Save', mSkip: 'Skip', mFailed: 'It could not be saved. Try again.',
+  mBefore: 'Before', mAfter: 'Later',
+  mFollowCta:  'Record it again now',
+  mUnknown: "I don't know", mNotMeasured: "I didn't count",
+  mChange: 'From {a} to {b}, between {d1} and {d2}.',
+  mClaim:  'A change you recorded — not proof that the step alone caused it.',
+  mRemove: 'Remove the measure', mEdit: 'Edit', mOutOf5: '{n} of 5',
   jDelete:   'Delete',
   jConfirm:  'Tap again to delete',
   jDownload: 'Download (JSON)',
@@ -229,6 +248,21 @@ const ar: SessionCopy = {
   jEmpty:    'لم يُحفظ شيء بعد. في نهاية المحادثة يمكنك الاحتفاظ بخلاصة لها.',
   jOff:      'الحفظ متوقف — لا يُحفظ شيء جديد.',
   jStep:     'الخطوة',
+  mAdd:        '+ سجّل قياسًا (اختياري)',
+  mHint:       'إن أحببت، اكتب شيئًا واحدًا تستطيع أن تعدّه الآن، ثم عُدّه مرة أخرى لاحقًا. أنت وحدك من يكتب القيمة، ويمكنك أن تتخطى.',
+  mLabel:      'ما الذي ستعدّه؟',
+  mLabelPh:    'مثلًا: السجائر',
+  mKindNumber: 'رقم',
+  mKindRating: 'تقييم من 1 إلى 5',
+  mPerDay: 'في اليوم', mPerWeek: 'في الأسبوع', mPerMonth: 'في الشهر',
+  mValueNow:   'قيمتك الآن',
+  mSave: 'احفظ', mSkip: 'تخطَّ', mFailed: 'تعذّر الحفظ. حاول مرة أخرى.',
+  mBefore: 'قبل', mAfter: 'بعد',
+  mFollowCta:  'سجّل القيمة الآن',
+  mUnknown: 'لا أعرف', mNotMeasured: 'لم أعدّ',
+  mChange: 'من {a} إلى {b}، بين {d1} و{d2}.',
+  mClaim:  'تغيير سجّلته أنت، وليس دليلًا على أن الخطوة وحدها سببته.',
+  mRemove: 'إزالة القياس', mEdit: 'تعديل', mOutOf5: '{n} من 5',
   jDelete:   'حذف',
   jConfirm:  'اضغط مرة أخرى للحذف',
   jDownload: 'تنزيل (JSON)',

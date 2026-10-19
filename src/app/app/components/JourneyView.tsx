@@ -16,6 +16,7 @@ import {
   listConversations, readConversation, deleteConversation, type Conversations,
 } from '@/lib-client/life/conversations';
 import type { Resume } from './ProblemSession';
+import { JourneyMeasure } from './JourneyMeasure';
 import { card } from './shared';
 
 const smallBtn = {
@@ -140,6 +141,8 @@ export function JourneyView({ onContinue, embedded = false }: { onContinue?: (r:
                             {s.jStep}: <bdi>{e.step}</bdi>{outcome(e) && <> — {outcome(e)}</>}
                           </div>
                         )}
+                        <JourneyMeasure entry={e} keeping={!!journey?.keeping} s={s} date={date}
+                          onUpdate={(n) => setJourney((j) => j && { ...j, entries: j.entries.map((x) => (x.id === n.id ? { ...x, ...n } : x)) })} />
                         <button type="button" style={{ ...smallBtn, marginTop: 8 }} onClick={() => void removeEntry(e.id)}>
                           {armed === e.id ? s.jConfirm : s.jDelete}
                         </button>
