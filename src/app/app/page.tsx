@@ -19,7 +19,7 @@ import { SignInGate } from './components/SignInGate';
 import { GoalPrefillReader } from './components/GoalPrefillReader';
 import { ProblemSession, ProblemSessionEntry, type Resume } from './components/ProblemSession';
 import { JourneyDrawer } from './components/JourneyDrawer';
-import { type GoalPrefill } from '@/lib/life/prefill';
+import { type GoalPrefill, stepAsGoal } from '@/lib/life/prefill';
 
 export default function LifeHome() {
   const { user, isLoading } = usePiAuth();
@@ -30,6 +30,7 @@ export default function LifeHome() {
   const isPro = isProPlan(plan ?? (user as { subscriptionPlan?: string } | null)?.subscriptionPlan);
   const [tab, setTab] = useState<LifeTab>('home');
   const [prefill, setPrefill] = useState<GoalPrefill | null>(null);
+  const [prefillN, setPrefillN] = useState(0); // a new tap opens a fresh Add form, even for the same step
   // Stage 1 session (First Session Spec §8): opened from Home, its words held in its own state only.
   const [inSession, setInSession] = useState(false);
   const [resume, setResume] = useState<Resume | undefined>(undefined);
@@ -118,8 +119,9 @@ export default function LifeHome() {
               <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={setTab} />
             </>
           )}
-          <JourneyDrawer open={menuOpen} onClose={() => setMenuOpen(false)} onNew={() => openSession()} onContinue={openSession} />
-          {tab === 'goals'    && <Goals isPro={isPro} prefill={prefill} key={prefill ? `pf:${prefill.title}` : 'goals'} />}
+          <JourneyDrawer open={menuOpen} onClose={() => setMenuOpen(false)} onNew={() => openSession()} onContinue={openSession}
+            onMakeGoal={(step) => { const p = stepAsGoal(step); if (!p) return; setPrefill(p); setPrefillN((n) => n + 1); setTab('goals'); }} />
+          {tab === 'goals'    && <Goals isPro={isPro} prefill={prefill} key={prefill ? `pf:${prefillN}:${prefill.title}` : 'goals'} />}
           {tab === 'skills'   && <Skills />}
           {tab === 'activity' && <Activity />}
           {tab === 'settings' && <SettingsView isPro={isPro} />}

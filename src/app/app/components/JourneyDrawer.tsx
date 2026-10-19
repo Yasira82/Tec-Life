@@ -26,8 +26,8 @@ export function MenuButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-export function JourneyDrawer({ open, onClose, onNew, onContinue }: {
-  open: boolean; onClose: () => void; onNew: () => void; onContinue: (r: Resume) => void;
+export function JourneyDrawer({ open, onClose, onNew, onContinue, onMakeGoal }: {
+  open: boolean; onClose: () => void; onNew: () => void; onContinue: (r: Resume) => void; onMakeGoal?: (step: string) => void;
 }) {
   const { locale } = useTranslation();
   const s = sessionCopy(locale);
@@ -57,7 +57,8 @@ export function JourneyDrawer({ open, onClose, onNew, onContinue }: {
         <button type="button" style={{ ...goldBtn, width: '100%', marginBottom: 16 }} onClick={() => { onNew(); onClose(); }}>
           ＋ {s.newConversation}
         </button>
-        <JourneyView embedded onContinue={(r) => { onContinue(r); onClose(); }} />
+        <JourneyView embedded onContinue={(r) => { onContinue(r); onClose(); }}
+          onMakeGoal={onMakeGoal && ((step) => { onMakeGoal(step); onClose(); })} />
       </div>
     </div>
   );
