@@ -188,7 +188,10 @@ describe('a conversation does not end unless the person ends it (owner, 2026-10-
   it('switching tabs does not close the conversation — only hides it', async () => {
     const { readFileSync } = await import('node:fs');
     const page = readFileSync('src/app/app/page.tsx', 'utf8');
-    expect(page).toMatch(/<BottomNav active=\{tab\} onSelect=\{setTab\} \/>/);
+    expect(page).toMatch(/<BottomNav active=\{tab\} onSelect=\{goTo\} \/>/);
+    // goTo only forgets a proposed goal — it never touches the conversation
+    const goTo = page.match(/const goTo = [^\n]*/)![0];
+    expect(goTo).not.toMatch(/InSession|Resume|sessionKey/);
     expect(page).toMatch(/hidden=\{tab !== 'home'\}/);
   });
 });

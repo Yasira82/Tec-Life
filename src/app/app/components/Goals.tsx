@@ -139,7 +139,7 @@ export function GoalItem({
 }
 
 
-export function Goals({ isPro, prefill }: { isPro: boolean; prefill?: GoalPrefill | null }) {
+export function Goals({ isPro, prefill, onPrefillUsed }: { isPro: boolean; prefill?: GoalPrefill | null; onPrefillUsed?: () => void }) {
   const { t, locale } = useTranslation();
   const { goals, loading, error, busy, addGoal, addProgress, setStatus, setDescription, removeGoal } = useGoals();
   // A3 (C-104 §10.1): a goal TEC AI proposed arrives as text in the form, and
@@ -179,6 +179,9 @@ export function Goals({ isPro, prefill }: { isPro: boolean; prefill?: GoalPrefil
     setSteps([]);
     setSuggested(false);
     await addGoal(t, Number.isFinite(amt) && amt > 0 ? amt : undefined, description);
+    // Only after the goal is saved: clearing the prefill remounts this form (empty), and
+    // the remount reads the list again — with the new goal in it.
+    if (suggested) onPrefillUsed?.();
   };
 
   return (

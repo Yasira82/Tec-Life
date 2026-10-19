@@ -74,3 +74,29 @@ describe('Goals opened from a step', () => {
     expect(JSON.parse(String(post[1]!.body))).not.toHaveProperty('target_amount');
   });
 });
+
+describe('a proposed goal is offered once (owner, 2026-10-19)', () => {
+  it('Add tells the page the prefill is used — after the goal is saved', async () => {
+    const order: string[] = [];
+    vi.stubGlobal('fetch', vi.fn(async (_u: RequestInfo | URL, init?: RequestInit) => {
+      if (init?.method === 'POST') { order.push('post'); return ok({ goal: {} }); }
+      return ok({ goals: [] });
+    }));
+    const onPrefillUsed = vi.fn(() => order.push('used'));
+    render(<Goals isPro={false} prefill={stepAsGoal('Pray at the mosque on Friday')} onPrefillUsed={onPrefillUsed} />);
+    await screen.findByDisplayValue('Pray at the mosque on Friday');
+    fireEvent.click(screen.getByRole('button', { name: DICTIONARIES.en.life.goals.add }));
+    await waitFor(() => expect(onPrefillUsed).toHaveBeenCalledTimes(1));
+    expect(order).toEqual(['post', 'used']);
+  });
+
+  it('a goal typed by hand does not report a prefill', async () => {
+    vi.stubGlobal('fetch', vi.fn(async (_u: RequestInfo | URL, init?: RequestInit) => ok(init?.method === 'POST' ? { goal: {} } : { goals: [] })));
+    const onPrefillUsed = vi.fn();
+    render(<Goals isPro={false} onPrefillUsed={onPrefillUsed} />);
+    fireEvent.change(await screen.findByPlaceholderText(DICTIONARIES.en.life.goals.addPlaceholder), { target: { value: 'Read' } });
+    fireEvent.click(screen.getByRole('button', { name: DICTIONARIES.en.life.goals.add }));
+    await waitFor(() => expect(vi.mocked(fetch).mock.calls.some(([, i]) => i?.method === 'POST')).toBe(true));
+    expect(onPrefillUsed).not.toHaveBeenCalled();
+  });
+});
