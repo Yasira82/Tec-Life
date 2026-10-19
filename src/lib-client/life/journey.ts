@@ -5,6 +5,10 @@
 // the session cookie; the owner is the session, never a field sent from here.
 export type JourneyOutcome = 'DONE' | 'PARTLY' | 'NOT_YET';
 
+export type MeasureKind = 'NUMBER' | 'RATING_1_5';
+export type MeasurePeriod = 'DAY' | 'WEEK' | 'MONTH';
+export type FollowupStatus = 'MEASURED' | 'UNKNOWN' | 'NOT_MEASURED';
+
 export interface JourneyEntry {
   id: string;
   problem: string;
@@ -12,7 +16,20 @@ export interface JourneyEntry {
   step: string | null;
   step_outcome: JourneyOutcome | null;
   created_at: string;
+  // "Before and after" v1 (owner, 2026-10-18) — all absent/null unless the person recorded one.
+  measure_kind?: MeasureKind | null;
+  measure_label?: string | null;
+  measure_period?: MeasurePeriod | null;
+  baseline_value?: number | null;
+  baseline_at?: string | null;
+  followup_value?: number | null;
+  followup_at?: string | null;
+  followup_status?: FollowupStatus | null;
 }
+
+/** The value BEFORE the step — typed by the person; there is no default and no guess. */
+export interface MeasureDraft { kind: MeasureKind; label: string; period: MeasurePeriod; value: number }
+export type FollowupDraft = { status: 'MEASURED'; value: number } | { status: 'UNKNOWN' | 'NOT_MEASURED' };
 
 export interface Journey { keeping: boolean; entries: JourneyEntry[] }
 
@@ -76,6 +93,39 @@ export async function setOutcome(id: string, step_outcome: JourneyOutcome): Prom
 export async function deleteEntry(id: string): Promise<boolean> {
   try {
     const res = await fetch(`/api/bff/life/journey/${encodeURIComponent(id)}`, { method: 'DELETE', credentials: 'include' });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+const put = (body: unknown): RequestInit => ({ method: 'PUT', credentials: 'include', headers: json, body: JSON.stringify(body) });
+
+async function entryOf(request: () => Promise<Response>): Promise<JourneyEntry | null> {
+  try {
+    const res = await request();
+    if (!res.ok) return null;
+    const out = await res.json() as { data?: { entry?: JourneyEntry } };
+    return out?.data?.entry ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Record the value before the step. Recording it again starts the measure over. */
+export function setMeasure(id: string, m: MeasureDraft): Promise<JourneyEntry | null> {
+  return entryOf(() => fetch(`/api/bff/life/journey/${encodeURIComponent(id)}/measure`, put(m)));
+}
+
+/** Record the value later — or "I don't know" / "I didn't count", which carry no number. */
+export function setFollowup(id: string, f: FollowupDraft): Promise<JourneyEntry | null> {
+  return entryOf(() => fetch(`/api/bff/life/journey/${encodeURIComponent(id)}/followup`, put(f)));
+}
+
+/** Remove the measure (both values); the summary stays. */
+export async function clearMeasure(id: string): Promise<boolean> {
+  try {
+    const res = await fetch(`/api/bff/life/journey/${encodeURIComponent(id)}/measure`, { method: 'DELETE', credentials: 'include' });
     return res.ok;
   } catch {
     return false;
