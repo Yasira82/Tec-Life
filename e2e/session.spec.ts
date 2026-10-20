@@ -59,7 +59,8 @@ test('the conversation\'s words go to Life\'s talk route and nowhere else', asyn
   await page.goto('/app');
 
   await page.getByRole('button', { name: 'Start' }).first().click();   // the entry on Home
-  await expect(page.getByText('sent to an AI model (Groq)', { exact: false })).toBeVisible();
+  await expect(page.getByText('what you write is sent to an AI model', { exact: false })).toBeVisible();
+  await expect(page.getByText('Groq', { exact: false })).toHaveCount(0);   // no vendor name on screen (owner, 2026-10-20)
   // Nothing goes anywhere before the person agrees.
   expect(seen.filter((r) => r.where.includes('/life/talk'))).toEqual([]);
   await page.getByRole('button', { name: 'I agree — start' }).click();
