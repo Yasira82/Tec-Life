@@ -78,7 +78,8 @@ describe('Goals opened from a step', () => {
 describe('a proposed goal is offered once (owner, 2026-10-19)', () => {
   it('Add tells the page the prefill is used — after the goal is saved', async () => {
     const order: string[] = [];
-    vi.stubGlobal('fetch', vi.fn(async (_u: RequestInfo | URL, init?: RequestInit) => {
+    vi.stubGlobal('fetch', vi.fn(async (u: RequestInfo | URL, init?: RequestInit) => {
+      if (String(u) === '/api/bff/life/session/count') { order.push(`count:${JSON.parse(String(init?.body)).metric}`); return ok({}); }
       if (init?.method === 'POST') { order.push('post'); return ok({ goal: {} }); }
       return ok({ goals: [] });
     }));
@@ -87,7 +88,8 @@ describe('a proposed goal is offered once (owner, 2026-10-19)', () => {
     await screen.findByDisplayValue('Pray at the mosque on Friday');
     fireEvent.click(screen.getByRole('button', { name: DICTIONARIES.en.life.goals.add }));
     await waitFor(() => expect(onPrefillUsed).toHaveBeenCalledTimes(1));
-    expect(order).toEqual(['post', 'used']);
+    // saved, then one count of "a step made a goal" (one word, no id), then the prefill is let go
+    expect(order).toEqual(['post', 'count:g_from_step', 'used']);
   });
 
   it('a goal typed by hand does not report a prefill', async () => {

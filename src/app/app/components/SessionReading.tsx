@@ -11,11 +11,15 @@ import { useTranslation } from '@/lib/i18n';
 import { sessionCopy } from '@/lib/life/session-copy';
 import { card } from './shared';
 
-type Shown = Record<'s2_started' | 's7_reached' | 'm6_yes' | 'm6_somewhat' | 'm6_no', number | null>;
+type Metric = 's2_started' | 's7_reached' | 'm6_yes' | 'm6_somewhat' | 'm6_no'
+  | 'j_kept' | 'c_resumed' | 'm_before' | 'm_after' | 'm_unknown' | 'g_from_step';
+type Shown = Partial<Record<Metric, number | null>>;
 interface Report {
   weeks:  { week_start: string; counts: Shown }[];
   total:  Shown;
   stage1: { m1: number | null; m6_clearer: number | null; m6_no: number | null; result: string };
+  /** The bar the owner set before seeing any number (Tec-core-backend #454). Absent on an older service. */
+  real_use?: { reached: number | null; after: number | null; met: boolean; bar: { weeks: number; reached: number; after: number } };
 }
 
 const pct = (v: number | null) => (v == null ? '—' : `${Math.round(v * 100)}%`);
@@ -35,7 +39,7 @@ export function SessionReading() {
   }, []);
 
   if (!report) return null;
-  const n = (v: number | null) => (v == null ? s.readingFewer : String(v));
+  const n = (v: number | null | undefined) => (v == null ? s.readingFewer : String(v));
   const clearerCount = (c: Shown) =>
     c.m6_yes == null && c.m6_somewhat == null ? null : (c.m6_yes ?? 0) + (c.m6_somewhat ?? 0);
 
@@ -55,6 +59,21 @@ export function SessionReading() {
         <dt>M6 · {s.readingNo}</dt><dd><bdi>{pct(report.stage1.m6_no)}</bdi></dd>
       </dl>
 
+      {report.real_use && (
+        <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 8, marginBottom: 10 }}>
+          <div style={{ fontSize: 13.5, fontWeight: 800, color: C.text }}>{s.realUseTitle}</div>
+          <div role="status" style={{ fontSize: 13.5, fontWeight: 700, color: report.real_use.met ? C.gold : C.subtext, margin: '2px 0 4px' }}>
+            {report.real_use.met ? s.realUseMet : s.realUseNotYet}
+          </div>
+          <div style={{ fontSize: 12, color: C.subtext, lineHeight: 1.5 }}>
+            {s.realUseBar.replace('{reached}', String(report.real_use.bar.reached)).replace('{after}', String(report.real_use.bar.after))}
+          </div>
+          <div style={{ fontSize: 12.5, color: C.text, marginTop: 4 }}>
+            {s.readingReached}: <bdi>{n(report.real_use.reached)}</bdi> · {s.readingAfter}: <bdi>{n(report.real_use.after)}</bdi>
+          </div>
+        </div>
+      )}
+
       {report.weeks.map((w) => (
         <div key={w.week_start} style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.7, borderTop: `1px solid ${C.border}`, paddingTop: 6, marginTop: 6 }}>
           <div style={{ color: C.text, fontWeight: 700 }}>{s.readingWeek} <bdi>{w.week_start}</bdi></div>
@@ -62,6 +81,13 @@ export function SessionReading() {
           <div>{s.readingReached}: <bdi>{n(w.counts.s7_reached)}</bdi></div>
           <div>{s.readingClearer}: <bdi>{n(clearerCount(w.counts))}</bdi></div>
           <div>{s.readingNo}: <bdi>{n(w.counts.m6_no)}</bdi></div>
+          <div style={{ color: C.text, marginTop: 4 }}>{s.readingLoop}</div>
+          <div>{s.readingKept}: <bdi>{n(w.counts.j_kept)}</bdi></div>
+          <div>{s.readingResumed}: <bdi>{n(w.counts.c_resumed)}</bdi></div>
+          <div>{s.readingBefore}: <bdi>{n(w.counts.m_before)}</bdi></div>
+          <div>{s.readingAfter}: <bdi>{n(w.counts.m_after)}</bdi></div>
+          <div>{s.readingUnknown}: <bdi>{n(w.counts.m_unknown)}</bdi></div>
+          <div>{s.readingGoal}: <bdi>{n(w.counts.g_from_step)}</bdi></div>
         </div>
       ))}
     </section>
