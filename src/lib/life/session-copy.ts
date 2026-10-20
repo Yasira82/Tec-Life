@@ -51,20 +51,20 @@ export interface SessionCopy {
 }
 
 const en: SessionCopy = {
-  entryTitle: 'Talk through a problem that keeps happening',
-  entryHint:  'A conversation to help you understand it. Only a summary you confirm is ever kept.',
+  entryTitle: 'Talk with your personal life coach',
+  entryHint:  'About anything you want to change or build in your life. Only a summary you confirm is ever kept.',
   entryCta:   'Start',
 
   introTitle: 'Before we start',
-  introIs:    'You will talk with Life about something that keeps happening and that you would like to change. It asks, and it listens — one step at a time.',
-  introIsNot: 'It is not a diagnosis, not a judgement of you, and it gives no advice it cannot ground.',
+  introIs:    'You will talk with Life, your personal life coach, about something you want to change or build — a habit, a decision, your work, the people around you, yourself. It asks, it listens, and it helps you choose your own next step.',
+  introIsNot: 'It is not a doctor, a lawyer or a financial adviser, not a diagnosis and not a judgement of you — and it gives no advice it cannot ground.',
   introAi:    'To reply, what you write is sent to an AI model. We do not keep it, and the model’s provider does not keep it for us. Numbers, emails and links are removed before it is sent — but that does not make your words fully anonymous.',
   introNothingSaved: 'The conversation itself is not saved — when you close this page it is gone. At the end you may keep a short summary that you read and confirm, only if you choose to.',
   agree:  'I agree — start',
   cancel: 'Not now',
 
   rolesNote: 'When you mention other people, describe them by their role — “my manager”, “a friend” — rather than by name.',
-  opener:    'What keeps happening that you would like to change? Tell me in your own words — for example: “I leave important things until the last minute.”',
+  opener:    'What would you like to change or build in your life? Tell me in your own words — for example: “I want to quit smoking”, “I can’t decide about a new job”, or “I leave important things until the last minute.”',
 
   placeholder: 'Write here…',
   send:        'Send',
@@ -182,20 +182,20 @@ const en: SessionCopy = {
 };
 
 const ar: SessionCopy = {
-  entryTitle: 'تحدّث عن مشكلة تتكرر معك',
-  entryHint:  'محادثة تساعدك على فهمها. لا يُحفظ منها إلا خلاصة تؤكدها أنت.',
+  entryTitle: 'تحدّث مع مدرّبك الشخصي للحياة',
+  entryHint:  'عن أي أمر تريد تغييره أو بناءه في حياتك. لا يُحفظ إلا خلاصة تؤكدها أنت.',
   entryCta:   'ابدأ',
 
   introTitle: 'قبل أن نبدأ',
-  introIs:    'ستتحدث مع Life عن أمر يتكرر وتريد تغييره. يسألك ويستمع إليك — خطوة بخطوة.',
-  introIsNot: 'ليست تشخيصًا، ولا حكمًا عليك، ولا تقدّم نصيحة بلا أساس.',
+  introIs:    'ستتحدث مع Life، مدرّبك الشخصي للحياة، عن أمر تريد تغييره أو بناءه — عادة، أو قرار، أو عملك، أو من حولك، أو نفسك. يسألك ويستمع إليك، ويساعدك على أن تختار خطوتك التالية بنفسك.',
+  introIsNot: 'ليس طبيبًا ولا محاميًا ولا مستشارًا ماليًا، وليس تشخيصًا ولا حكمًا عليك، ولا يقدّم نصيحة بلا أساس.',
   introAi:    'لكي يرد عليك، يُرسَل ما تكتبه إلى نموذج ذكاء اصطناعي. لا نحتفظ به، ولا يحتفظ به مزوّد النموذج لدينا. تُحذف الأرقام والبريد والروابط قبل الإرسال — لكن ذلك لا يجعل كلامك مجهول الهوية تمامًا.',
   introNothingSaved: 'المحادثة نفسها لا تُحفظ — بمجرد إغلاق الصفحة تزول. في النهاية يمكنك أن تحتفظ بخلاصة قصيرة تقرؤها وتؤكدها، إن اخترت ذلك فقط.',
   agree:  'موافق — ابدأ',
   cancel: 'ليس الآن',
 
   rolesNote: 'عندما تذكر شخصًا، صِفه بدوره — «مديري»، «صديقي» — دون ذكر اسمه.',
-  opener:    'ما الأمر الذي يتكرر وتريد تغييره؟ احكِ لي بكلماتك — مثلًا: «أؤجّل الأمور المهمة إلى آخر لحظة».',
+  opener:    'ما الذي تريد أن تغيّره أو تبنيه في حياتك؟ احكِ لي بكلماتك — مثلًا: «أريد أن أُقلع عن التدخين»، أو «أنا محتار في عمل جديد»، أو «أؤجّل الأمور المهمة إلى آخر لحظة».',
 
   placeholder: 'اكتب هنا…',
   send:        'إرسال',

@@ -4,18 +4,18 @@
 import type { PersonCopy } from '../session-copy';
 
 export const pt: PersonCopy = {
-  "entryTitle": "Converse sobre um problema que se repete",
-  "entryHint": "Uma conversa para ajudar você a entendê-lo. Só fica guardado um resumo que você confirmar.",
+  "entryTitle": "Converse com seu coach pessoal de vida",
+  "entryHint": "Sobre qualquer coisa que você queira mudar ou construir na sua vida. Só fica guardado um resumo que você confirmar.",
   "entryCta": "Começar",
   "introTitle": "Antes de começar",
-  "introIs": "Você vai conversar com o Life sobre algo que se repete e que gostaria de mudar. Ele pergunta e escuta, um passo de cada vez.",
-  "introIsNot": "Não é um diagnóstico, não é um julgamento sobre você, e ele não dá conselhos que não possa fundamentar.",
+  "introIs": "Você vai conversar com o Life, seu coach pessoal de vida, sobre algo que quer mudar ou construir — um hábito, uma decisão, seu trabalho, as pessoas ao seu redor, você mesmo. Ele pergunta, escuta e ajuda você a escolher o seu próximo passo.",
+  "introIsNot": "Não é médico, advogado nem consultor financeiro; não é um diagnóstico nem um julgamento sobre você, e não dá conselhos que não possa fundamentar.",
   "introAi": "Para responder, o que você escreve é enviado a um modelo de IA. Não guardamos isso, e o fornecedor do modelo não guarda para nós. Números, e-mails e links são removidos antes do envio — mas isso não torna suas palavras totalmente anônimas.",
   "introNothingSaved": "A conversa em si não é salva — quando você fecha esta página, ela some. No fim, você pode guardar um breve resumo que lê e confirma, só se quiser.",
   "agree": "Concordo — começar",
   "cancel": "Agora não",
   "rolesNote": "Ao mencionar outras pessoas, descreva-as pelo papel — “meu chefe”, “uma amiga” — e não pelo nome.",
-  "opener": "O que se repete e você gostaria de mudar? Conte com suas palavras — por exemplo: “Deixo as coisas importantes para a última hora.”",
+  "opener": "O que você gostaria de mudar ou construir na sua vida? Conte com suas palavras — por exemplo: “Quero parar de fumar”, “Estou em dúvida sobre um novo emprego” ou “Deixo as coisas importantes para a última hora.”",
   "placeholder": "Escreva aqui…",
   "send": "Enviar",
   "thinking": "O Life está escrevendo…",

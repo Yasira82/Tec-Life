@@ -4,18 +4,18 @@
 import type { PersonCopy } from '../session-copy';
 
 export const tr: PersonCopy = {
-  "entryTitle": "Tekrar eden bir sorunu konuş",
-  "entryHint": "Onu anlamana yardım eden bir sohbet. Yalnızca senin onayladığın bir özet saklanır.",
+  "entryTitle": "Kişisel yaşam koçunla konuş",
+  "entryHint": "Hayatında değiştirmek ya da inşa etmek istediğin her şey hakkında. Yalnızca senin onayladığın bir özet saklanır.",
   "entryCta": "Başla",
   "introTitle": "Başlamadan önce",
-  "introIs": "Life ile tekrar eden ve değiştirmek istediğin bir şey hakkında konuşacaksın. Soru sorar ve dinler — adım adım.",
-  "introIsNot": "Bu bir teşhis değildir, seni yargılamaz ve dayanağı olmayan bir tavsiye vermez.",
+  "introIs": "Kişisel yaşam koçun Life ile değiştirmek ya da inşa etmek istediğin bir şey hakkında konuşacaksın — bir alışkanlık, bir karar, işin, çevrendeki insanlar, kendin. Sorar, dinler ve bir sonraki adımını kendin seçmene yardım eder.",
+  "introIsNot": "Doktor, avukat ya da mali danışman değildir; bir teşhis değildir, seni yargılamaz ve dayanağı olmayan bir tavsiye vermez.",
   "introAi": "Sana yanıt vermek için yazdıkların bir yapay zekâ modeline gönderilir. Biz bunu saklamayız, modelin sağlayıcısı da bizim için saklamaz. Numaralar, e-postalar ve bağlantılar gönderilmeden önce silinir — ama bu, sözlerini tamamen anonim yapmaz.",
   "introNothingSaved": "Sohbetin kendisi kaydedilmez — bu sayfayı kapattığında gider. Sonunda, istersen okuyup onayladığın kısa bir özeti saklayabilirsin.",
   "agree": "Kabul ediyorum — başla",
   "cancel": "Şimdi değil",
   "rolesNote": "Başka insanlardan söz ederken onları adlarıyla değil, rolleriyle anlat — “müdürüm”, “bir arkadaşım” gibi.",
-  "opener": "Tekrar eden ve değiştirmek istediğin şey ne? Kendi sözlerinle anlat — örneğin: “Önemli işleri son dakikaya bırakıyorum.”",
+  "opener": "Hayatında neyi değiştirmek ya da inşa etmek istersin? Kendi sözlerinle anlat — örneğin: “Sigarayı bırakmak istiyorum”, “Yeni bir iş konusunda karar veremiyorum” ya da “Önemli işleri son dakikaya bırakıyorum.”",
   "placeholder": "Buraya yaz…",
   "send": "Gönder",
   "thinking": "Life yazıyor…",

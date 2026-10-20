@@ -25,11 +25,11 @@ export const zh = {
     appsCount: '24 Apps',
   },
   life: {
-    brand:       'TEC Life · 你的私人空间',
+    brand:       'TEC Life · 你的私人生活教练',
     pro:         'PRO',
     welcome:     '欢迎',
     welcomeName: '欢迎，{name}',
-    subtitle:    '你在 TEC 生态中的个人情境',
+    subtitle:    '一步一步，成就更好的自己',
     nav: { home: '首页', goals: '目标', skills: '技能', activity: '动态', settings: '设置' },
     home: {
       focus: '当前焦点',

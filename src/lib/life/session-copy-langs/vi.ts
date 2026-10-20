@@ -4,18 +4,18 @@
 import type { PersonCopy } from '../session-copy';
 
 export const vi: PersonCopy = {
-  "entryTitle": "Nói về một vấn đề cứ lặp lại",
-  "entryHint": "Một cuộc trò chuyện giúp bạn hiểu nó. Chỉ bản tóm tắt bạn xác nhận mới được giữ lại.",
+  "entryTitle": "Trò chuyện với huấn luyện viên cuộc sống của bạn",
+  "entryHint": "Về bất cứ điều gì bạn muốn thay đổi hoặc xây dựng trong cuộc sống. Chỉ bản tóm tắt bạn xác nhận mới được giữ lại.",
   "entryCta": "Bắt đầu",
   "introTitle": "Trước khi bắt đầu",
-  "introIs": "Bạn sẽ trò chuyện với Life về một điều cứ lặp lại mà bạn muốn thay đổi. Life hỏi và lắng nghe — từng bước một.",
-  "introIsNot": "Đây không phải chẩn đoán, không phán xét bạn, và không đưa lời khuyên nào mà nó không thể dựa vào đâu.",
+  "introIs": "Bạn sẽ trò chuyện với Life, huấn luyện viên cuộc sống của riêng bạn, về điều bạn muốn thay đổi hoặc xây dựng — một thói quen, một quyết định, công việc, những người xung quanh, chính bạn. Life hỏi, lắng nghe và giúp bạn tự chọn bước tiếp theo.",
+  "introIsNot": "Đây không phải bác sĩ, luật sư hay cố vấn tài chính, không phải chẩn đoán và không phán xét bạn — và không đưa lời khuyên nào mà nó không thể dựa vào đâu.",
   "introAi": "Để trả lời, những gì bạn viết được gửi tới một mô hình AI. Chúng tôi không lưu lại, và nhà cung cấp mô hình cũng không lưu cho chúng tôi. Số điện thoại, email và đường link được xóa trước khi gửi — nhưng điều đó không làm lời bạn hoàn toàn ẩn danh.",
   "introNothingSaved": "Bản thân cuộc trò chuyện không được lưu — khi bạn đóng trang này, nó biến mất. Cuối cùng, bạn có thể giữ một bản tóm tắt ngắn mà bạn đọc và xác nhận, chỉ khi bạn muốn.",
   "agree": "Tôi đồng ý — bắt đầu",
   "cancel": "Để sau",
   "rolesNote": "Khi nhắc đến người khác, hãy mô tả họ theo vai trò — “sếp tôi”, “một người bạn” — thay vì nêu tên.",
-  "opener": "Điều gì cứ lặp lại mà bạn muốn thay đổi? Hãy kể bằng lời của bạn — ví dụ: “Tôi để việc quan trọng đến phút cuối.”",
+  "opener": "Bạn muốn thay đổi hoặc xây dựng điều gì trong cuộc sống? Hãy kể bằng lời của bạn — ví dụ: “Tôi muốn bỏ thuốc lá”, “Tôi phân vân về một công việc mới” hoặc “Tôi để việc quan trọng đến phút cuối.”",
   "placeholder": "Viết ở đây…",
   "send": "Gửi",
   "thinking": "Life đang viết…",

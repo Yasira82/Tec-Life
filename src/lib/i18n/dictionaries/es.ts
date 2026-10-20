@@ -25,11 +25,11 @@ export const es = {
     appsCount: '24 Apps',
   },
   life: {
-    brand:       'TEC Life · Tu espacio personal',
+    brand:       'TEC Life · Tu coach personal de vida',
     pro:         'PRO',
     welcome:     'Bienvenido',
     welcomeName: 'Bienvenido, {name}',
-    subtitle:    'tu contexto personal en el ecosistema TEC',
+    subtitle:    'constrúyete paso a paso',
     nav: { home: 'Inicio', goals: 'Metas', skills: 'Habilidades', activity: 'Actividad', settings: 'Ajustes' },
     home: {
       focus: 'Tu foco',

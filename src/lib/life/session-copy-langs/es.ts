@@ -4,18 +4,18 @@
 import type { PersonCopy } from '../session-copy';
 
 export const es: PersonCopy = {
-  "entryTitle": "Habla de un problema que se repite",
-  "entryHint": "Una conversación para ayudarte a entenderlo. Solo se guarda un resumen que tú confirmes.",
+  "entryTitle": "Habla con tu coach personal de vida",
+  "entryHint": "Sobre cualquier cosa que quieras cambiar o construir en tu vida. Solo se guarda un resumen que tú confirmes.",
   "entryCta": "Empezar",
   "introTitle": "Antes de empezar",
-  "introIs": "Hablarás con Life sobre algo que se repite y que te gustaría cambiar. Pregunta y escucha, paso a paso.",
-  "introIsNot": "No es un diagnóstico, no te juzga y no da consejos que no pueda fundamentar.",
+  "introIs": "Hablarás con Life, tu coach personal de vida, sobre algo que quieras cambiar o construir: un hábito, una decisión, tu trabajo, las personas que te rodean, tú mismo. Pregunta, escucha y te ayuda a elegir tu propio siguiente paso.",
+  "introIsNot": "No es médico, ni abogado, ni asesor financiero; no es un diagnóstico ni te juzga, y no da consejos que no pueda fundamentar.",
   "introAi": "Para responderte, lo que escribes se envía a un modelo de IA. No lo guardamos, y el proveedor del modelo no lo guarda para nosotros. Los números, correos y enlaces se eliminan antes de enviarlo, pero eso no hace que tus palabras sean del todo anónimas.",
   "introNothingSaved": "La conversación en sí no se guarda: al cerrar esta página, desaparece. Al final puedes guardar un breve resumen que lees y confirmas, solo si lo eliges.",
   "agree": "Acepto: empezar",
   "cancel": "Ahora no",
   "rolesNote": "Cuando menciones a otras personas, descríbelas por su papel —«mi jefe», «una amiga»— y no por su nombre.",
-  "opener": "¿Qué se repite que te gustaría cambiar? Cuéntamelo con tus palabras; por ejemplo: «Dejo las cosas importantes para el último momento».",
+  "opener": "¿Qué te gustaría cambiar o construir en tu vida? Cuéntamelo con tus palabras; por ejemplo: «Quiero dejar de fumar», «No sé si cambiar de trabajo» o «Dejo las cosas importantes para el último momento».",
   "placeholder": "Escribe aquí…",
   "send": "Enviar",
   "thinking": "Life está escribiendo…",

@@ -4,18 +4,18 @@
 import type { PersonCopy } from '../session-copy';
 
 export const id: PersonCopy = {
-  "entryTitle": "Bicarakan masalah yang terus berulang",
-  "entryHint": "Percakapan untuk membantumu memahaminya. Hanya ringkasan yang kamu setujui yang disimpan.",
+  "entryTitle": "Bicara dengan life coach pribadimu",
+  "entryHint": "Tentang apa pun yang ingin kamu ubah atau bangun dalam hidupmu. Hanya ringkasan yang kamu setujui yang disimpan.",
   "entryCta": "Mulai",
   "introTitle": "Sebelum kita mulai",
-  "introIs": "Kamu akan berbicara dengan Life tentang sesuatu yang terus berulang dan ingin kamu ubah. Life bertanya dan mendengarkan — selangkah demi selangkah.",
-  "introIsNot": "Ini bukan diagnosis, bukan penilaian atas dirimu, dan Life tidak memberi saran yang tidak bisa ia dasarkan.",
+  "introIs": "Kamu akan berbicara dengan Life, life coach pribadimu, tentang sesuatu yang ingin kamu ubah atau bangun — kebiasaan, keputusan, pekerjaan, orang-orang di sekitarmu, dirimu sendiri. Life bertanya, mendengarkan, dan membantumu memilih langkah berikutnya sendiri.",
+  "introIsNot": "Life bukan dokter, pengacara, atau penasihat keuangan, bukan diagnosis, dan bukan penilaian atas dirimu — dan tidak memberi saran yang tidak bisa ia dasarkan.",
   "introAi": "Untuk membalas, apa yang kamu tulis dikirim ke model AI. Kami tidak menyimpannya, dan penyedia model tidak menyimpannya untuk kami. Nomor, email, dan tautan dihapus sebelum dikirim — tetapi itu tidak membuat kata-katamu sepenuhnya anonim.",
   "introNothingSaved": "Percakapannya sendiri tidak disimpan — saat kamu menutup halaman ini, percakapan hilang. Di akhir, kamu boleh menyimpan ringkasan singkat yang kamu baca dan setujui, hanya jika kamu mau.",
   "agree": "Saya setuju — mulai",
   "cancel": "Nanti saja",
   "rolesNote": "Saat menyebut orang lain, gambarkan mereka dari perannya — “atasan saya”, “seorang teman” — bukan dari namanya.",
-  "opener": "Apa yang terus berulang dan ingin kamu ubah? Ceritakan dengan kata-katamu sendiri — misalnya: “Saya menunda hal penting sampai menit terakhir.”",
+  "opener": "Apa yang ingin kamu ubah atau bangun dalam hidupmu? Ceritakan dengan kata-katamu sendiri — misalnya: “Saya ingin berhenti merokok”, “Saya bingung soal pekerjaan baru”, atau “Saya menunda hal penting sampai menit terakhir.”",
   "placeholder": "Tulis di sini…",
   "send": "Kirim",
   "thinking": "Life sedang menulis…",

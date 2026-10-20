@@ -25,11 +25,11 @@ export const hi = {
     appsCount: '24 Apps',
   },
   life: {
-    brand:       'TEC Life · आपका निजी स्थान',
+    brand:       'TEC Life · आपका निजी लाइफ़ कोच',
     pro:         'PRO',
     welcome:     'स्वागत है',
     welcomeName: 'स्वागत है, {name}',
-    subtitle:    'TEC इकोसिस्टम में आपका निजी संदर्भ',
+    subtitle:    'खुद को कदम-दर-कदम बनाइए',
     nav: { home: 'होम', goals: 'लक्ष्य', skills: 'कौशल', activity: 'गतिविधि', settings: 'सेटिंग्स' },
     home: {
       focus: 'आपका फ़ोकस',

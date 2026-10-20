@@ -25,11 +25,11 @@ export const vi = {
     appsCount: '24 Apps',
   },
   life: {
-    brand:       'TEC Life · Không gian riêng của bạn',
+    brand:       'TEC Life · Huấn luyện viên cuộc sống của bạn',
     pro:         'PRO',
     welcome:     'Chào mừng',
     welcomeName: 'Chào mừng, {name}',
-    subtitle:    'bối cảnh cá nhân của bạn trong hệ sinh thái TEC',
+    subtitle:    'xây dựng bản thân từng bước một',
     nav: { home: 'Trang chủ', goals: 'Mục tiêu', skills: 'Kỹ năng', activity: 'Hoạt động', settings: 'Cài đặt' },
     home: {
       focus: 'Trọng tâm của bạn',

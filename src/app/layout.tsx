@@ -12,7 +12,7 @@ import { QuestReturn } from '@/components/pioneer/QuestReturn';
 
 export const metadata: Metadata = {
   title:       'TEC Life',
-  description: 'TEC Life — your personal economic context in the Pi Network ecosystem',
+  description: 'TEC Life — your personal life coach: build yourself, one step at a time',
 };
 
 export default function RootLayout({

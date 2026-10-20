@@ -35,3 +35,21 @@ describe('Life in every language', () => {
     }
   }
 });
+
+describe('Life presents itself as a personal life coach (owner, 2026-10-20: «احنا مشروع بناء الإنسان»)', () => {
+  it('every language names the coach, and says it is no doctor, lawyer or financial adviser', async () => {
+    const { sessionCopy } = await import('@/lib/life/session-copy');
+    const coach: Record<string, RegExp> = {
+      en: /life coach/, ar: /مدرّبك الشخصي/, es: /coach personal/, fr: /coach de vie/, pt: /coach pessoal/,
+      tr: /yaşam koç/, ru: /лайф-коуч/, id: /life coach/, vi: /huấn luyện viên/, hi: /लाइफ़ कोच/, ko: /라이프 코치/, zh: /生活教练/,
+    };
+    for (const [lang, re] of Object.entries(coach)) {
+      const s = sessionCopy(lang as Parameters<typeof sessionCopy>[0]);
+      expect(s.entryTitle).toMatch(re);
+      expect(s.introIs).toMatch(re);
+      expect(s.introIsNot.length).toBeGreaterThan(20);
+    }
+    expect(sessionCopy('ar').introIsNot).toMatch(/ليس طبيبًا ولا محاميًا ولا مستشارًا ماليًا/);
+    expect(sessionCopy('en').introIsNot).toMatch(/not a doctor, a lawyer or a financial adviser/);
+  });
+});

@@ -25,11 +25,11 @@ export const ar = {
     appsCount: '24 Apps',
   },
   life: {
-    brand:       'TEC Life · مساحتك الشخصية',
+    brand:       'TEC Life · مدرّبك الشخصي للحياة',
     pro:         'PRO',
     welcome:     'مرحباً',
     welcomeName: 'مرحباً، {name}',
-    subtitle:    'سياقك الشخصي داخل منظومة TEC',
+    subtitle:    'ابنِ نفسك خطوة بخطوة',
     nav: { home: 'الرئيسية', goals: 'الأهداف', skills: 'المهارات', activity: 'النشاط', settings: 'الإعدادات' },
     home: {
       focus: 'تركيزك',

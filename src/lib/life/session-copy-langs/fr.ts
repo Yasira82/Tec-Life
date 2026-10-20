@@ -4,18 +4,18 @@
 import type { PersonCopy } from '../session-copy';
 
 export const fr: PersonCopy = {
-  "entryTitle": "Parler d’un problème qui revient",
-  "entryHint": "Une conversation pour vous aider à le comprendre. Seul un résumé que vous confirmez est conservé.",
+  "entryTitle": "Parler avec votre coach de vie personnel",
+  "entryHint": "De tout ce que vous voulez changer ou construire dans votre vie. Seul un résumé que vous confirmez est conservé.",
   "entryCta": "Commencer",
   "introTitle": "Avant de commencer",
-  "introIs": "Vous parlerez avec Life de quelque chose qui revient et que vous aimeriez changer. Il pose des questions et écoute, étape par étape.",
-  "introIsNot": "Ce n’est pas un diagnostic, ni un jugement sur vous, et il ne donne aucun conseil qu’il ne peut pas justifier.",
+  "introIs": "Vous allez parler avec Life, votre coach de vie personnel, de quelque chose que vous voulez changer ou construire : une habitude, une décision, votre travail, votre entourage, vous-même. Il pose des questions, il écoute, et il vous aide à choisir vous-même votre prochaine étape.",
+  "introIsNot": "Ce n’est ni un médecin, ni un avocat, ni un conseiller financier, ni un diagnostic, ni un jugement sur vous — et il ne donne aucun conseil qu’il ne peut pas justifier.",
   "introAi": "Pour vous répondre, ce que vous écrivez est envoyé à un modèle d’IA. Nous ne le conservons pas, et le fournisseur du modèle ne le conserve pas pour nous. Les numéros, e-mails et liens sont retirés avant l’envoi — mais cela ne rend pas vos mots totalement anonymes.",
   "introNothingSaved": "La conversation elle-même n’est pas enregistrée : quand vous fermez cette page, elle disparaît. À la fin, vous pouvez garder un court résumé que vous lisez et confirmez, seulement si vous le souhaitez.",
   "agree": "J’accepte — commencer",
   "cancel": "Pas maintenant",
   "rolesNote": "Quand vous parlez d’autres personnes, décrivez-les par leur rôle — « mon responsable », « une amie » — plutôt que par leur nom.",
-  "opener": "Qu’est-ce qui revient et que vous aimeriez changer ? Dites-le avec vos mots — par exemple : « Je repousse les choses importantes jusqu’à la dernière minute. »",
+  "opener": "Qu’aimeriez-vous changer ou construire dans votre vie ? Dites-le avec vos mots — par exemple : « Je veux arrêter de fumer », « J’hésite à changer de travail » ou « Je repousse les choses importantes jusqu’à la dernière minute ».",
   "placeholder": "Écrivez ici…",
   "send": "Envoyer",
   "thinking": "Life écrit…",
