@@ -2,10 +2,22 @@
 // §2, §5, §8). The Arabic is Modern Standard Arabic, not a dialect (owner, 2026-10-17) —
 // the same register as the rest of Life's Arabic.
 //
-// Arabic and English only: the first reading is in those two languages (§8 Q7), and a
-// conversation about a person's own life, machine-translated into ten more, is a worse
-// conversation. Every other locale reads the English.
+// All twelve of the app's languages (owner, 2026-10-20: "I want Life working in all 12").
+// English and Arabic are written here; the other ten are in ./session-copy-langs/, translated
+// from the English and waiting for a native speaker's read. The admin's reading (the counts
+// only the owner sees) stays English outside Arabic — it is for one person, not for the people
+// Life talks with. The model answers in the language the person writes in, whatever this is.
 import type { Locale } from '@/lib/i18n';
+import { es } from './session-copy-langs/es';
+import { fr } from './session-copy-langs/fr';
+import { pt } from './session-copy-langs/pt';
+import { tr } from './session-copy-langs/tr';
+import { ru } from './session-copy-langs/ru';
+import { id } from './session-copy-langs/id';
+import { vi } from './session-copy-langs/vi';
+import { ko } from './session-copy-langs/ko';
+import { hi } from './session-copy-langs/hi';
+import { zh } from './session-copy-langs/zh';
 
 export interface SessionCopy {
   entryTitle: string; entryHint: string; entryCta: string;
@@ -46,7 +58,7 @@ const en: SessionCopy = {
   introTitle: 'Before we start',
   introIs:    'You will talk with Life about something that keeps happening and that you would like to change. It asks, and it listens — one step at a time.',
   introIsNot: 'It is not a diagnosis, not a judgement of you, and it gives no advice it cannot ground.',
-  introAi:    'To reply, what you write is sent to an AI model (Groq). We do not keep it, and Groq’s retention is switched off for us. Numbers, emails and links are removed before it is sent — but that does not make your words fully anonymous.',
+  introAi:    'To reply, what you write is sent to an AI model. We do not keep it, and the model’s provider does not keep it for us. Numbers, emails and links are removed before it is sent — but that does not make your words fully anonymous.',
   introNothingSaved: 'The conversation itself is not saved — when you close this page it is gone. At the end you may keep a short summary that you read and confirm, only if you choose to.',
   agree:  'I agree — start',
   cancel: 'Not now',
@@ -79,7 +91,7 @@ const en: SessionCopy = {
 
   finish: 'Finish',
 
-  memoryNote: 'Life will read your three most recent kept summaries so it can continue from where you were. They are sent to Groq with your messages.',
+  memoryNote: 'Life will read your three most recent kept summaries so it can continue from where you were. They are sent to the AI model with your messages.',
   lastStepQ:  'Last time you chose a small step: “{step}”. Did you try it?',
   outDone: 'Yes', outPartly: 'Partly', outNotYet: 'Not yet',
   outThanks: 'Noted. Life will continue from there.',
@@ -177,7 +189,7 @@ const ar: SessionCopy = {
   introTitle: 'قبل أن نبدأ',
   introIs:    'ستتحدث مع Life عن أمر يتكرر وتريد تغييره. يسألك ويستمع إليك — خطوة بخطوة.',
   introIsNot: 'ليست تشخيصًا، ولا حكمًا عليك، ولا تقدّم نصيحة بلا أساس.',
-  introAi:    'لكي يرد عليك، يُرسَل ما تكتبه إلى نموذج ذكاء اصطناعي (Groq). لا نحتفظ به، وقد أُوقف احتفاظ Groq به لدينا. تُحذف الأرقام والبريد والروابط قبل الإرسال — لكن ذلك لا يجعل كلامك مجهول الهوية تمامًا.',
+  introAi:    'لكي يرد عليك، يُرسَل ما تكتبه إلى نموذج ذكاء اصطناعي. لا نحتفظ به، ولا يحتفظ به مزوّد النموذج لدينا. تُحذف الأرقام والبريد والروابط قبل الإرسال — لكن ذلك لا يجعل كلامك مجهول الهوية تمامًا.',
   introNothingSaved: 'المحادثة نفسها لا تُحفظ — بمجرد إغلاق الصفحة تزول. في النهاية يمكنك أن تحتفظ بخلاصة قصيرة تقرؤها وتؤكدها، إن اخترت ذلك فقط.',
   agree:  'موافق — ابدأ',
   cancel: 'ليس الآن',
@@ -210,7 +222,7 @@ const ar: SessionCopy = {
 
   finish: 'إنهاء',
 
-  memoryNote: 'سيقرأ Life آخر ثلاث خلاصات احتفظت بها، ليكمل من حيث كنت. تُرسَل إلى Groq مع رسائلك.',
+  memoryNote: 'سيقرأ Life آخر ثلاث خلاصات احتفظت بها، ليكمل من حيث كنت. تُرسَل إلى نموذج الذكاء الاصطناعي مع رسائلك.',
   lastStepQ:  'في المرة السابقة اخترت خطوة صغيرة: «{step}». هل جرّبتها؟',
   outDone: 'نعم', outPartly: 'جزئيًا', outNotYet: 'ليس بعد',
   outThanks: 'سُجِّل ذلك. سيكمل Life من هنا.',
@@ -300,6 +312,26 @@ const ar: SessionCopy = {
   realUseBar: 'آخر أسبوعين: {reached} محادثات على الأقل وصلت إلى النهاية و{after} قيم «بعد». استخدامك أنت (المشرف) لا يُحسب. الأعداد أحداث، لا أشخاص.',
 };
 
+/** The owner's reading — admin only, so it is not translated beyond English and Arabic. */
+export const ADMIN_KEYS = [
+  'readingTitle', 'readingHint', 'readingFewer', 'readingResult', 'readingStarted', 'readingReached',
+  'readingClearer', 'readingNo', 'readingWeek', 'readingLoop', 'readingKept', 'readingResumed',
+  'readingBefore', 'readingAfter', 'readingUnknown', 'readingGoal',
+  'realUseTitle', 'realUseMet', 'realUseNotYet', 'realUseBar',
+] as const;
+type AdminKey = (typeof ADMIN_KEYS)[number];
+/** What a person reads — every key a translation must have. */
+export type PersonCopy = Omit<SessionCopy, AdminKey>;
+
+const adminEn = Object.fromEntries(ADMIN_KEYS.map((k) => [k, en[k]])) as Pick<SessionCopy, AdminKey>;
+const withAdmin = (c: PersonCopy): SessionCopy => ({ ...c, ...adminEn });
+
+const COPY: Record<Locale, SessionCopy> = {
+  en, ar,
+  es: withAdmin(es), fr: withAdmin(fr), pt: withAdmin(pt), tr: withAdmin(tr), ru: withAdmin(ru),
+  id: withAdmin(id), vi: withAdmin(vi), ko: withAdmin(ko), hi: withAdmin(hi), zh: withAdmin(zh),
+};
+
 export function sessionCopy(locale: Locale): SessionCopy {
-  return locale === 'ar' ? ar : en;
+  return COPY[locale] ?? en;
 }
