@@ -67,10 +67,11 @@ async function converse() {
 }
 
 describe('consent first', () => {
-  it('nothing is sent before the person agrees, and the AI and Groq are named', () => {
+  it('nothing is sent before the person agrees; the AI is named, its vendor is not (owner, 2026-10-20)', () => {
     render(<ProblemSession onClose={vi.fn()} />);
     expect(screen.getByText(s.introAi)).toBeTruthy();
-    expect(s.introAi).toMatch(/Groq/);
+    expect(s.introAi).toMatch(/AI model/);
+    expect(s.introAi).not.toMatch(/Groq/);
     expect(screen.getByText(s.support)).toBeTruthy();
     // The only calls before agreeing are Life reading the person's own journey and
     // kept-conversation setting from Life — reads, with no body.
@@ -179,9 +180,11 @@ describe('the code keeps the rule', () => {
     for (const m of client.matchAll(/fetch\(([^,)]+)/g)) expect(m[1]).toMatch(/^[`']\/api\/bff\/life\/(journey|consent)/);
   });
 
-  it('Arabic and English copy have the same keys; other locales read English', () => {
-    expect(Object.keys(sessionCopy('ar')).sort()).toEqual(Object.keys(sessionCopy('en')).sort());
-    expect(sessionCopy('fr')).toBe(sessionCopy('en'));
+  it('every locale has the same keys, and none reads English in its place (owner, 2026-10-20)', () => {
+    for (const l of ['ar', 'fr', 'zh'] as const) {
+      expect(Object.keys(sessionCopy(l)).sort()).toEqual(Object.keys(sessionCopy('en')).sort());
+      expect(sessionCopy(l).opener).not.toBe(sessionCopy('en').opener);
+    }
   });
 });
 

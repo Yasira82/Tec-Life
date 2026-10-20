@@ -2,10 +2,22 @@
 // §2, §5, §8). The Arabic is Modern Standard Arabic, not a dialect (owner, 2026-10-17) —
 // the same register as the rest of Life's Arabic.
 //
-// Arabic and English only: the first reading is in those two languages (§8 Q7), and a
-// conversation about a person's own life, machine-translated into ten more, is a worse
-// conversation. Every other locale reads the English.
+// All twelve of the app's languages (owner, 2026-10-20: "I want Life working in all 12").
+// English and Arabic are written here; the other ten are in ./session-copy-langs/, translated
+// from the English and waiting for a native speaker's read. The admin's reading (the counts
+// only the owner sees) stays English outside Arabic — it is for one person, not for the people
+// Life talks with. The model answers in the language the person writes in, whatever this is.
 import type { Locale } from '@/lib/i18n';
+import { es } from './session-copy-langs/es';
+import { fr } from './session-copy-langs/fr';
+import { pt } from './session-copy-langs/pt';
+import { tr } from './session-copy-langs/tr';
+import { ru } from './session-copy-langs/ru';
+import { id } from './session-copy-langs/id';
+import { vi } from './session-copy-langs/vi';
+import { ko } from './session-copy-langs/ko';
+import { hi } from './session-copy-langs/hi';
+import { zh } from './session-copy-langs/zh';
 
 export interface SessionCopy {
   entryTitle: string; entryHint: string; entryCta: string;
@@ -32,6 +44,7 @@ export interface SessionCopy {
   mPerDay: string; mPerWeek: string; mPerMonth: string; mValueNow: string; mSave: string; mSkip: string; mFailed: string;
   mBefore: string; mAfter: string; mFollowCta: string; mUnknown: string; mNotMeasured: string;
   mChange: string; mClaim: string; mRemove: string; mEdit: string; mOutOf5: string; jMakeGoal: string; jGoalNote: string;
+  pGoalQ: string; pSkillQ: string; pAddGoal: string; pAddSkill: string; pNo: string; pAddedGoal: string; pAddedSkill: string; pFailed: string; pNote: string;
   readingTitle: string; readingHint: string; readingFewer: string; readingResult: Record<string, string>;
   readingStarted: string; readingReached: string; readingClearer: string; readingNo: string; readingWeek: string;
   readingLoop: string; readingKept: string; readingResumed: string; readingBefore: string; readingAfter: string; readingUnknown: string; readingGoal: string;
@@ -39,20 +52,20 @@ export interface SessionCopy {
 }
 
 const en: SessionCopy = {
-  entryTitle: 'Talk through a problem that keeps happening',
-  entryHint:  'A conversation to help you understand it. Only a summary you confirm is ever kept.',
+  entryTitle: 'Talk with your personal life coach',
+  entryHint:  'About anything you want to change or build in your life. Only a summary you confirm is ever kept.',
   entryCta:   'Start',
 
   introTitle: 'Before we start',
-  introIs:    'You will talk with Life about something that keeps happening and that you would like to change. It asks, and it listens — one step at a time.',
-  introIsNot: 'It is not a diagnosis, not a judgement of you, and it gives no advice it cannot ground.',
-  introAi:    'To reply, what you write is sent to an AI model (Groq). We do not keep it, and Groq’s retention is switched off for us. Numbers, emails and links are removed before it is sent — but that does not make your words fully anonymous.',
+  introIs:    'You will talk with Life, your personal life coach, about something you want to change or build — a habit, a decision, your work, the people around you, yourself. It asks, it listens, and it helps you choose your own next step.',
+  introIsNot: 'It is not a doctor, a lawyer or a financial adviser, not a diagnosis and not a judgement of you — and it gives no advice it cannot ground.',
+  introAi:    'To reply, what you write is sent to an AI model. We do not keep it, and the model’s provider does not keep it for us. Numbers, emails and links are removed before it is sent — but that does not make your words fully anonymous.',
   introNothingSaved: 'The conversation itself is not saved — when you close this page it is gone. At the end you may keep a short summary that you read and confirm, only if you choose to.',
   agree:  'I agree — start',
   cancel: 'Not now',
 
   rolesNote: 'When you mention other people, describe them by their role — “my manager”, “a friend” — rather than by name.',
-  opener:    'What keeps happening that you would like to change? Tell me in your own words — for example: “I leave important things until the last minute.”',
+  opener:    'What would you like to change or build in your life? Tell me in your own words — for example: “I want to quit smoking”, “I can’t decide about a new job”, or “I leave important things until the last minute.”',
 
   placeholder: 'Write here…',
   send:        'Send',
@@ -79,7 +92,7 @@ const en: SessionCopy = {
 
   finish: 'Finish',
 
-  memoryNote: 'Life will read your three most recent kept summaries so it can continue from where you were. They are sent to Groq with your messages.',
+  memoryNote: 'Life will read your three most recent kept summaries so it can continue from where you were. They are sent to the AI model with your messages.',
   lastStepQ:  'Last time you chose a small step: “{step}”. Did you try it?',
   outDone: 'Yes', outPartly: 'Partly', outNotYet: 'Not yet',
   outThanks: 'Noted. Life will continue from there.',
@@ -144,6 +157,15 @@ const en: SessionCopy = {
   mRemove: 'Remove the measure', mEdit: 'Edit', mOutOf5: '{n} of 5',
   jMakeGoal: 'Make it a goal',
   jGoalNote: 'Your step from My journey — edit it or ignore it. Nothing is saved until you tap Add.',
+  pGoalQ: 'Keep this as a goal in Life?',
+  pSkillQ: 'Add this to your skills in Life?',
+  pAddGoal: 'Add to my goals',
+  pAddSkill: 'Add to my skills',
+  pNo: 'Not now',
+  pAddedGoal: 'Added to your goals — you will find it, with its steps, in Goals.',
+  pAddedSkill: 'Added to your skills.',
+  pFailed: 'It could not be added. Try again.',
+  pNote: 'Life suggested this from what you agreed. Nothing is added unless you tap.',
   jDelete:   'Delete',
   jConfirm:  'Tap again to delete',
   jDownload: 'Download (JSON)',
@@ -170,20 +192,20 @@ const en: SessionCopy = {
 };
 
 const ar: SessionCopy = {
-  entryTitle: 'تحدّث عن مشكلة تتكرر معك',
-  entryHint:  'محادثة تساعدك على فهمها. لا يُحفظ منها إلا خلاصة تؤكدها أنت.',
+  entryTitle: 'تحدّث مع مدرّبك الشخصي للحياة',
+  entryHint:  'عن أي أمر تريد تغييره أو بناءه في حياتك. لا يُحفظ إلا خلاصة تؤكدها أنت.',
   entryCta:   'ابدأ',
 
   introTitle: 'قبل أن نبدأ',
-  introIs:    'ستتحدث مع Life عن أمر يتكرر وتريد تغييره. يسألك ويستمع إليك — خطوة بخطوة.',
-  introIsNot: 'ليست تشخيصًا، ولا حكمًا عليك، ولا تقدّم نصيحة بلا أساس.',
-  introAi:    'لكي يرد عليك، يُرسَل ما تكتبه إلى نموذج ذكاء اصطناعي (Groq). لا نحتفظ به، وقد أُوقف احتفاظ Groq به لدينا. تُحذف الأرقام والبريد والروابط قبل الإرسال — لكن ذلك لا يجعل كلامك مجهول الهوية تمامًا.',
+  introIs:    'ستتحدث مع Life، مدرّبك الشخصي للحياة، عن أمر تريد تغييره أو بناءه — عادة، أو قرار، أو عملك، أو من حولك، أو نفسك. يسألك ويستمع إليك، ويساعدك على أن تختار خطوتك التالية بنفسك.',
+  introIsNot: 'ليس طبيبًا ولا محاميًا ولا مستشارًا ماليًا، وليس تشخيصًا ولا حكمًا عليك، ولا يقدّم نصيحة بلا أساس.',
+  introAi:    'لكي يرد عليك، يُرسَل ما تكتبه إلى نموذج ذكاء اصطناعي. لا نحتفظ به، ولا يحتفظ به مزوّد النموذج لدينا. تُحذف الأرقام والبريد والروابط قبل الإرسال — لكن ذلك لا يجعل كلامك مجهول الهوية تمامًا.',
   introNothingSaved: 'المحادثة نفسها لا تُحفظ — بمجرد إغلاق الصفحة تزول. في النهاية يمكنك أن تحتفظ بخلاصة قصيرة تقرؤها وتؤكدها، إن اخترت ذلك فقط.',
   agree:  'موافق — ابدأ',
   cancel: 'ليس الآن',
 
   rolesNote: 'عندما تذكر شخصًا، صِفه بدوره — «مديري»، «صديقي» — دون ذكر اسمه.',
-  opener:    'ما الأمر الذي يتكرر وتريد تغييره؟ احكِ لي بكلماتك — مثلًا: «أؤجّل الأمور المهمة إلى آخر لحظة».',
+  opener:    'ما الذي تريد أن تغيّره أو تبنيه في حياتك؟ احكِ لي بكلماتك — مثلًا: «أريد أن أُقلع عن التدخين»، أو «أنا محتار في عمل جديد»، أو «أؤجّل الأمور المهمة إلى آخر لحظة».',
 
   placeholder: 'اكتب هنا…',
   send:        'إرسال',
@@ -210,7 +232,7 @@ const ar: SessionCopy = {
 
   finish: 'إنهاء',
 
-  memoryNote: 'سيقرأ Life آخر ثلاث خلاصات احتفظت بها، ليكمل من حيث كنت. تُرسَل إلى Groq مع رسائلك.',
+  memoryNote: 'سيقرأ Life آخر ثلاث خلاصات احتفظت بها، ليكمل من حيث كنت. تُرسَل إلى نموذج الذكاء الاصطناعي مع رسائلك.',
   lastStepQ:  'في المرة السابقة اخترت خطوة صغيرة: «{step}». هل جرّبتها؟',
   outDone: 'نعم', outPartly: 'جزئيًا', outNotYet: 'ليس بعد',
   outThanks: 'سُجِّل ذلك. سيكمل Life من هنا.',
@@ -275,6 +297,15 @@ const ar: SessionCopy = {
   mRemove: 'إزالة القياس', mEdit: 'تعديل', mOutOf5: '{n} من 5',
   jMakeGoal: 'اجعلها هدفًا',
   jGoalNote: 'خطوتك من مسيرتك — عدّلها أو تجاهلها. لا شيء يُحفظ قبل أن تضغط إضافة.',
+  pGoalQ: 'أتحب أن تحتفظ بهذا هدفًا في Life؟',
+  pSkillQ: 'أتحب أن تضيف هذا إلى مهاراتك في Life؟',
+  pAddGoal: 'أضِف إلى أهدافي',
+  pAddSkill: 'أضِف إلى مهاراتي',
+  pNo: 'ليس الآن',
+  pAddedGoal: 'أُضيف إلى أهدافك — تجده مع خطواته في الأهداف.',
+  pAddedSkill: 'أُضيف إلى مهاراتك.',
+  pFailed: 'تعذّرت الإضافة. حاول مرة أخرى.',
+  pNote: 'اقترح Life هذا مما اتفقتما عليه. لا يُضاف شيء إلا إذا ضغطت.',
   jDelete:   'حذف',
   jConfirm:  'اضغط مرة أخرى للحذف',
   jDownload: 'تنزيل (JSON)',
@@ -300,6 +331,26 @@ const ar: SessionCopy = {
   realUseBar: 'آخر أسبوعين: {reached} محادثات على الأقل وصلت إلى النهاية و{after} قيم «بعد». استخدامك أنت (المشرف) لا يُحسب. الأعداد أحداث، لا أشخاص.',
 };
 
+/** The owner's reading — admin only, so it is not translated beyond English and Arabic. */
+export const ADMIN_KEYS = [
+  'readingTitle', 'readingHint', 'readingFewer', 'readingResult', 'readingStarted', 'readingReached',
+  'readingClearer', 'readingNo', 'readingWeek', 'readingLoop', 'readingKept', 'readingResumed',
+  'readingBefore', 'readingAfter', 'readingUnknown', 'readingGoal',
+  'realUseTitle', 'realUseMet', 'realUseNotYet', 'realUseBar',
+] as const;
+type AdminKey = (typeof ADMIN_KEYS)[number];
+/** What a person reads — every key a translation must have. */
+export type PersonCopy = Omit<SessionCopy, AdminKey>;
+
+const adminEn = Object.fromEntries(ADMIN_KEYS.map((k) => [k, en[k]])) as Pick<SessionCopy, AdminKey>;
+const withAdmin = (c: PersonCopy): SessionCopy => ({ ...c, ...adminEn });
+
+const COPY: Record<Locale, SessionCopy> = {
+  en, ar,
+  es: withAdmin(es), fr: withAdmin(fr), pt: withAdmin(pt), tr: withAdmin(tr), ru: withAdmin(ru),
+  id: withAdmin(id), vi: withAdmin(vi), ko: withAdmin(ko), hi: withAdmin(hi), zh: withAdmin(zh),
+};
+
 export function sessionCopy(locale: Locale): SessionCopy {
-  return locale === 'ar' ? ar : en;
+  return COPY[locale] ?? en;
 }

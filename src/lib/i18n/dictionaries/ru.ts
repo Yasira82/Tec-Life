@@ -25,11 +25,11 @@ export const ru = {
     appsCount: '24 Apps',
   },
   life: {
-    brand:       'TEC Life · Ваше личное пространство',
+    brand:       'TEC Life · Ваш личный лайф-коуч',
     pro:         'PRO',
     welcome:     'Добро пожаловать',
     welcomeName: 'Добро пожаловать, {name}',
-    subtitle:    'ваш личный контекст в экосистеме TEC',
+    subtitle:    'стройте себя шаг за шагом',
     nav: { home: 'Главная', goals: 'Цели', skills: 'Навыки', activity: 'Активность', settings: 'Настройки' },
     home: {
       focus: 'Ваш фокус',

@@ -25,11 +25,11 @@ export const id = {
     appsCount: '24 Apps',
   },
   life: {
-    brand:       'TEC Life · Ruang pribadi Anda',
+    brand:       'TEC Life · Life coach pribadimu',
     pro:         'PRO',
     welcome:     'Selamat datang',
     welcomeName: 'Selamat datang, {name}',
-    subtitle:    'konteks pribadi Anda di ekosistem TEC',
+    subtitle:    'bangun dirimu, selangkah demi selangkah',
     nav: { home: 'Beranda', goals: 'Tujuan', skills: 'Keterampilan', activity: 'Aktivitas', settings: 'Pengaturan' },
     home: {
       focus: 'Fokus kamu',

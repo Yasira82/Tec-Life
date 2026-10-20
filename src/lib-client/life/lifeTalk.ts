@@ -3,6 +3,8 @@
 // The words go to Life's own BFF and nowhere else (the BFF forwards them to the AI
 // service, which answers from Groq and keeps nothing). Kept out of the component so
 // the component holds state and this file holds the one network door.
+import { readProposal, type Proposal } from './proposals';
+
 export interface Turn { role: 'user' | 'assistant'; content: string }
 
 /**
@@ -13,7 +15,7 @@ export interface Turn { role: 'user' | 'assistant'; content: string }
 export const MAX_MESSAGES = 400;
 
 export type TalkResult =
-  | { ok: true; reply: string }
+  | { ok: true; reply: string; proposal: Proposal | null }
   | { ok: false; reason: 'busy' | 'limit' | 'capacity' | 'unavailable' };
 
 export async function talk(messages: Turn[]): Promise<TalkResult> {
@@ -30,9 +32,11 @@ export async function talk(messages: Turn[]): Promise<TalkResult> {
       const body = await res.json().catch(() => ({})) as { error?: unknown };
       return { ok: false, reason: body?.error === 'capacity' ? 'capacity' : 'unavailable' };
     }
-    const json = await res.json() as { data?: { reply?: unknown } };
+    const json = await res.json() as { data?: { reply?: unknown; proposal?: unknown } };
     const reply = json?.data?.reply;
-    return typeof reply === 'string' && reply.trim() ? { ok: true, reply } : { ok: false, reason: 'unavailable' };
+    return typeof reply === 'string' && reply.trim()
+      ? { ok: true, reply, proposal: readProposal(json.data?.proposal) }
+      : { ok: false, reason: 'unavailable' };
   } catch {
     return { ok: false, reason: 'unavailable' };
   }

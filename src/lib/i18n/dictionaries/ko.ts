@@ -25,11 +25,11 @@ export const ko = {
     appsCount: '24 Apps',
   },
   life: {
-    brand:       'TEC Life · 나만의 공간',
+    brand:       'TEC Life · 나만의 라이프 코치',
     pro:         'PRO',
     welcome:     '환영합니다',
     welcomeName: '환영합니다, {name}님',
-    subtitle:    'TEC 생태계에서의 개인 맥락',
+    subtitle:    '한 걸음씩 나를 만들어 가요',
     nav: { home: '홈', goals: '목표', skills: '기술', activity: '활동', settings: '설정' },
     home: {
       focus: '지금 집중',

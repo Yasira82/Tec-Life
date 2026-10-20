@@ -92,16 +92,32 @@ const HUB = (() => {
  * stranger chose — on a page that exists to tell somebody where to go next.
  * The value is an index into this table or it is nothing.
  */
-const RETURN_TO: Record<string, { path: string; en: [string, string]; ar: [string, string] }> = {
+type Lang = 'en' | 'ar' | 'es' | 'fr' | 'pt' | 'tr' | 'ru' | 'id' | 'vi' | 'ko' | 'hi' | 'zh';
+const LANGS: readonly Lang[] = ['en', 'ar', 'es', 'fr', 'pt', 'tr', 'ru', 'id', 'vi', 'ko', 'hi', 'zh'];
+
+// Life speaks all twelve languages (owner, 2026-10-20) — so does the way back to the campaign.
+const RETURN_TO: Record<string, { path: string; text: Record<Lang, [string, string]> }> = {
   '1': {
     path: '/pioneers',
-    en: ['Back to the Quest',   'Founding 100'],
-    ar: ['عد إلى المهمة',          'المئة المؤسِّسة'],
+    text: {
+      en: ['Back to the Quest', 'Founding 100'],        ar: ['عد إلى المهمة', 'المئة المؤسِّسة'],
+      es: ['Volver a la misión', 'Los 100 fundadores'],  fr: ['Retour à la quête', 'Les 100 fondateurs'],
+      pt: ['Voltar à missão', 'Os 100 fundadores'],      tr: ['Göreve dön', 'Kurucu 100'],
+      ru: ['Назад к заданию', 'Первые 100'],             id: ['Kembali ke misi', '100 Pendiri'],
+      vi: ['Quay lại nhiệm vụ', '100 người sáng lập'],   ko: ['퀘스트로 돌아가기', '창립 100인'],
+      hi: ['मिशन पर वापस', 'संस्थापक 100'],              zh: ['返回任务', '创始 100 人'],
+    },
   },
   '2': {
     path: '/hub/campaign',
-    en: ['Back to the campaign', 'Pioneer reward'],
-    ar: ['عد إلى الحملة',           'مكافأة الرواد'],
+    text: {
+      en: ['Back to the campaign', 'Pioneer reward'],    ar: ['عد إلى الحملة', 'مكافأة الرواد'],
+      es: ['Volver a la campaña', 'Recompensa Pioneer'], fr: ['Retour à la campagne', 'Récompense Pioneer'],
+      pt: ['Voltar à campanha', 'Recompensa Pioneer'],   tr: ['Kampanyaya dön', 'Pioneer ödülü'],
+      ru: ['Назад к кампании', 'Награда Pioneer'],       id: ['Kembali ke kampanye', 'Hadiah Pioneer'],
+      vi: ['Quay lại chiến dịch', 'Phần thưởng Pioneer'], ko: ['캠페인으로 돌아가기', 'Pioneer 보상'],
+      hi: ['अभियान पर वापस', 'Pioneer इनाम'],             zh: ['返回活动', 'Pioneer 奖励'],
+    },
   },
 };
 
@@ -120,18 +136,22 @@ const RETURN_TO: Record<string, { path: string; en: [string, string]; ar: [strin
  * still answers when there is not. Server render has neither; 'en' until the
  * effect runs, which is also when the bar first appears.
  */
-function readLocale(): 'en' | 'ar' {
+const asLang = (v: string | null | undefined): Lang | null => (v && (LANGS as readonly string[]).includes(v) ? (v as Lang) : null);
+
+function readLocale(): Lang {
   try {
-    if (localStorage.getItem('tec_locale') === 'ar') return 'ar';
+    const stored = asLang(localStorage.getItem('tec_locale'));
+    if (stored) return stored;
   } catch { /* ignore */ } // storage blocked — the document answers next
   try {
-    if (document.documentElement.lang === 'ar') return 'ar';
+    const lang = asLang(document.documentElement.lang?.slice(0, 2));
+    if (lang) return lang;
   } catch { /* ignore */ } // no document — server render; 'en' until the effect
   return 'en';
 }
 
 export function QuestReturn() {
-  const [locale, setLocale] = useState<'en' | 'ar'>('en');
+  const [locale, setLocale] = useState<Lang>('en');
   /** The key into RETURN_TO, or null. Never a path read off the URL. */
   const [from, setFrom] = useState<string | null>(null);
 
@@ -181,7 +201,7 @@ export function QuestReturn() {
   const dest = from ? RETURN_TO[from] : undefined;
   if (!dest) return null;
 
-  const [back, hint] = locale === 'ar' ? dest.ar : dest.en;
+  const [back, hint] = dest.text[locale] ?? dest.text.en;
 
   return (
     <a

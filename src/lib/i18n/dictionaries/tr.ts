@@ -25,11 +25,11 @@ export const tr = {
     appsCount: '24 Apps',
   },
   life: {
-    brand:       'TEC Life · Kişisel alanın',
+    brand:       'TEC Life · Kişisel yaşam koçun',
     pro:         'PRO',
     welcome:     'Hoş geldin',
     welcomeName: 'Hoş geldin, {name}',
-    subtitle:    'TEC ekosistemindeki kişisel bağlamın',
+    subtitle:    'kendini adım adım inşa et',
     nav: { home: 'Ana sayfa', goals: 'Hedefler', skills: 'Beceriler', activity: 'Etkinlik', settings: 'Ayarlar' },
     home: {
       focus: 'Odağın',
