@@ -34,6 +34,8 @@ export interface SessionCopy {
   mChange: string; mClaim: string; mRemove: string; mEdit: string; mOutOf5: string; jMakeGoal: string; jGoalNote: string;
   readingTitle: string; readingHint: string; readingFewer: string; readingResult: Record<string, string>;
   readingStarted: string; readingReached: string; readingClearer: string; readingNo: string; readingWeek: string;
+  readingLoop: string; readingKept: string; readingResumed: string; readingBefore: string; readingAfter: string; readingUnknown: string; readingGoal: string;
+  realUseTitle: string; realUseMet: string; realUseNotYet: string; realUseBar: string;
 }
 
 const en: SessionCopy = {
@@ -159,6 +161,12 @@ const en: SessionCopy = {
   },
   readingStarted: 'Started', readingReached: 'Reached the end', readingClearer: 'Clearer (yes + somewhat)', readingNo: '“No”',
   readingWeek: 'Week of',
+  readingLoop: 'The change loop', readingKept: 'Summaries kept', readingResumed: 'Conversations continued',
+  readingBefore: 'Measures before', readingAfter: 'Values after', readingUnknown: '“I don’t know” / didn’t count', readingGoal: 'Steps made goals',
+  realUseTitle: 'Real use',
+  realUseMet: 'Met — real use exists; patterns can be considered',
+  realUseNotYet: 'Not yet',
+  realUseBar: 'Last 2 weeks: at least {reached} conversations reached the end and {after} “after” values. Your own use (admin) is not counted. Counts are events, not people.',
 };
 
 const ar: SessionCopy = {
@@ -284,6 +292,12 @@ const ar: SessionCopy = {
   },
   readingStarted: 'بدأوا', readingReached: 'وصلوا إلى النهاية', readingClearer: 'أوضح (نعم + إلى حدٍّ ما)', readingNo: '«لا»',
   readingWeek: 'أسبوع',
+  readingLoop: 'دائرة التغيير', readingKept: 'خلاصات محفوظة', readingResumed: 'محادثات أُكملت',
+  readingBefore: 'قياسات «قبل»', readingAfter: 'قيم «بعد»', readingUnknown: '«لا أعرف» / لم أعدّ', readingGoal: 'خطوات صارت أهدافًا',
+  realUseTitle: 'الاستخدام الحقيقي',
+  realUseMet: 'تحقّق — يوجد استخدام حقيقي، ويمكن التفكير في الأنماط',
+  realUseNotYet: 'لم يتحقق بعد',
+  realUseBar: 'آخر أسبوعين: {reached} محادثات على الأقل وصلت إلى النهاية و{after} قيم «بعد». استخدامك أنت (المشرف) لا يُحسب. الأعداد أحداث، لا أشخاص.',
 };
 
 export function sessionCopy(locale: Locale): SessionCopy {

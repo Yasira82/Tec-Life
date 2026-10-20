@@ -17,6 +17,7 @@ import { Overview } from './Overview';
 import { Pace } from './Pace';
 import { type GoalPrefill } from '@/lib/life/prefill';
 import { sessionCopy } from '@/lib/life/session-copy';
+import { countSession } from '@/lib-client/life/sessionCounter';
 import { parseSteps, toggleStep, withSteps } from '@/lib/life/steps';
 
 // One goal row. If it has a π target, shows a progress bar + a compact "log progress"
@@ -181,6 +182,7 @@ export function Goals({ isPro, prefill, onPrefillUsed }: { isPro: boolean; prefi
     await addGoal(name, Number.isFinite(amt) && amt > 0 ? amt : undefined, description);
     // Only after the goal is saved: clearing the prefill remounts this form (empty), and
     // the remount reads the list again — with the new goal in it.
+    if (suggested && prefill?.from === 'journey') countSession('g_from_step');
     if (suggested) onPrefillUsed?.();
   };
 

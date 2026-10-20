@@ -20,6 +20,7 @@ import { GoalPrefillReader } from './components/GoalPrefillReader';
 import { ProblemSession, ProblemSessionEntry, type Resume } from './components/ProblemSession';
 import { JourneyDrawer } from './components/JourneyDrawer';
 import { type GoalPrefill, stepAsGoal } from '@/lib/life/prefill';
+import { countSession } from '@/lib-client/life/sessionCounter';
 
 export default function LifeHome() {
   const { user, isLoading } = usePiAuth();
@@ -41,7 +42,10 @@ export default function LifeHome() {
   // is gone — coming back to Goals shows an empty form, not the same step again (owner,
   // 2026-10-19: the step was still in the field after it had been added).
   const goTo = (t: LifeTab) => { if (t !== 'goals') setPrefill(null); setTab(t); };
-  const openSession = (r?: Resume) => { setResume(r); setSessionKey((k) => k + 1); setInSession(true); setTab('home'); };
+  const openSession = (r?: Resume) => {
+    if (r) countSession('c_resumed'); // a kept conversation continued — one word, no id (Tec-core-backend PR 454)
+    setResume(r); setSessionKey((k) => k + 1); setInSession(true); setTab('home');
+  };
   const { t } = useTranslation();
 
   return (
