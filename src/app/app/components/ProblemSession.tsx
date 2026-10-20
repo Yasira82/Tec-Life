@@ -22,6 +22,8 @@
 //   • Full conversations (owner, 2026-10-18) are kept ONLY when the person turned
 //     "Keep my full conversations" on — then each answered turn is saved, encrypted
 //     by tec-life-service, so a closed page loses nothing and it can be continued.
+//   • Capabilities v1 (owner, 2026-10-20): after a yes to a step, Life's reply may carry one
+//     proposal — a goal or a skill. It is written only when the person taps Add (ProposalCard).
 //   • The text field turns off the browser's own ways of moving text:
 //     `autoComplete="off"`, `spellCheck={false}`, and `translate="no"` on everything
 //     that shows the conversation.
@@ -40,6 +42,8 @@ import {
   type ConversationListing,
 } from '@/lib-client/life/conversations';
 import { card, goldBtn } from './shared';
+import { ProposalCard } from './ProposalCard';
+import type { Proposal } from '@/lib-client/life/proposals';
 import { MenuButton } from './JourneyDrawer';
 
 type Step = 'intro' | 'chat' | 'end';
@@ -77,6 +81,8 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
   const [keep, setKeep] = useState<'idle' | 'writing' | 'editing' | 'saving' | 'saved' | 'failed'>('idle');
   const [summaryFailed, setSummaryFailed] = useState(false);
   const [fields, setFields] = useState({ problem: '', understanding: '', step: '' });
+  // Capabilities v1: Life's one proposal after a yes — shown under the reply it came with.
+  const [proposal, setProposal] = useState<Proposal | null>(null);
 
   useEffect(() => { void readJourney().then(setJourney); }, []);
   // Full conversations: kept only while the person has turned it on.
@@ -113,12 +119,13 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
     if (turns.length + 1 > MAX_MESSAGES) { setError(s.errLimit); return; }
     if (!counted.current.s2) { counted.current.s2 = true; countSession('s2_started'); }
     const next: Turn[] = [...turns, { role: 'user', content: text }];
-    setTurns(next); setDraft(''); setBusy(true); setError(null);
+    setTurns(next); setDraft(''); setBusy(true); setError(null); setProposal(null);
     const out = await talk(next);
     setBusy(false);
     if (out.ok) {
       const all: Turn[] = [...next, { role: 'assistant', content: out.reply }];
       setTurns(all);
+      setProposal(out.proposal);
       void keepFull(all);
       return;
     }
@@ -129,7 +136,7 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
 
   const finish = () => {
     // Drop every word before leaving, rather than trusting unmount to.
-    setTurns([]); setDraft(''); setClearer(null);
+    setTurns([]); setDraft(''); setClearer(null); setProposal(null);
     setFields({ problem: '', understanding: '', step: '' });
     onClose();
   };
@@ -253,6 +260,7 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
             </div>
           )}
           <div>{turns.map(bubble)}</div>
+          {proposal && !busy && <ProposalCard proposal={proposal} s={s} onDone={() => setProposal(null)} />}
           {busy && <div role="status" style={{ fontSize: 12.5, color: C.subtext, marginTop: 10 }}>{s.thinking}</div>}
           {error && <div role="alert" style={{ fontSize: 13, color: C.text, marginTop: 10 }}>{error}</div>}
           {fullSaveFailed && <div role="status" style={{ fontSize: 12, color: C.subtext, marginTop: 6 }}>{s.fullSaveFailed}</div>}

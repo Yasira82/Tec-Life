@@ -44,6 +44,7 @@ export interface SessionCopy {
   mPerDay: string; mPerWeek: string; mPerMonth: string; mValueNow: string; mSave: string; mSkip: string; mFailed: string;
   mBefore: string; mAfter: string; mFollowCta: string; mUnknown: string; mNotMeasured: string;
   mChange: string; mClaim: string; mRemove: string; mEdit: string; mOutOf5: string; jMakeGoal: string; jGoalNote: string;
+  pGoalQ: string; pSkillQ: string; pAddGoal: string; pAddSkill: string; pNo: string; pAddedGoal: string; pAddedSkill: string; pFailed: string; pNote: string;
   readingTitle: string; readingHint: string; readingFewer: string; readingResult: Record<string, string>;
   readingStarted: string; readingReached: string; readingClearer: string; readingNo: string; readingWeek: string;
   readingLoop: string; readingKept: string; readingResumed: string; readingBefore: string; readingAfter: string; readingUnknown: string; readingGoal: string;
@@ -156,6 +157,15 @@ const en: SessionCopy = {
   mRemove: 'Remove the measure', mEdit: 'Edit', mOutOf5: '{n} of 5',
   jMakeGoal: 'Make it a goal',
   jGoalNote: 'Your step from My journey — edit it or ignore it. Nothing is saved until you tap Add.',
+  pGoalQ: 'Keep this as a goal in Life?',
+  pSkillQ: 'Add this to your skills in Life?',
+  pAddGoal: 'Add to my goals',
+  pAddSkill: 'Add to my skills',
+  pNo: 'Not now',
+  pAddedGoal: 'Added to your goals — you will find it, with its steps, in Goals.',
+  pAddedSkill: 'Added to your skills.',
+  pFailed: 'It could not be added. Try again.',
+  pNote: 'Life suggested this from what you agreed. Nothing is added unless you tap.',
   jDelete:   'Delete',
   jConfirm:  'Tap again to delete',
   jDownload: 'Download (JSON)',
@@ -287,6 +297,15 @@ const ar: SessionCopy = {
   mRemove: 'إزالة القياس', mEdit: 'تعديل', mOutOf5: '{n} من 5',
   jMakeGoal: 'اجعلها هدفًا',
   jGoalNote: 'خطوتك من مسيرتك — عدّلها أو تجاهلها. لا شيء يُحفظ قبل أن تضغط إضافة.',
+  pGoalQ: 'أتحب أن تحتفظ بهذا هدفًا في Life؟',
+  pSkillQ: 'أتحب أن تضيف هذا إلى مهاراتك في Life؟',
+  pAddGoal: 'أضِف إلى أهدافي',
+  pAddSkill: 'أضِف إلى مهاراتي',
+  pNo: 'ليس الآن',
+  pAddedGoal: 'أُضيف إلى أهدافك — تجده مع خطواته في الأهداف.',
+  pAddedSkill: 'أُضيف إلى مهاراتك.',
+  pFailed: 'تعذّرت الإضافة. حاول مرة أخرى.',
+  pNote: 'اقترح Life هذا مما اتفقتما عليه. لا يُضاف شيء إلا إذا ضغطت.',
   jDelete:   'حذف',
   jConfirm:  'اضغط مرة أخرى للحذف',
   jDownload: 'تنزيل (JSON)',
