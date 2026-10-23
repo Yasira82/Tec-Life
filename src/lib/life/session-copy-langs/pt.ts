@@ -15,7 +15,7 @@ export const pt: PersonCopy = {
   "agree": "Concordo — começar",
   "cancel": "Agora não",
   "rolesNote": "Ao mencionar outras pessoas, descreva-as pelo papel — “meu chefe”, “uma amiga” — e não pelo nome.",
-  "opener": "O que você gostaria de mudar ou construir na sua vida? Conte com suas palavras — por exemplo: “Quero parar de fumar”, “Estou em dúvida sobre um novo emprego” ou “Deixo as coisas importantes para a última hora.”",
+  "opener": "Estou aqui para te ouvir. O que está na sua cabeça hoje, ou o que você gostaria que mudasse na sua vida? Comece por onde quiser, com suas próprias palavras.",
   "placeholder": "Escreva aqui…",
   "send": "Enviar",
   "thinking": "O Life está escrevendo…",

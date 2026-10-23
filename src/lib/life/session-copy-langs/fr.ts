@@ -15,7 +15,7 @@ export const fr: PersonCopy = {
   "agree": "J’accepte — commencer",
   "cancel": "Pas maintenant",
   "rolesNote": "Quand vous parlez d’autres personnes, décrivez-les par leur rôle — « mon responsable », « une amie » — plutôt que par leur nom.",
-  "opener": "Qu’aimeriez-vous changer ou construire dans votre vie ? Dites-le avec vos mots — par exemple : « Je veux arrêter de fumer », « J’hésite à changer de travail » ou « Je repousse les choses importantes jusqu’à la dernière minute ».",
+  "opener": "Je suis là pour vous écouter. Qu’est-ce qui vous occupe l’esprit aujourd’hui, ou qu’aimeriez-vous voir changer dans votre vie ? Commencez où vous voulez, avec vos propres mots.",
   "placeholder": "Écrivez ici…",
   "send": "Envoyer",
   "thinking": "Life écrit…",

@@ -15,7 +15,7 @@ export const id: PersonCopy = {
   "agree": "Saya setuju — mulai",
   "cancel": "Nanti saja",
   "rolesNote": "Saat menyebut orang lain, gambarkan mereka dari perannya — “atasan saya”, “seorang teman” — bukan dari namanya.",
-  "opener": "Apa yang ingin kamu ubah atau bangun dalam hidupmu? Ceritakan dengan kata-katamu sendiri — misalnya: “Saya ingin berhenti merokok”, “Saya bingung soal pekerjaan baru”, atau “Saya menunda hal penting sampai menit terakhir.”",
+  "opener": "Aku di sini untuk mendengarkanmu. Apa yang sedang kamu pikirkan hari ini, atau apa yang ingin kamu ubah dalam hidupmu? Mulailah dari mana saja, dengan kata-katamu sendiri.",
   "placeholder": "Tulis di sini…",
   "send": "Kirim",
   "thinking": "Life sedang menulis…",
