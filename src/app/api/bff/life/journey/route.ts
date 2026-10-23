@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { forwardLife } from '@/lib/bff/lifeGateway';
+import { FEELINGS } from '@/lib-client/life/journey';
 
 // GET  /api/bff/life/journey — the caller's own kept summaries, and whether keeping is on.
 // POST /api/bff/life/journey — keep ONE summary the person read, edited and confirmed.
@@ -17,6 +18,11 @@ const EntrySchema = z.object({
   helped:        z.string().trim().max(300).nullable().optional(),
   triggers:      z.string().trim().max(300).nullable().optional(),
   reason:        z.string().trim().max(300).nullable().optional(),
+  practice:      z.string().trim().max(300).nullable().optional(),
+  words:         z.string().trim().max(300).nullable().optional(),
+  // Chosen by the person from a closed list — never free text, never inferred.
+  feeling_start: z.enum(FEELINGS).nullable().optional(),
+  feeling_end:   z.enum(FEELINGS).nullable().optional(),
 });
 
 export async function GET(req: NextRequest) {
@@ -26,8 +32,8 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const parsed = EntrySchema.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success) return NextResponse.json({ error: 'VALIDATION_ERROR' }, { status: 400 });
-  const { problem, understanding, step, tried, helped, triggers, reason } = parsed.data;
+  const { problem, understanding, step, ...rest } = parsed.data;
   // Only the memory fields the person filled travel; an empty one is not sent.
-  const memory = Object.fromEntries(Object.entries({ tried, helped, triggers, reason }).filter(([, v]) => v));
+  const memory = Object.fromEntries(Object.entries(rest).filter(([, v]) => v));
   return forwardLife(req, 'POST', '/api/identity/life/journey', { problem, understanding, step: step || null, ...memory });
 }

@@ -177,7 +177,7 @@ describe('the code keeps the rule', () => {
 
   it('the journey client sends to Life\'s own routes only', () => {
     const client = readFileSync(join(process.cwd(), 'src/lib-client/life/journey.ts'), 'utf8');
-    for (const m of client.matchAll(/fetch\(([^,)]+)/g)) expect(m[1]).toMatch(/^[`']\/api\/bff\/life\/(journey|consent)/);
+    for (const m of client.matchAll(/fetch\(([^,)]+)/g)) expect(m[1]).toMatch(/^[`']\/api\/bff\/life\/(journey|consent|self)/);
   });
 
   it('every locale has the same keys, and none reads English in its place (owner, 2026-10-20)', () => {
@@ -333,5 +333,22 @@ describe('personal memory', () => {
     click(s.agree);
     await screen.findByText(s.rolesNote);
     expect(screen.queryByText(s.memStrip)).toBeNull();
+  });
+});
+
+describe('professional memory in the summary — practice, own words, chosen feelings (owner, 2026-10-23)', () => {
+  it('Life preselects a feeling the person named; the person changes it with a tap; only what is filled is kept', async () => {
+    summary = { problem: 'p', understanding: 'u', step: null, practice: 'I walk after dinner', words: 'I will not go back', feeling_start: 'FRUSTRATED', feeling_end: null };
+    await toEnd();
+    click(s.keepWrite);
+    await screen.findByDisplayValue('I walk after dinner');
+    expect(screen.getByDisplayValue('I will not go back')).toBeTruthy();
+    const starts = screen.getAllByRole('button', { name: s.feel.FRUSTRATED });
+    expect(starts[0]!.getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(starts[0]!);                                         // tap again → cleared
+    fireEvent.click(screen.getAllByRole('button', { name: s.feel.HOPEFUL })[1]!);   // the end: their choice
+    click(s.keepSaveOn);
+    await screen.findByText(s.keepSaved);
+    expect(JSON.parse(keeps()[0]!.body)).toEqual({ problem: 'p', understanding: 'u', step: null, practice: 'I walk after dinner', words: 'I will not go back', feeling_end: 'HOPEFUL' });
   });
 });

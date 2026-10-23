@@ -20,6 +20,14 @@ describe('Life in every language', () => {
     const c = sessionCopy(code);
     it(`${code}: every key, every placeholder, no vendor`, () => {
       for (const k of personKeys) {
+        // A closed list of labels (the feelings) is checked label by label.
+        if (typeof en[k] === 'object') {
+          const want = en[k] as Record<string, string>; const got = (c[k] ?? {}) as Record<string, string>;
+          expect(Object.keys(got).sort(), `${code}.${k}`).toEqual(Object.keys(want).sort());
+          for (const id of Object.keys(want)) expect(typeof got[id] === 'string' && got[id]!.trim().length > 0, `${code}.${k}.${id}`).toBe(true);
+          if (code !== 'en') expect(Object.keys(want).filter((id) => got[id] === want[id]), `${code}.${k}`).toEqual([]);
+          continue;
+        }
         const v = c[k] as unknown;
         expect(typeof v === 'string' && v.trim().length > 0, `${code}.${k}`).toBe(true);
         expect(holes(v as string), `${code}.${k}`).toEqual(holes(en[k] as string));
@@ -28,7 +36,7 @@ describe('Life in every language', () => {
     });
     if (code !== 'en') {
       it(`${code}: nothing a person reads is left in English`, () => {
-        const same = personKeys.filter((k) => !SAME.has(k) && !(ALSO_SAME[code] ?? []).includes(k) && c[k] === en[k] && /[a-z]{3}/i.test(en[k] as string));
+        const same = personKeys.filter((k) => typeof en[k] === 'string' && !SAME.has(k) && !(ALSO_SAME[code] ?? []).includes(k) && c[k] === en[k] && /[a-z]{3}/i.test(en[k] as string));
         // "Life" stays "Life"; a value equal to the English otherwise is an untranslated string.
         expect(same.filter((k) => en[k] !== 'Life'), code).toEqual([]);
       });

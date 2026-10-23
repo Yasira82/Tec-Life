@@ -35,7 +35,7 @@ import { countSession } from '@/lib-client/life/sessionCounter';
 import { talk, summarise, MAX_MESSAGES, type Turn } from '@/lib-client/life/lifeTalk';
 import {
   readJourney, keepEntry, turnKeepingOn, setOutcome,
-  MEMORY_FIELDS, type Journey, type JourneyOutcome,
+  MEMORY_FIELDS, type Journey, type JourneyOutcome, type Feeling,
 } from '@/lib-client/life/journey';
 import {
   listConversations, readConversation, saveConversation, turnConversationsOn, newConversationId, onConversationDeleted,
@@ -45,6 +45,7 @@ import { card, goldBtn } from './shared';
 import { ProposalCard } from './ProposalCard';
 import type { Proposal } from '@/lib-client/life/proposals';
 import { MenuButton } from './JourneyDrawer';
+import { FeelingPicker } from './FeelingPicker';
 
 type Step = 'intro' | 'chat' | 'end';
 
@@ -80,8 +81,10 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
   const [answered, setAnswered] = useState(false);
   const [keep, setKeep] = useState<'idle' | 'writing' | 'editing' | 'saving' | 'saved' | 'failed'>('idle');
   const [summaryFailed, setSummaryFailed] = useState(false);
-  const EMPTY = { problem: '', understanding: '', step: '', tried: '', helped: '', triggers: '', reason: '' };
+  const EMPTY = { problem: '', understanding: '', step: '', tried: '', helped: '', triggers: '', reason: '', practice: '', words: '' };
   const [fields, setFields] = useState(EMPTY);
+  // Feelings are chosen, not typed: Life may preselect one the person named; they change it.
+  const [feelings, setFeelings] = useState<{ feeling_start: Feeling | null; feeling_end: Feeling | null }>({ feeling_start: null, feeling_end: null });
   // Capabilities v1: Life's one proposal after a yes — shown under the reply it came with.
   const [proposal, setProposal] = useState<Proposal | null>(null);
 
@@ -138,7 +141,7 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
   const finish = () => {
     // Drop every word before leaving, rather than trusting unmount to.
     setTurns([]); setDraft(''); setClearer(null); setProposal(null);
-    setFields(EMPTY);
+    setFields(EMPTY); setFeelings({ feeling_start: null, feeling_end: null });
     onClose();
   };
   // Deleting the conversation that is open here closes it: its words leave the screen and
@@ -161,7 +164,9 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
     if (sm) setFields({
       problem: sm.problem, understanding: sm.understanding, step: sm.step ?? '',
       tried: sm.tried ?? '', helped: sm.helped ?? '', triggers: sm.triggers ?? '', reason: sm.reason ?? '',
+      practice: sm.practice ?? '', words: sm.words ?? '',
     });
+    if (sm) setFeelings({ feeling_start: sm.feeling_start, feeling_end: sm.feeling_end });
     else setSummaryFailed(true);
     setKeep('editing');
   };
@@ -176,6 +181,7 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
       problem: fields.problem.trim(), understanding: fields.understanding.trim(), step: fields.step.trim() || null,
       // Only the memory the person left filled is kept; an empty field sends nothing.
       ...Object.fromEntries(MEMORY_FIELDS.map((k) => [k, fields[k].trim()]).filter(([, v]) => v)),
+      ...Object.fromEntries(Object.entries(feelings).filter(([, v]) => v)),
     });
     if (!saved) { setKeep('failed'); return; }
     setJourney((j) => ({ keeping: true, entries: [saved, ...(j?.entries ?? [])] }));
@@ -320,7 +326,8 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
                 <>
                   {summaryFailed && <div role="alert" style={{ fontSize: 13, color: C.text, marginBottom: 10 }}>{s.keepSummaryFailed}</div>}
                   {([['problem', s.fProblem, 300], ['understanding', s.fUnderstanding, 800], ['step', s.fStep, 300],
-                    ['tried', s.fTried, 300], ['helped', s.fHelped, 300], ['triggers', s.fTriggers, 300], ['reason', s.fReason, 300]] as const).map(([k, label, max]) => (
+                    ['tried', s.fTried, 300], ['helped', s.fHelped, 300], ['triggers', s.fTriggers, 300], ['reason', s.fReason, 300],
+                    ['practice', s.fPractice, 300], ['words', s.fWords, 300]] as const).map(([k, label, max]) => (
                     <label key={k} style={{ display: 'block', marginTop: 10 }}>
                       <span style={{ display: 'block', fontSize: 12, fontWeight: 700, color: C.subtext, marginBottom: 4 }}>{label}</span>
                       <textarea
@@ -330,6 +337,10 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
                       />
                     </label>
                   ))}
+                  <FeelingPicker label={s.fFeelStart} value={feelings.feeling_start} s={s} disabled={keep === 'saving'}
+                    onChange={(f) => setFeelings((x) => ({ ...x, feeling_start: f }))} />
+                  <FeelingPicker label={s.fFeelEnd} value={feelings.feeling_end} s={s} disabled={keep === 'saving'}
+                    onChange={(f) => setFeelings((x) => ({ ...x, feeling_end: f }))} />
                   {!journey?.keeping && (
                     <p role="note" style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.5, marginTop: 10 }}>{s.keepConsent}</p>
                   )}

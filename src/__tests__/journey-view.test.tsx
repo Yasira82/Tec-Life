@@ -73,7 +73,7 @@ describe('My journey', () => {
     await screen.findByText('Water, gum, walking');
     const put = calls.find((c) => c.method === 'PUT')!;
     expect(put.url).toBe('/api/bff/life/journey/j2/memory');
-    expect(JSON.parse(put.body!)).toEqual({ tried: 'Water, gum, walking', helped: null, triggers: null, reason: null });
+    expect(JSON.parse(put.body!)).toEqual({ tried: 'Water, gum, walking', helped: null, triggers: null, reason: null, practice: null, words: null, feeling_start: null, feeling_end: null });
     expect(screen.queryByText('My kids')).toBeNull();
   });
 });
