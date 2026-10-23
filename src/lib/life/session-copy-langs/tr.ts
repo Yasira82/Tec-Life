@@ -15,7 +15,7 @@ export const tr: PersonCopy = {
   "agree": "Kabul ediyorum — başla",
   "cancel": "Şimdi değil",
   "rolesNote": "Başka insanlardan söz ederken onları adlarıyla değil, rolleriyle anlat — “müdürüm”, “bir arkadaşım” gibi.",
-  "opener": "Hayatında neyi değiştirmek ya da inşa etmek istersin? Kendi sözlerinle anlat — örneğin: “Sigarayı bırakmak istiyorum”, “Yeni bir iş konusunda karar veremiyorum” ya da “Önemli işleri son dakikaya bırakıyorum.”",
+  "opener": "Seni dinlemek için buradayım. Bugün aklını ne meşgul ediyor, ya da hayatında neyin değişmesini isterdin? İstediğin yerden, kendi sözlerinle başla.",
   "placeholder": "Buraya yaz…",
   "send": "Gönder",
   "thinking": "Life yazıyor…",

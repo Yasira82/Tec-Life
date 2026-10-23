@@ -15,7 +15,7 @@ export const vi: PersonCopy = {
   "agree": "Tôi đồng ý — bắt đầu",
   "cancel": "Để sau",
   "rolesNote": "Khi nhắc đến người khác, hãy mô tả họ theo vai trò — “sếp tôi”, “một người bạn” — thay vì nêu tên.",
-  "opener": "Bạn muốn thay đổi hoặc xây dựng điều gì trong cuộc sống? Hãy kể bằng lời của bạn — ví dụ: “Tôi muốn bỏ thuốc lá”, “Tôi phân vân về một công việc mới” hoặc “Tôi để việc quan trọng đến phút cuối.”",
+  "opener": "Tôi ở đây để lắng nghe bạn. Hôm nay điều gì đang khiến bạn bận tâm, hay bạn mong điều gì thay đổi trong cuộc sống? Hãy bắt đầu từ bất cứ đâu, bằng lời của chính bạn.",
   "placeholder": "Viết ở đây…",
   "send": "Gửi",
   "thinking": "Life đang viết…",

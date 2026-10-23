@@ -65,7 +65,7 @@ const en: SessionCopy = {
   cancel: 'Not now',
 
   rolesNote: 'When you mention other people, describe them by their role — “my manager”, “a friend” — rather than by name.',
-  opener:    'What would you like to change or build in your life? Tell me in your own words — for example: “I want to quit smoking”, “I can’t decide about a new job”, or “I leave important things until the last minute.”',
+  opener:    'I’m here to listen. What’s on your mind today, or what do you wish would change in your life? Start anywhere, in your own words.',
 
   placeholder: 'Write here…',
   send:        'Send',
@@ -205,7 +205,7 @@ const ar: SessionCopy = {
   cancel: 'ليس الآن',
 
   rolesNote: 'عندما تذكر شخصًا، صِفه بدوره — «مديري»، «صديقي» — دون ذكر اسمه.',
-  opener:    'ما الذي تريد أن تغيّره أو تبنيه في حياتك؟ احكِ لي بكلماتك — مثلًا: «أريد أن أُقلع عن التدخين»، أو «أنا محتار في عمل جديد»، أو «أؤجّل الأمور المهمة إلى آخر لحظة».',
+  opener:    'أنا هنا لأسمعك. ما الذي يشغلك اليوم، أو ما الذي تتمنى أن يتغيّر في حياتك؟ ابدأ من أي مكان، وبكلماتك أنت.',
 
   placeholder: 'اكتب هنا…',
   send:        'إرسال',
