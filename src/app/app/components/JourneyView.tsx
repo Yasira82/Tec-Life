@@ -17,6 +17,7 @@ import {
 } from '@/lib-client/life/conversations';
 import type { Resume } from './ProblemSession';
 import { JourneyMeasure } from './JourneyMeasure';
+import { JourneyMemory } from './JourneyMemory';
 import { card } from './shared';
 
 const smallBtn = {
@@ -148,6 +149,8 @@ export function JourneyView({ onContinue, onMakeGoal, embedded = false }: {
                           // here: the Goals tab opens with the step in its Add field, editable.
                           <button type="button" style={{ ...smallBtn, marginTop: 8 }} onClick={() => onMakeGoal(e.step!)}>{s.jMakeGoal}</button>
                         )}
+                        <JourneyMemory entry={e} keeping={!!journey?.keeping} s={s}
+                          onUpdate={(n) => setJourney((j) => j && { ...j, entries: j.entries.map((x) => (x.id === n.id ? { ...x, ...n } : x)) })} />
                         <JourneyMeasure entry={e} keeping={!!journey?.keeping} s={s} date={date}
                           onUpdate={(n) => setJourney((j) => j && { ...j, entries: j.entries.map((x) => (x.id === n.id ? { ...x, ...n } : x)) })} />
                         <button type="button" style={{ ...smallBtn, marginTop: 8 }} onClick={() => void removeEntry(e.id)}>

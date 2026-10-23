@@ -25,7 +25,26 @@ export interface JourneyEntry {
   followup_value?: number | null;
   followup_at?: string | null;
   followup_status?: FollowupStatus | null;
+  // Personal memory (owner, 2026-10-23) — confirmed by the person; Life coaches from it.
+  tried?: string | null;
+  helped?: string | null;
+  triggers?: string | null;
+  reason?: string | null;
+  // Professional memory (same day): what they now do regularly, one sentence of theirs, and how
+  // they felt at the start and the end — CHOSEN from a closed list, never inferred.
+  practice?: string | null;
+  words?: string | null;
+  feeling_start?: Feeling | null;
+  feeling_end?: Feeling | null;
 }
+
+export const FEELINGS = ['CALM', 'HOPEFUL', 'DETERMINED', 'PROUD', 'RELIEVED', 'TIRED', 'ANXIOUS', 'SAD', 'FRUSTRATED', 'ANGRY', 'ASHAMED', 'CONFUSED'] as const;
+export type Feeling = typeof FEELINGS[number];
+export const isFeeling = (v: unknown): v is Feeling => typeof v === 'string' && (FEELINGS as readonly string[]).includes(v);
+
+export const MEMORY_FIELDS = ['tried', 'helped', 'triggers', 'reason', 'practice', 'words'] as const;
+export type MemoryField = typeof MEMORY_FIELDS[number];
+export type MemoryDraft = Record<MemoryField, string | null> & { feeling_start: Feeling | null; feeling_end: Feeling | null };
 
 /** The value BEFORE the step — typed by the person; there is no default and no guess. */
 export interface MeasureDraft { kind: MeasureKind; label: string; period: MeasurePeriod; value: number }
@@ -33,7 +52,7 @@ export type FollowupDraft = { status: 'MEASURED'; value: number } | { status: 'U
 
 export interface Journey { keeping: boolean; entries: JourneyEntry[] }
 
-export interface JourneyDraft { problem: string; understanding: string; step: string | null }
+export interface JourneyDraft extends Partial<MemoryDraft> { problem: string; understanding: string; step: string | null }
 
 const json = { 'Content-Type': 'application/json' };
 
@@ -120,6 +139,37 @@ export function setMeasure(id: string, m: MeasureDraft): Promise<JourneyEntry | 
 /** Record the value later — or "I don't know" / "I didn't count", which carry no number. */
 export function setFollowup(id: string, f: FollowupDraft): Promise<JourneyEntry | null> {
   return entryOf(() => fetch(`/api/bff/life/journey/${encodeURIComponent(id)}/followup`, put(f)));
+}
+
+/** Change what Life remembers on one entry — an empty field is cleared. */
+export function setMemory(id: string, m: MemoryDraft): Promise<JourneyEntry | null> {
+  return entryOf(() => fetch(`/api/bff/life/journey/${encodeURIComponent(id)}/memory`, put(m)));
+}
+
+/** "Who I am becoming" — one sentence, the person's own (owner, 2026-10-23). Null when unreadable. */
+export interface Self { keeping: boolean; statement: string | null }
+
+export async function readSelf(): Promise<Self | null> {
+  try {
+    const res = await fetch('/api/bff/life/self', { credentials: 'include', cache: 'no-store' });
+    if (!res.ok) return null;
+    const d = (await res.json() as { data?: Partial<Self> })?.data;
+    return d ? { keeping: d.keeping === true, statement: typeof d.statement === 'string' ? d.statement : null } : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Write it, or clear it with an empty sentence. */
+export async function setSelf(statement: string): Promise<Self | null> {
+  try {
+    const res = await fetch('/api/bff/life/self', put({ statement }));
+    if (!res.ok) return null;
+    const d = (await res.json() as { data?: Partial<Self> })?.data;
+    return d ? { keeping: d.keeping === true, statement: typeof d.statement === 'string' ? d.statement : null } : null;
+  } catch {
+    return null;
+  }
 }
 
 /** Remove the measure (both values); the summary stays. */

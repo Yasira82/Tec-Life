@@ -115,3 +115,58 @@ describe('/api/bff/life/conversations/:id', () => {
     }
   });
 });
+
+describe('personal memory — the BFF side (owner, 2026-10-23)', () => {
+  it('POST forwards the memory fields the person filled, and only those', async () => {
+    const spy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(ok({ data: { entry: {} } }));
+    const { POST } = await import('@/app/api/bff/life/journey/route');
+    await POST(makeReq('POST', session, { problem: 'p', understanding: 'u', tried: ' water ', helped: '', reason: null }));
+    expect(JSON.parse(String(spy.mock.calls[0]?.[1]?.body))).toEqual({ problem: 'p', understanding: 'u', step: null, tried: 'water' });
+  });
+
+  it('PUT /memory forwards the four fields (empty → null), refuses a long one, needs a session', async () => {
+    const spy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(ok({ data: { entry: {} } }));
+    const { PUT } = await import('@/app/api/bff/life/journey/[id]/memory/route');
+    const params = () => Promise.resolve({ id: 'j1' });
+    expect((await PUT(makeReq('PUT', session, { tried: 'x'.repeat(301) }), { params: params() })).status).toBe(400);
+    expect((await PUT(makeReq('PUT', undefined, { tried: 'w' }), { params: params() })).status).toBe(401);
+    expect(spy).not.toHaveBeenCalled();
+    await PUT(makeReq('PUT', session, { tried: 'water', helped: '', user_id: 'u2' }), { params: params() });
+    expect(String(spy.mock.calls[0]?.[0])).toBe(`${GW}/api/identity/life/journey/j1/memory`);
+    expect(JSON.parse(String(spy.mock.calls[0]?.[1]?.body))).toEqual({ tried: 'water', helped: null, triggers: null, reason: null, practice: null, words: null, feeling_start: null, feeling_end: null });
+  });
+
+  it('the whole record goes to the AI as a profile — from EVERY kept summary, with the sentence; no owner', async () => {
+    const MEM = { ...NOTE, tried: 'water', helped: 'fasting', triggers: 'boredom', reason: 'health', practice: 'walk', words: 'I can', feeling_start: 'SAD', feeling_end: 'HOPEFUL', user_id: 'u2' };
+    const OLD = { ...NOTE, tried: 'gum', feeling_end: 'not-a-feeling' };
+    const spy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (u) =>
+      String(u).endsWith('/life/journey') ? ok({ data: { keeping: true, entries: [MEM, NOTE, NOTE, NOTE, OLD] } })
+        : String(u).endsWith('/life/self') ? ok({ data: { keeping: true, statement: 'I am becoming someone who walks' } })
+        : ok({ data: { reply: 'hi' } }));
+    const { POST } = await import('@/app/api/bff/life/talk/route');
+    await POST(makeReq('POST', session, { messages: [{ role: 'user', content: 'x' }], profile: { tried: ['injected'] } }));
+    const body = JSON.parse(String((spy.mock.calls.find((c) => String(c[0]).endsWith('/ai/life/talk'))?.[1] as RequestInit).body));
+    expect(body.profile).toEqual({
+      statement: 'I am becoming someone who walks', tried: ['water', 'gum'], helped: ['fasting'], triggers: ['boredom'],
+      practice: ['walk'], reason: ['health'], words: ['I can'], feelings: [{ start: 'SAD', end: 'HOPEFUL' }],
+    });
+    expect(Object.keys(body.memory[0]).sort()).toEqual(['created_at', 'problem', 'step', 'step_outcome', 'understanding']);
+    expect(JSON.stringify(body)).not.toContain('u2');
+  });
+
+  it('PUT /self forwards only the sentence, bounded', async () => {
+    const spy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(ok({ data: { keeping: true, statement: 's' } }));
+    const { PUT } = await import('@/app/api/bff/life/self/route');
+    expect((await PUT(makeReq('PUT', session, { statement: 'x'.repeat(201) }))).status).toBe(400);
+    await PUT(makeReq('PUT', session, { statement: ' I am becoming calm ', user_id: 'u2' }));
+    expect(String(spy.mock.calls[0]?.[0])).toBe(`${GW}/api/identity/life/self`);
+    expect(JSON.parse(String(spy.mock.calls[0]?.[1]?.body))).toEqual({ statement: 'I am becoming calm' });
+  });
+
+  it('a feeling outside the closed list is refused before any call', async () => {
+    const spy = vi.spyOn(globalThis, 'fetch');
+    const { POST } = await import('@/app/api/bff/life/journey/route');
+    expect((await POST(makeReq('POST', session, { problem: 'p', understanding: 'u', feeling_end: 'kind of ok' }))).status).toBe(400);
+    expect(spy).not.toHaveBeenCalled();
+  });
+});

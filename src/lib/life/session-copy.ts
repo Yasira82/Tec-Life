@@ -35,6 +35,13 @@ export interface SessionCopy {
   lastStepQ: string; outDone: string; outPartly: string; outNotYet: string; outThanks: string;
   keepTitle: string; endAndKeep: string; keepHint: string; keepWrite: string; keepWriting: string; keepSummaryFailed: string;
   fProblem: string; fUnderstanding: string; fStep: string;
+  fTried: string; fHelped: string; fTriggers: string; fReason: string;
+  memStrip: string; memStripEdit: string; jMemEdit: string; jMemSave: string; jMemCancel: string; jMemFailed: string;
+  fPractice: string; fWords: string; fFeelStart: string; fFeelEnd: string;
+  bTitle: string; bHint: string; bStatementLabel: string; bStatementPh: string; bStatementEmpty: string; bEdit: string;
+  bDid: string; bHelped: string; bPractice: string; bReasons: string; bWords: string; bFeelings: string; bEmpty: string;
+  /** The closed list of feelings a person may CHOOSE (never inferred) — keyed like tec-life-service's LifeFeeling. */
+  feel: Record<'CALM' | 'HOPEFUL' | 'DETERMINED' | 'PROUD' | 'RELIEVED' | 'TIRED' | 'ANXIOUS' | 'SAD' | 'FRUSTRATED' | 'ANGRY' | 'ASHAMED' | 'CONFUSED', string>;
   keepConsent: string; keepSave: string; keepSaveOn: string; keepSaved: string; keepFailed: string;
   fullOn: string; fullOff: string; fullTurnOn: string; fullTurnOnNote: string; fullSaveFailed: string; fullKeptEnd: string;
   cTitle: string; cHint: string; cEmpty: string; cContinue: string; cOpenFailed: string; cDeleteFailed: string; continueLast: string; startNew: string; menu: string; closeMenu: string; newConversation: string; cMessages: string; cUnreadable: string; cDownload: string; cLoading: string;
@@ -92,7 +99,7 @@ const en: SessionCopy = {
 
   finish: 'Finish',
 
-  memoryNote: 'Life will read your three most recent kept summaries so it can continue from where you were. They are sent to the AI model with your messages.',
+  memoryNote: "Life reads what you chose to keep — your summaries and your sentence about who you are becoming — so it can coach you from where you are. They are sent to the AI model with your messages.",
   lastStepQ:  'Last time you chose a small step: “{step}”. Did you try it?',
   outDone: 'Yes', outPartly: 'Partly', outNotYet: 'Not yet',
   outThanks: 'Noted. Life will continue from there.',
@@ -106,6 +113,34 @@ const en: SessionCopy = {
   fProblem:       'What keeps happening',
   fUnderstanding: 'What became clearer',
   fStep:          'The small step you chose (optional)',
+  fTried: "What you already tried (optional)",
+  fHelped: "What helped, even a little (optional)",
+  fTriggers: "When it gets hard (optional)",
+  fReason: "Why it matters to you (optional)",
+  memStrip: "Life coaches you from what you chose to keep: what you tried, what helped, when it gets hard and why it matters to you. You can see and change it at any time.",
+  memStripEdit: "See what Life remembers",
+  jMemEdit: "Edit what Life remembers",
+  jMemSave: "Save",
+  jMemCancel: "Cancel",
+  jMemFailed: "This could not be saved. Try again.",
+  fPractice: "What you now do regularly (optional)",
+  fWords: "A sentence of yours to keep (optional)",
+  fFeelStart: "How you felt at the start (optional)",
+  fFeelEnd: "How you feel now (optional)",
+  bTitle: "I'm changing",
+  bHint: "Built only from what you chose to keep.",
+  bStatementLabel: "I am becoming…",
+  bStatementPh: "Someone who…",
+  bStatementEmpty: "Write one sentence about who you are becoming. Life will remind you of it when you doubt yourself.",
+  bEdit: "Edit",
+  bDid: "What you managed",
+  bHelped: "What works for you",
+  bPractice: "What you now do",
+  bReasons: "Why it matters to you",
+  bWords: "In your own words",
+  bFeelings: "How you felt — start → end",
+  bEmpty: "Every summary you keep adds to this page: what you managed, what works for you, and who you are becoming.",
+  feel: {"CALM": "Calm", "HOPEFUL": "Hopeful", "DETERMINED": "Determined", "PROUD": "Proud", "RELIEVED": "Relieved", "TIRED": "Tired", "ANXIOUS": "Anxious", "SAD": "Sad", "FRUSTRATED": "Frustrated", "ANGRY": "Angry", "ASHAMED": "Ashamed", "CONFUSED": "Confused"},
   keepConsent: 'Keeping turns on “Keep my journey” in Privacy. You can turn it off there at any time — turning it off deletes everything kept.',
   keepSave:   'Keep this summary',
   keepSaveOn: 'Turn on and keep',
@@ -232,7 +267,7 @@ const ar: SessionCopy = {
 
   finish: 'إنهاء',
 
-  memoryNote: 'سيقرأ Life آخر ثلاث خلاصات احتفظت بها، ليكمل من حيث كنت. تُرسَل إلى نموذج الذكاء الاصطناعي مع رسائلك.',
+  memoryNote: "يقرأ Life ما اخترت أن تحتفظ به — خلاصاتك وجملتك عمّن تصبح — ليدرّبك من حيث أنت. تُرسَل إلى نموذج الذكاء الاصطناعي مع رسائلك.",
   lastStepQ:  'في المرة السابقة اخترت خطوة صغيرة: «{step}». هل جرّبتها؟',
   outDone: 'نعم', outPartly: 'جزئيًا', outNotYet: 'ليس بعد',
   outThanks: 'سُجِّل ذلك. سيكمل Life من هنا.',
@@ -246,6 +281,34 @@ const ar: SessionCopy = {
   fProblem:       'ما الذي يتكرر',
   fUnderstanding: 'ما الذي اتّضح',
   fStep:          'الخطوة الصغيرة التي اخترتها (اختياري)',
+  fTried: "ما جرّبته من قبل (اختياري)",
+  fHelped: "ما ساعدك ولو قليلًا (اختياري)",
+  fTriggers: "متى يصعب الأمر (اختياري)",
+  fReason: "لماذا يهمّك هذا (اختياري)",
+  memStrip: "يدرّبك Life بناءً على ما اخترت أن تحتفظ به: ما جرّبته، وما ساعدك، ومتى يصعب الأمر، ولماذا يهمّك. يمكنك أن تراه وتغيّره في أي وقت.",
+  memStripEdit: "اعرض ما يتذكّره Life",
+  jMemEdit: "عدّل ما يتذكّره Life",
+  jMemSave: "حفظ",
+  jMemCancel: "إلغاء",
+  jMemFailed: "تعذّر الحفظ. حاول مرة أخرى.",
+  fPractice: "ما صرت تفعله بانتظام (اختياري)",
+  fWords: "جملة قلتها وتريد أن تحتفظ بها (اختياري)",
+  fFeelStart: "كيف كنت تشعر في البداية (اختياري)",
+  fFeelEnd: "كيف تشعر الآن (اختياري)",
+  bTitle: "أنا أتغيّر",
+  bHint: "مبنيّة فقط مما اخترت أن تحتفظ به.",
+  bStatementLabel: "أنا أصبحت…",
+  bStatementPh: "شخصًا…",
+  bStatementEmpty: "اكتب جملة واحدة عن الشخص الذي تصبحه. سيذكّرك Life بها حين تشكّ في نفسك.",
+  bEdit: "تعديل",
+  bDid: "ما استطعت أن تفعله",
+  bHelped: "ما ينفع معك",
+  bPractice: "ما صرت تفعله",
+  bReasons: "لماذا يهمّك هذا",
+  bWords: "بكلماتك أنت",
+  bFeelings: "كيف شعرت — البداية ← النهاية",
+  bEmpty: "كل خلاصة تحتفظ بها تضيف إلى هذه الصفحة: ما استطعت أن تفعله، وما ينفع معك، ومن تصبح.",
+  feel: {"CALM": "هادئ", "HOPEFUL": "متفائل", "DETERMINED": "عازم", "PROUD": "فخور", "RELIEVED": "مرتاح", "TIRED": "متعب", "ANXIOUS": "قلق", "SAD": "حزين", "FRUSTRATED": "محبط", "ANGRY": "غاضب", "ASHAMED": "خجلان", "CONFUSED": "مشوّش"},
   keepConsent: 'الحفظ يفعّل «الاحتفاظ بمسيرتي» في الخصوصية. يمكنك إيقافه هناك متى شئت — وإيقافه يحذف كل ما حُفظ.',
   keepSave:   'احتفظ بهذه الخلاصة',
   keepSaveOn: 'فعّل واحتفظ',

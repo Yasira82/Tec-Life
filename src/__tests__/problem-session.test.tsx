@@ -177,7 +177,7 @@ describe('the code keeps the rule', () => {
 
   it('the journey client sends to Life\'s own routes only', () => {
     const client = readFileSync(join(process.cwd(), 'src/lib-client/life/journey.ts'), 'utf8');
-    for (const m of client.matchAll(/fetch\(([^,)]+)/g)) expect(m[1]).toMatch(/^[`']\/api\/bff\/life\/(journey|consent)/);
+    for (const m of client.matchAll(/fetch\(([^,)]+)/g)) expect(m[1]).toMatch(/^[`']\/api\/bff\/life\/(journey|consent|self)/);
   });
 
   it('every locale has the same keys, and none reads English in its place (owner, 2026-10-20)', () => {
@@ -298,4 +298,57 @@ describe('the conversation lasts until the person ends it', () => {
     expect(screen.queryByText(s.errLimit)).toBeNull();
     expect(JSON.parse(talks().at(-1)!.body).messages).toHaveLength(50); // the page keeps it whole
   }, 30_000);
+});
+
+// ── Personal memory (owner, 2026-10-23): Life coaches from what the person kept, and says so ──
+describe('personal memory', () => {
+  it('the summary\'s memory fields are shown, editable, and only the filled ones are kept', async () => {
+    summary = { problem: 'You stay up late', understanding: 'u', step: null, tried: 'Water and gum', helped: 'Fasting', triggers: null, reason: 'My health' };
+    await toEnd();
+    click(s.keepWrite);
+    const tried = await screen.findByDisplayValue('Water and gum');
+    expect(screen.getByText(s.fTried)).toBeTruthy();
+    fireEvent.change(screen.getByDisplayValue('My health'), { target: { value: '' } });
+    fireEvent.change(tried, { target: { value: 'Water, gum, a five-minute wait' } });
+    click(s.keepSaveOn);
+    await screen.findByText(s.keepSaved);
+    expect(JSON.parse(keeps()[0]!.body)).toEqual({
+      problem: 'You stay up late', understanding: 'u', step: null, tried: 'Water, gum, a five-minute wait', helped: 'Fasting',
+    });
+  });
+
+  it('in the chat, the person sees that Life coaches from their memory — and can open it', async () => {
+    journey = { keeping: true, entries: [{ id: 'j1', problem: 'p', understanding: 'u', step: null, step_outcome: null, created_at: '2026-10-10T09:00:00.000Z', tried: 'water' }] };
+    const onMenu = vi.fn();
+    render(<ProblemSession onClose={vi.fn()} onMenu={onMenu} />);
+    await waitFor(() => expect(calls.some((c) => c.url === '/api/bff/life/journey')).toBe(true));
+    click(s.agree);
+    expect(await screen.findByText(s.memStrip)).toBeTruthy();
+    click(s.memStripEdit);
+    expect(onMenu).toHaveBeenCalled();
+  });
+
+  it('no strip when nothing is kept', async () => {
+    render(<ProblemSession onClose={vi.fn()} onMenu={vi.fn()} />);
+    click(s.agree);
+    await screen.findByText(s.rolesNote);
+    expect(screen.queryByText(s.memStrip)).toBeNull();
+  });
+});
+
+describe('professional memory in the summary — practice, own words, chosen feelings (owner, 2026-10-23)', () => {
+  it('Life preselects a feeling the person named; the person changes it with a tap; only what is filled is kept', async () => {
+    summary = { problem: 'p', understanding: 'u', step: null, practice: 'I walk after dinner', words: 'I will not go back', feeling_start: 'FRUSTRATED', feeling_end: null };
+    await toEnd();
+    click(s.keepWrite);
+    await screen.findByDisplayValue('I walk after dinner');
+    expect(screen.getByDisplayValue('I will not go back')).toBeTruthy();
+    const starts = screen.getAllByRole('button', { name: s.feel.FRUSTRATED });
+    expect(starts[0]!.getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(starts[0]!);                                         // tap again → cleared
+    fireEvent.click(screen.getAllByRole('button', { name: s.feel.HOPEFUL })[1]!);   // the end: their choice
+    click(s.keepSaveOn);
+    await screen.findByText(s.keepSaved);
+    expect(JSON.parse(keeps()[0]!.body)).toEqual({ problem: 'p', understanding: 'u', step: null, practice: 'I walk after dinner', words: 'I will not go back', feeling_end: 'HOPEFUL' });
+  });
 });

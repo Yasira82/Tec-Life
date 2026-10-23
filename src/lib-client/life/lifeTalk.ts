@@ -4,6 +4,7 @@
 // service, which answers from Groq and keeps nothing). Kept out of the component so
 // the component holds state and this file holds the one network door.
 import { readProposal, type Proposal } from './proposals';
+import { isFeeling, type Feeling } from './journey';
 
 export interface Turn { role: 'user' | 'assistant'; content: string }
 
@@ -42,7 +43,11 @@ export async function talk(messages: Turn[]): Promise<TalkResult> {
   }
 }
 
-export interface Summary { problem: string; understanding: string; step: string | null }
+export interface Summary {
+  problem: string; understanding: string; step: string | null;
+  tried: string | null; helped: string | null; triggers: string | null; reason: string | null;
+  practice: string | null; words: string | null; feeling_start: Feeling | null; feeling_end: Feeling | null;
+}
 
 /**
  * The closing summary, written by Life for the person to read and edit (Life memory v1).
@@ -60,7 +65,14 @@ export async function summarise(messages: Turn[]): Promise<Summary | null> {
     const json = await res.json() as { data?: { summary?: Partial<Summary> } };
     const sm = json?.data?.summary;
     if (typeof sm?.problem !== 'string' || typeof sm?.understanding !== 'string') return null;
-    return { problem: sm.problem, understanding: sm.understanding, step: typeof sm.step === 'string' ? sm.step : null };
+    const str = (v: unknown) => (typeof v === 'string' ? v : null);
+    return {
+      problem: sm.problem, understanding: sm.understanding, step: str(sm.step),
+      tried: str(sm.tried), helped: str(sm.helped), triggers: str(sm.triggers), reason: str(sm.reason),
+      practice: str(sm.practice), words: str(sm.words),
+      feeling_start: isFeeling(sm.feeling_start) ? sm.feeling_start : null,
+      feeling_end:   isFeeling(sm.feeling_end) ? sm.feeling_end : null,
+    };
   } catch {
     return null;
   }
