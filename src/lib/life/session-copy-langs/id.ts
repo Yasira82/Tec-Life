@@ -10,7 +10,7 @@ export const id: PersonCopy = {
   "introTitle": "Sebelum kita mulai",
   "introIs": "Kamu akan berbicara dengan Life, life coach pribadimu, tentang sesuatu yang ingin kamu ubah atau bangun — kebiasaan, keputusan, pekerjaan, orang-orang di sekitarmu, dirimu sendiri. Life bertanya, mendengarkan, dan membantumu memilih langkah berikutnya sendiri.",
   "introIsNot": "Life bukan dokter, pengacara, atau penasihat keuangan, bukan diagnosis, dan bukan penilaian atas dirimu — dan tidak memberi saran yang tidak bisa ia dasarkan.",
-  "introAi": "Untuk membalas, apa yang kamu tulis dikirim ke model AI. Kami tidak menyimpannya, dan penyedia model tidak menyimpannya untuk kami. Nomor, email, dan tautan dihapus sebelum dikirim — tetapi itu tidak membuat kata-katamu sepenuhnya anonim.",
+  "introAi": "Untuk membalas, apa yang kamu tulis dikirim ke model AI. Kami tidak menyimpannya, dan penyedia model tidak menyimpannya untuk kami. Nomor, email, dan tautan dihapus sebelum dikirim — tetapi itu tidak membuat kata-katamu sepenuhnya anonim. Jika kamu meminta Life mencari sesuatu, hanya topik umum — tidak pernah kata-katamu — yang dikirim ke layanan pencarian.",
   "introNothingSaved": "Percakapannya sendiri tidak disimpan — saat kamu menutup halaman ini, percakapan hilang. Di akhir, kamu boleh menyimpan ringkasan singkat yang kamu baca dan setujui, hanya jika kamu mau.",
   "agree": "Saya setuju — mulai",
   "cancel": "Nanti saja",

@@ -10,7 +10,7 @@ export const vi: PersonCopy = {
   "introTitle": "Trước khi bắt đầu",
   "introIs": "Bạn sẽ trò chuyện với Life, huấn luyện viên cuộc sống của riêng bạn, về điều bạn muốn thay đổi hoặc xây dựng — một thói quen, một quyết định, công việc, những người xung quanh, chính bạn. Life hỏi, lắng nghe và giúp bạn tự chọn bước tiếp theo.",
   "introIsNot": "Đây không phải bác sĩ, luật sư hay cố vấn tài chính, không phải chẩn đoán và không phán xét bạn — và không đưa lời khuyên nào mà nó không thể dựa vào đâu.",
-  "introAi": "Để trả lời, những gì bạn viết được gửi tới một mô hình AI. Chúng tôi không lưu lại, và nhà cung cấp mô hình cũng không lưu cho chúng tôi. Số điện thoại, email và đường link được xóa trước khi gửi — nhưng điều đó không làm lời bạn hoàn toàn ẩn danh.",
+  "introAi": "Để trả lời, những gì bạn viết được gửi tới một mô hình AI. Chúng tôi không lưu lại, và nhà cung cấp mô hình cũng không lưu cho chúng tôi. Số điện thoại, email và đường link được xóa trước khi gửi — nhưng điều đó không làm lời bạn hoàn toàn ẩn danh. Nếu bạn nhờ Life tìm kiếm điều gì, chỉ một chủ đề chung — không bao giờ là lời của bạn — được gửi tới một dịch vụ tìm kiếm.",
   "introNothingSaved": "Bản thân cuộc trò chuyện không được lưu — khi bạn đóng trang này, nó biến mất. Cuối cùng, bạn có thể giữ một bản tóm tắt ngắn mà bạn đọc và xác nhận, chỉ khi bạn muốn.",
   "agree": "Tôi đồng ý — bắt đầu",
   "cancel": "Để sau",

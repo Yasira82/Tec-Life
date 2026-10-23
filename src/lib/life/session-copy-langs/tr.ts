@@ -10,7 +10,7 @@ export const tr: PersonCopy = {
   "introTitle": "Başlamadan önce",
   "introIs": "Kişisel yaşam koçun Life ile değiştirmek ya da inşa etmek istediğin bir şey hakkında konuşacaksın — bir alışkanlık, bir karar, işin, çevrendeki insanlar, kendin. Sorar, dinler ve bir sonraki adımını kendin seçmene yardım eder.",
   "introIsNot": "Doktor, avukat ya da mali danışman değildir; bir teşhis değildir, seni yargılamaz ve dayanağı olmayan bir tavsiye vermez.",
-  "introAi": "Sana yanıt vermek için yazdıkların bir yapay zekâ modeline gönderilir. Biz bunu saklamayız, modelin sağlayıcısı da bizim için saklamaz. Numaralar, e-postalar ve bağlantılar gönderilmeden önce silinir — ama bu, sözlerini tamamen anonim yapmaz.",
+  "introAi": "Sana yanıt vermek için yazdıkların bir yapay zekâ modeline gönderilir. Biz bunu saklamayız, modelin sağlayıcısı da bizim için saklamaz. Numaralar, e-postalar ve bağlantılar gönderilmeden önce silinir — ama bu, sözlerini tamamen anonim yapmaz. Life'tan bir şey araştırmasını istersen, bir arama hizmetine yalnızca genel bir konu gönderilir — senin sözlerin asla.",
   "introNothingSaved": "Sohbetin kendisi kaydedilmez — bu sayfayı kapattığında gider. Sonunda, istersen okuyup onayladığın kısa bir özeti saklayabilirsin.",
   "agree": "Kabul ediyorum — başla",
   "cancel": "Şimdi değil",

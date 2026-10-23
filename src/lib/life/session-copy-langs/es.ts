@@ -10,7 +10,7 @@ export const es: PersonCopy = {
   "introTitle": "Antes de empezar",
   "introIs": "Hablarás con Life, tu coach personal de vida, sobre algo que quieras cambiar o construir: un hábito, una decisión, tu trabajo, las personas que te rodean, tú mismo. Pregunta, escucha y te ayuda a elegir tu propio siguiente paso.",
   "introIsNot": "No es médico, ni abogado, ni asesor financiero; no es un diagnóstico ni te juzga, y no da consejos que no pueda fundamentar.",
-  "introAi": "Para responderte, lo que escribes se envía a un modelo de IA. No lo guardamos, y el proveedor del modelo no lo guarda para nosotros. Los números, correos y enlaces se eliminan antes de enviarlo, pero eso no hace que tus palabras sean del todo anónimas.",
+  "introAi": "Para responderte, lo que escribes se envía a un modelo de IA. No lo guardamos, y el proveedor del modelo no lo guarda para nosotros. Los números, correos y enlaces se eliminan antes de enviarlo, pero eso no hace que tus palabras sean del todo anónimas. Si pides a Life que busque algo, solo se envía un tema general —nunca tus palabras— a un servicio de búsqueda.",
   "introNothingSaved": "La conversación en sí no se guarda: al cerrar esta página, desaparece. Al final puedes guardar un breve resumen que lees y confirmas, solo si lo eliges.",
   "agree": "Acepto: empezar",
   "cancel": "Ahora no",
