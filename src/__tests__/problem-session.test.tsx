@@ -299,3 +299,39 @@ describe('the conversation lasts until the person ends it', () => {
     expect(JSON.parse(talks().at(-1)!.body).messages).toHaveLength(50); // the page keeps it whole
   }, 30_000);
 });
+
+// ── Personal memory (owner, 2026-10-23): Life coaches from what the person kept, and says so ──
+describe('personal memory', () => {
+  it('the summary\'s memory fields are shown, editable, and only the filled ones are kept', async () => {
+    summary = { problem: 'You stay up late', understanding: 'u', step: null, tried: 'Water and gum', helped: 'Fasting', triggers: null, reason: 'My health' };
+    await toEnd();
+    click(s.keepWrite);
+    const tried = await screen.findByDisplayValue('Water and gum');
+    expect(screen.getByText(s.fTried)).toBeTruthy();
+    fireEvent.change(screen.getByDisplayValue('My health'), { target: { value: '' } });
+    fireEvent.change(tried, { target: { value: 'Water, gum, a five-minute wait' } });
+    click(s.keepSaveOn);
+    await screen.findByText(s.keepSaved);
+    expect(JSON.parse(keeps()[0]!.body)).toEqual({
+      problem: 'You stay up late', understanding: 'u', step: null, tried: 'Water, gum, a five-minute wait', helped: 'Fasting',
+    });
+  });
+
+  it('in the chat, the person sees that Life coaches from their memory — and can open it', async () => {
+    journey = { keeping: true, entries: [{ id: 'j1', problem: 'p', understanding: 'u', step: null, step_outcome: null, created_at: '2026-10-10T09:00:00.000Z', tried: 'water' }] };
+    const onMenu = vi.fn();
+    render(<ProblemSession onClose={vi.fn()} onMenu={onMenu} />);
+    await waitFor(() => expect(calls.some((c) => c.url === '/api/bff/life/journey')).toBe(true));
+    click(s.agree);
+    expect(await screen.findByText(s.memStrip)).toBeTruthy();
+    click(s.memStripEdit);
+    expect(onMenu).toHaveBeenCalled();
+  });
+
+  it('no strip when nothing is kept', async () => {
+    render(<ProblemSession onClose={vi.fn()} onMenu={vi.fn()} />);
+    click(s.agree);
+    await screen.findByText(s.rolesNote);
+    expect(screen.queryByText(s.memStrip)).toBeNull();
+  });
+});

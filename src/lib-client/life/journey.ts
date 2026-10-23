@@ -25,7 +25,16 @@ export interface JourneyEntry {
   followup_value?: number | null;
   followup_at?: string | null;
   followup_status?: FollowupStatus | null;
+  // Personal memory (owner, 2026-10-23) — confirmed by the person; Life coaches from it.
+  tried?: string | null;
+  helped?: string | null;
+  triggers?: string | null;
+  reason?: string | null;
 }
+
+export const MEMORY_FIELDS = ['tried', 'helped', 'triggers', 'reason'] as const;
+export type MemoryField = typeof MEMORY_FIELDS[number];
+export type MemoryDraft = Record<MemoryField, string | null>;
 
 /** The value BEFORE the step — typed by the person; there is no default and no guess. */
 export interface MeasureDraft { kind: MeasureKind; label: string; period: MeasurePeriod; value: number }
@@ -33,7 +42,7 @@ export type FollowupDraft = { status: 'MEASURED'; value: number } | { status: 'U
 
 export interface Journey { keeping: boolean; entries: JourneyEntry[] }
 
-export interface JourneyDraft { problem: string; understanding: string; step: string | null }
+export interface JourneyDraft extends Partial<MemoryDraft> { problem: string; understanding: string; step: string | null }
 
 const json = { 'Content-Type': 'application/json' };
 
@@ -120,6 +129,11 @@ export function setMeasure(id: string, m: MeasureDraft): Promise<JourneyEntry | 
 /** Record the value later — or "I don't know" / "I didn't count", which carry no number. */
 export function setFollowup(id: string, f: FollowupDraft): Promise<JourneyEntry | null> {
   return entryOf(() => fetch(`/api/bff/life/journey/${encodeURIComponent(id)}/followup`, put(f)));
+}
+
+/** Change what Life remembers on one entry — an empty field is cleared. */
+export function setMemory(id: string, m: MemoryDraft): Promise<JourneyEntry | null> {
+  return entryOf(() => fetch(`/api/bff/life/journey/${encodeURIComponent(id)}/memory`, put(m)));
 }
 
 /** Remove the measure (both values); the summary stays. */

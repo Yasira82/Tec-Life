@@ -35,6 +35,8 @@ export interface SessionCopy {
   lastStepQ: string; outDone: string; outPartly: string; outNotYet: string; outThanks: string;
   keepTitle: string; endAndKeep: string; keepHint: string; keepWrite: string; keepWriting: string; keepSummaryFailed: string;
   fProblem: string; fUnderstanding: string; fStep: string;
+  fTried: string; fHelped: string; fTriggers: string; fReason: string;
+  memStrip: string; memStripEdit: string; jMemEdit: string; jMemSave: string; jMemCancel: string; jMemFailed: string;
   keepConsent: string; keepSave: string; keepSaveOn: string; keepSaved: string; keepFailed: string;
   fullOn: string; fullOff: string; fullTurnOn: string; fullTurnOnNote: string; fullSaveFailed: string; fullKeptEnd: string;
   cTitle: string; cHint: string; cEmpty: string; cContinue: string; cOpenFailed: string; cDeleteFailed: string; continueLast: string; startNew: string; menu: string; closeMenu: string; newConversation: string; cMessages: string; cUnreadable: string; cDownload: string; cLoading: string;
@@ -106,6 +108,16 @@ const en: SessionCopy = {
   fProblem:       'What keeps happening',
   fUnderstanding: 'What became clearer',
   fStep:          'The small step you chose (optional)',
+  fTried: "What you already tried (optional)",
+  fHelped: "What helped, even a little (optional)",
+  fTriggers: "When it gets hard (optional)",
+  fReason: "Why it matters to you (optional)",
+  memStrip: "Life coaches you from what you chose to keep: what you tried, what helped, when it gets hard and why it matters to you. You can see and change it at any time.",
+  memStripEdit: "See what Life remembers",
+  jMemEdit: "Edit what Life remembers",
+  jMemSave: "Save",
+  jMemCancel: "Cancel",
+  jMemFailed: "This could not be saved. Try again.",
   keepConsent: 'Keeping turns on “Keep my journey” in Privacy. You can turn it off there at any time — turning it off deletes everything kept.',
   keepSave:   'Keep this summary',
   keepSaveOn: 'Turn on and keep',
@@ -246,6 +258,16 @@ const ar: SessionCopy = {
   fProblem:       'ما الذي يتكرر',
   fUnderstanding: 'ما الذي اتّضح',
   fStep:          'الخطوة الصغيرة التي اخترتها (اختياري)',
+  fTried: "ما جرّبته من قبل (اختياري)",
+  fHelped: "ما ساعدك ولو قليلًا (اختياري)",
+  fTriggers: "متى يصعب الأمر (اختياري)",
+  fReason: "لماذا يهمّك هذا (اختياري)",
+  memStrip: "يدرّبك Life بناءً على ما اخترت أن تحتفظ به: ما جرّبته، وما ساعدك، ومتى يصعب الأمر، ولماذا يهمّك. يمكنك أن تراه وتغيّره في أي وقت.",
+  memStripEdit: "اعرض ما يتذكّره Life",
+  jMemEdit: "عدّل ما يتذكّره Life",
+  jMemSave: "حفظ",
+  jMemCancel: "إلغاء",
+  jMemFailed: "تعذّر الحفظ. حاول مرة أخرى.",
   keepConsent: 'الحفظ يفعّل «الاحتفاظ بمسيرتي» في الخصوصية. يمكنك إيقافه هناك متى شئت — وإيقافه يحذف كل ما حُفظ.',
   keepSave:   'احتفظ بهذه الخلاصة',
   keepSaveOn: 'فعّل واحتفظ',
