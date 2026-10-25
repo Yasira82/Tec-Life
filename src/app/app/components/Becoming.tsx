@@ -10,7 +10,7 @@
 //
 // Read from Life with the session (never from storage); nothing at all when it cannot be read.
 import { useEffect, useState } from 'react';
-import { C } from '@/lib-client/palette';
+import { C, identityA } from '@/lib-client/palette';
 import { useTranslation } from '@/lib/i18n';
 import { sessionCopy } from '@/lib/life/session-copy';
 import { readJourney, readSelf, setSelf, type Journey, type Self } from '@/lib-client/life/journey';
@@ -26,7 +26,7 @@ function Section({ title, items }: { title: string; items: string[] }) {
   if (items.length === 0) return null;
   return (
     <div style={{ marginTop: 12 }}>
-      <div style={{ fontSize: 12, fontWeight: 800, color: C.gold, marginBottom: 4 }}>{title}</div>
+      <div style={{ fontSize: 12, fontWeight: 700, color: C.identityInk, marginBottom: 4 }}>{title}</div>
       <ul translate="no" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
         {items.slice(0, SHOW).map((t, i) => (
           <li key={i} style={{ fontSize: 13.5, color: C.text, lineHeight: 1.55, marginTop: 2 }}><bdi>{t}</bdi></li>
@@ -76,12 +76,17 @@ export function Becoming() {
   };
 
   return (
-    <section aria-label={s.bTitle} style={{ ...card, marginTop: 16 }}>
-      <div style={{ fontSize: 15, fontWeight: 800, color: C.text }}>{s.bTitle}</div>
+    // Painted in IDENTITY, the one place Life uses its second colour: this card is about who
+    // the person is becoming, and gold is kept for what they can press.
+    <section aria-label={s.bTitle} className="tec-rise" style={{
+      ...card, marginTop: 14, borderRadius: 22,
+      background: identityA(0.10), border: `1px solid ${identityA(0.32)}`,
+    }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: C.identityInk }}>{s.bTitle}</div>
       <div style={{ fontSize: 12, color: C.subtext, marginTop: 2 }}>{s.bHint}</div>
 
       <div style={{ marginTop: 12 }}>
-        <div style={{ fontSize: 12, fontWeight: 800, color: C.gold, marginBottom: 4 }}>{s.bStatementLabel}</div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: C.identityInk, marginBottom: 4 }}>{s.bStatementLabel}</div>
         {editing ? (
           <>
             <textarea value={draft} maxLength={200} disabled={saving} placeholder={s.bStatementPh} aria-label={s.bStatementLabel}
@@ -97,7 +102,7 @@ export function Becoming() {
         ) : (
           <>
             {self?.statement
-              ? <div translate="no" style={{ fontSize: 15, fontWeight: 700, color: C.text, lineHeight: 1.5 }}><bdi>{self.statement}</bdi></div>
+              ? <div translate="no" style={{ fontSize: 19, fontWeight: 700, color: C.text, lineHeight: 1.55 }}><bdi>{self.statement}</bdi></div>
               : <div style={{ fontSize: 13, color: C.subtext, lineHeight: 1.5 }}>{s.bStatementEmpty}</div>}
             {self && (
               <button type="button" style={{ ...smallBtn, marginTop: 8 }}

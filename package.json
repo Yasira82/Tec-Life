@@ -16,6 +16,7 @@
     "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
+    "@fontsource/ibm-plex-sans-arabic": "^5.3.0",
     "@yasser172/tec-auth": "^1.2.0",
     "@yasser172/tec-sdk": "^1.2.2",
     "@yasser172/tec-ui": "^3.0.0",

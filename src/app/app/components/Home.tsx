@@ -91,6 +91,27 @@ export function Stat({ value, label, accent, onClick }: {
 }
 
 
+// A glance tile: one number on its own card, three side by side. The strip of bare
+// numbers it replaced read as a line of text; a tile gives each number a place the eye
+// can land, and it is still a button into the tab it counts.
+export function Tile({ value, label, onClick }: { value: string; label: string; onClick: () => void }) {
+  return (
+    <button onClick={onClick} className="tec-rise" style={{
+      minWidth: 0, textAlign: 'start', font: 'inherit', cursor: 'pointer',
+      background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16,
+      padding: '14px 12px', display: 'flex', flexDirection: 'column', gap: 6,
+    }}>
+      <span style={{ fontSize: 24, fontWeight: 800, color: C.gold, lineHeight: 1.1,
+                     fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em',
+                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <bdi>{value}</bdi>
+      </span>
+      <span style={{ fontSize: 12, color: C.subtext, lineHeight: 1.45 }}>{label}</span>
+    </button>
+  );
+}
+
+
 // The one goal you are closest to finishing, with the only action worth having
 // on a home screen: add to it. Everything else about a goal (rename, complete,
 // delete) belongs in the Goals tab — a home screen that repeats a full editor
@@ -128,7 +149,7 @@ export function Focus({ goals, busy, eta, onLog, onGo }: {
 
   return (
     <div style={{
-      ...card, marginTop: 14, padding: '20px 20px 18px',
+      ...card, marginTop: 14, padding: '20px 20px 18px', borderRadius: 22,
       // The hero, and it is allowed to look like one: a faint amber wash from
       // the ring's corner so the card carries the same light direction as the
       // band above it. One accent, used twice, reads as a system.
@@ -265,8 +286,10 @@ export function RecentActivity({ onGo }: { onGo: (t: LifeTab) => void }) {
 }
 
 
-export function HomeView({ isPro, daysRemaining, onGo }: {
+export function HomeView({ isPro, daysRemaining, onGo, identity }: {
   isPro: boolean; daysRemaining: number | null; onGo: (t: LifeTab) => void;
+  /** «أنا بتغيّر», placed between the tiles and the focus goal. */
+  identity?: React.ReactNode;
 }) {
   const { t } = useTranslation();
   const { goals, busy, addProgress } = useGoals();
@@ -281,18 +304,14 @@ export function HomeView({ isPro, daysRemaining, onGo }: {
 
   return (
     <>
-      {/* On the page ground, not in a card. Three cards of identical size and
-          weight is what made the screen read as a stack of boxes; a bare
-          numeric strip under the band gives the hero below it somewhere to be
-          the hero. π tracked is no longer GREEN — green is a status colour
-          here (C-83), and an amount is not a status. */}
-      <div style={{ display: 'flex', gap: 4, margin: '16px 2px 2px' }}>
-        <Stat value={String(active)}        label={t.life.goals.active}  accent={C.gold} onClick={() => onGo('goals')} />
-        <div style={{ width: 1, background: C.border, margin: '4px 0' }} />
-        <Stat value={String(skills.length)} label={t.life.home.skills}   accent={C.text} onClick={() => onGo('skills')} />
-        <div style={{ width: 1, background: C.border, margin: '4px 0' }} />
-        <Stat value={`π ${fmtPi(tracked)}`} label={t.life.goals.tracked} accent={C.text} onClick={() => onGo('goals')} />
+      {/* Three tiles, then who you are becoming, then the goal you are closest to. */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10, marginTop: 14 }}>
+        <Tile value={String(active)}        label={t.life.goals.active}  onClick={() => onGo('goals')} />
+        <Tile value={String(skills.length)} label={t.life.home.skills}   onClick={() => onGo('skills')} />
+        <Tile value={`π ${fmtPi(tracked)}`} label={t.life.goals.tracked} onClick={() => onGo('goals')} />
       </div>
+
+      {identity}
 
       <Focus goals={goals} busy={busy} eta={eta} onLog={addProgress} onGo={onGo} />
       {/* L1 — the person's caps and the month's in/out, each amount from the

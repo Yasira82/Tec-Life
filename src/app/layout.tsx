@@ -4,6 +4,11 @@ import { RefApply } from '@/components/referral/RefApply';
 import { HUB_HOSTS } from '@/lib/pi-network';
 import type { Metadata } from 'next';
 import '@/styles/tec-design-tokens.css';
+// Arabic UI face, served from this app (the CSP allows fonts from 'self' only). Each file
+// carries an Arabic unicode-range, so a page with no Arabic text downloads none of them.
+import '@fontsource/ibm-plex-sans-arabic/arabic-400.css';
+import '@fontsource/ibm-plex-sans-arabic/arabic-600.css';
+import '@fontsource/ibm-plex-sans-arabic/arabic-700.css';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { LocaleProvider } from '@/lib/i18n';
 import { THEME_BOOT_SCRIPT } from '@/lib-client/theme';
