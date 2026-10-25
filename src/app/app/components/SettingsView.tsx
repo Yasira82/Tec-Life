@@ -18,6 +18,7 @@ import { LOCALES } from '@/lib/i18n/locales';
 import { InviteCard } from '@/components/referral/InviteCard';
 import { FeedbackCard } from '@/components/feedback/FeedbackCard';
 import { SocialLinks } from '@/components/social/SocialLinks';
+import { uiCopy } from '@/lib/life/ui-copy';
 
 const FOCUS_OPTIONS = ['Saving', 'Earning', 'Learning', 'Building', 'Trading'];
 
@@ -339,7 +340,8 @@ export function SettingsView({ isPro }: { isPro: boolean }) {
           <select style={selectStyle} value={prefs.focus ?? ''} disabled={loading || saving}
             onChange={(e) => save({ focus: e.target.value })}>
             <option value="">—</option>
-            {FOCUS_OPTIONS.map((f) => <option key={f} value={f}>{f}</option>)}
+            {/* The stored value stays the English key; only the label is the reader's language. */}
+            {FOCUS_OPTIONS.map((f) => <option key={f} value={f}>{uiCopy(locale).focus[f as keyof ReturnType<typeof uiCopy>['focus']] ?? f}</option>)}
           </select>
         </Row>
       </Section>

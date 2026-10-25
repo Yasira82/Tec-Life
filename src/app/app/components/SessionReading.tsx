@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { C } from '@/lib-client/palette';
 import { useTranslation } from '@/lib/i18n';
 import { sessionCopy } from '@/lib/life/session-copy';
+import { uiCopy } from '@/lib/life/ui-copy';
 import { card } from './shared';
 
 type Metric = 's2_started' | 's7_reached' | 'm6_yes' | 'm6_somewhat' | 'm6_no'
@@ -74,6 +75,10 @@ export function SessionReading() {
         </div>
       )}
 
+      {/* The weekly rows are reference, not the verdict: folded by default so the
+          settings screen is not a page of counts. */}
+      <details style={{ borderTop: `1px solid ${C.border}`, paddingTop: 8 }}>
+        <summary style={{ fontSize: 13, fontWeight: 700, color: C.gold, cursor: 'pointer', minHeight: 32 }}>{uiCopy(locale).showWeeks}</summary>
       {report.weeks.map((w) => (
         <div key={w.week_start} style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.7, borderTop: `1px solid ${C.border}`, paddingTop: 6, marginTop: 6 }}>
           <div style={{ color: C.text, fontWeight: 700 }}>{s.readingWeek} <bdi>{w.week_start}</bdi></div>
@@ -90,6 +95,7 @@ export function SessionReading() {
           <div>{s.readingGoal}: <bdi>{n(w.counts.g_from_step)}</bdi></div>
         </div>
       ))}
+      </details>
     </section>
   );
 }
