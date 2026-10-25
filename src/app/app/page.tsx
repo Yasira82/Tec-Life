@@ -50,7 +50,7 @@ export default function LifeHome() {
   const { t } = useTranslation();
 
   return (
-    <main style={{ minHeight: '100vh', background: C.bg, color: C.text, fontFamily: 'system-ui, -apple-system, sans-serif', paddingBottom: 96 }}>
+    <main style={{ minHeight: '100vh', background: C.bg, color: C.text, fontFamily: 'var(--tec-font-ui)', paddingBottom: 112 }}>
       <div style={{ maxWidth: 760, margin: '0 auto', padding: '28px 22px 0' }}>
         {/* ── The band ───────────────────────────────────────────────────────
             The Hub frames every inner page with a solid band that has rounded
@@ -125,8 +125,7 @@ export default function LifeHome() {
           {tab === 'home' && !inSession && (
             <>
               <ProblemSessionEntry onStart={() => openSession()} onContinue={openSession} onMenu={() => setMenuOpen(true)} />
-              <Becoming />
-              <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={goTo} />
+              <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={goTo} identity={<Becoming />} />
             </>
           )}
           <JourneyDrawer open={menuOpen} onClose={() => setMenuOpen(false)} onNew={() => openSession()} onContinue={openSession}

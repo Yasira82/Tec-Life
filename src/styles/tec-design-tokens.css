@@ -105,6 +105,11 @@ html, body {
   --tec-red:         #ef4444;
   --tec-red-rgb:     239, 68, 68;
   --tec-purple:      #8b5cf6;
+  /* IDENTITY (C-83 §5) at partial opacity, and an ink for text on its wash: #8b5cf6
+     itself is ~4:1 on the dark card — short of 4.5 for small text. Life paints «أنا
+     بتغيّر» with these; gold stays the action colour. */
+  --tec-purple-rgb:  139, 92, 246;
+  --tec-identity-ink: #c4b5fd;
 
   --tec-text-1:      rgba(255,255,255,0.92);
   --tec-text-2:      rgba(255,255,255,0.62);
@@ -262,6 +267,8 @@ html, body {
   --tec-blue:      #1d4ed8;
   --tec-red:       #b91c1c;
   --tec-purple:    #6d28d9;
+  --tec-purple-rgb: 109, 40, 217;
+  --tec-identity-ink: #5b21b6;
   --tec-green-rgb: 21, 128, 61;
   --tec-red-rgb:   185, 28, 28;
   --tec-text-4:    rgba(0,0,0,0.30);
@@ -312,6 +319,8 @@ html, body {
   --tec-blue:      #1d4ed8;
   --tec-red:       #b91c1c;
   --tec-purple:    #6d28d9;
+  --tec-purple-rgb: 109, 40, 217;
+  --tec-identity-ink: #5b21b6;
   --tec-green-rgb: 21, 128, 61;
   --tec-red-rgb:   185, 28, 28;
     --tec-text-4:    rgba(0,0,0,0.30);
@@ -453,3 +462,20 @@ input[type=number] { -moz-appearance: textfield; }
     transition-duration:  0.01ms !important;
   }
 }
+
+/* The UI face. IBM Plex Sans Arabic first, for Arabic glyphs only (its files are
+   limited to the Arabic unicode-range); every other script falls through to the
+   phone's own sans. One variable, so a screen asks for "the UI font", not a list. */
+:root {
+  --tec-font-ui: 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* A card arriving, once. Opacity and a few pixels — never on a reader who asked
+   the phone for less motion. */
+@keyframes tec-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.tec-rise { animation: tec-rise .38s cubic-bezier(.2,.8,.2,1) both; }
+@media (prefers-reduced-motion: reduce) { .tec-rise { animation: none; } }
+
+/* Form controls do not inherit the page font by default; without this every button
+   and field stayed in the browser's face while the text around it changed. */
+button, input, textarea, select { font-family: inherit; }

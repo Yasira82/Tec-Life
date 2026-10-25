@@ -28,7 +28,7 @@
 //     `autoComplete="off"`, `spellCheck={false}`, and `translate="no"` on everything
 //     that shows the conversation.
 import { useEffect, useRef, useState } from 'react';
-import { C } from '@/lib-client/palette';
+import { C, goldA } from '@/lib-client/palette';
 import { useTranslation } from '@/lib/i18n';
 import { sessionCopy } from '@/lib/life/session-copy';
 import { countSession } from '@/lib-client/life/sessionCounter';
@@ -403,23 +403,38 @@ export function ProblemSessionEntry({ onStart, onContinue, onMenu }: { onStart: 
     if (messages && messages.length > 0) onContinue({ id: last.id, messages });
     else setFailed(true);
   };
+  // The hero of Home: the conversation is what Life is for, so it is the first and the
+  // largest thing on the screen — a warm wash from the corner, the last thing said shown
+  // as a quote, and one full-width action. Starting over is there, but quieter.
+  const wide = { width: '100%', minHeight: 50, borderRadius: 14, fontSize: 15.5 } as const;
   return (
-    <section style={{ ...card, marginTop: 16 }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 4 }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: C.text, flex: 1 }}>{s.entryTitle}</div>
+    <section className="tec-rise" style={{
+      ...card, marginTop: 16, borderRadius: 22, padding: '20px 20px 18px',
+      backgroundImage: `radial-gradient(110% 120% at 100% 0%, ${goldA(0.10)}, transparent 60%)`,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 6 }}>
+        <div style={{ fontSize: 18, fontWeight: 800, color: C.text, flex: 1, lineHeight: 1.4 }}>{s.entryTitle}</div>
         {onMenu && <MenuButton onClick={onMenu} />}
       </div>
-      <div style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.5, marginBottom: 12 }}>{s.entryHint}</div>
+      <div style={{ fontSize: 13, color: C.subtext, lineHeight: 1.6, marginBottom: 14 }}>{s.entryHint}</div>
       {last && (
-        <div style={{ marginBottom: 12 }}>
-          <button type="button" style={goldBtn} disabled={opening} onClick={() => void continueLast()}>
+        <div style={{ marginBottom: 10 }}>
+          {last.preview && (
+            <div translate="no" style={{
+              fontSize: 14, color: C.text, lineHeight: 1.65, marginBottom: 12,
+              background: C.surface2, border: `1px solid ${C.border}`, borderRadius: 14, padding: '12px 14px',
+              display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+            }}><bdi>{last.preview}</bdi></div>
+          )}
+          <button type="button" style={{ ...goldBtn, ...wide }} disabled={opening} onClick={() => void continueLast()}>
             {opening ? s.cLoading : s.continueLast}
           </button>
-          {last.preview && <div translate="no" style={{ fontSize: 12, color: C.subtext, marginTop: 6 }}><bdi>{last.preview}</bdi></div>}
           {failed && <div role="alert" style={{ fontSize: 12, color: C.text, marginTop: 6 }}>{s.cOpenFailed}</div>}
         </div>
       )}
-      <button type="button" style={last ? ghostBtn : goldBtn} onClick={onStart}>{last ? s.startNew : s.entryCta}</button>
+      <button type="button" style={last ? { ...ghostBtn, ...wide, fontSize: 14 } : { ...goldBtn, ...wide }} onClick={onStart}>
+        {last ? s.startNew : s.entryCta}
+      </button>
     </section>
   );
 }

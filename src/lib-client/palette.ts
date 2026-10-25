@@ -83,6 +83,14 @@ export const C = {
 
   /** A faint wash over the page — white on dark, black on light. */
   fill:     'var(--tec-fill-soft)',
+
+  /**
+   * IDENTITY (C-83 §5) — the second colour, used for one meaning only: who the person is
+   * becoming («أنا بتغيّر»). Gold stays the colour of action. `identityInk` is the
+   * readable text on an `identityA()` wash; the raw purple is for fills and dots.
+   */
+  identity:    'var(--tec-purple)',
+  identityInk: 'var(--tec-identity-ink)',
 } as const;
 
 /**
@@ -114,6 +122,10 @@ export const inkA = (alpha: number): string =>
  */
 export const successA = (alpha: number): string =>
   `rgba(var(--tec-green-rgb), ${round(alpha)})`;
+
+/** Identity purple at partial opacity — the «أنا بتغيّر» wash and its hairline. */
+export const identityA = (alpha: number): string =>
+  `rgba(var(--tec-purple-rgb), ${round(alpha)})`;
 
 /** Error red at partial opacity. Status — does not flip with the theme. */
 export const errorA = (alpha: number): string =>
