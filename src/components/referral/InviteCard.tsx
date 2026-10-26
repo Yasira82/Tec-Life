@@ -9,8 +9,11 @@
 import { useEffect, useState } from 'react';
 import {Icon} from '@yasser172/tec-ui';
 import { C, goldA } from '@/lib-client/palette';
+import { useTranslation } from '@/lib/i18n';
+import { uiCopy } from '@/lib/life/ui-copy';
 
 export function InviteCard() {
+  const u = uiCopy(useTranslation().locale);
   const [code, setCode]   = useState<string | null>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'anon'>('loading');
   const [copied, setCopied] = useState(false);
@@ -50,12 +53,12 @@ export function InviteCard() {
     <section style={card}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <Icon name="gift" size={16} color={C.gold} strokeWidth={1.9} />
-        <span style={{ fontSize: 14, fontWeight: 800, color: C.text }}>Invite &amp; earn</span>
+        <span style={{ fontSize: 14, fontWeight: 800, color: C.text }}>{u.inviteTitle}</span>
       </div>
 
       {state === 'anon' ? (
         <p style={{ fontSize: 13, color: C.subtext, margin: '8px 0 0', lineHeight: 1.6 }}>
-          Sign in with Pi to get your invite link — share it and earn a reward when a friend joins.
+          {u.inviteAnon}
         </p>
       ) : (
         <>
@@ -65,7 +68,7 @@ export function InviteCard() {
               beside it. The button says what it copies; that is the whole
               contract. */}
           <p style={{ fontSize: 12.5, color: C.subtext, margin: '6px 0 12px', lineHeight: 1.5 }}>
-            You both earn when a friend joins TEC through your link.
+            {u.inviteBody}
           </p>
           <button
             onClick={copy}
@@ -79,7 +82,7 @@ export function InviteCard() {
               transition: 'background .2s, color .2s',
             }}
           >
-            {copied ? '✓ Copied' : 'Copy invite link'}
+            {copied ? u.inviteCopied : u.inviteCopy}
           </button>
         </>
       )}

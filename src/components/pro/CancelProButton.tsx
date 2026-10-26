@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { C, errorA } from '@/lib-client/palette';
+import { useTranslation } from '@/lib/i18n';
+import { uiCopy } from '@/lib/life/ui-copy';
 
 /**
  * Cancel THIS app's Pro — and only this app's (owner decision, 2026-10-02: each
@@ -18,6 +20,7 @@ const csrf = (): string => {
 };
 
 export function CancelProButton({ onCancelled }: { onCancelled?: () => void } = {}) {
+  const u = uiCopy(useTranslation().locale);
   const [show,   setShow]   = useState(false);
   const [busy,   setBusy]   = useState(false);
   const [error,  setError]  = useState('');
@@ -38,7 +41,7 @@ export function CancelProButton({ onCancelled }: { onCancelled?: () => void } = 
 
   const cancel = async () => {
     if (busy) return;
-    if (!window.confirm('Cancel Pro in this app? Your Pro here ends now. Other apps and the Hub plan are not affected.')) return;
+    if (!window.confirm(u.cancelConfirm)) return;
     setBusy(true); setError('');
     try {
       const res = await fetch('/api/bff/subscription/cancel', {
@@ -48,12 +51,12 @@ export function CancelProButton({ onCancelled }: { onCancelled?: () => void } = 
       });
       if (!res.ok) {
         const b = await res.json().catch(() => ({})) as { message?: unknown; error?: unknown };
-        throw new Error(String(b.message ?? b.error ?? 'Could not cancel'));
+        throw new Error(String(b.message ?? b.error ?? u.cancelFailed));
       }
       setShow(false);
       if (onCancelled) onCancelled(); else window.location.reload();
     } catch (e) {
-      setError((e as Error).message || 'Could not cancel');
+      setError((e as Error).message || u.cancelFailed);
     } finally {
       setBusy(false);
     }
@@ -70,7 +73,7 @@ export function CancelProButton({ onCancelled }: { onCancelled?: () => void } = 
           fontSize: 12, fontWeight: 700,
         }}
       >
-        {busy ? 'Cancelling…' : 'Cancel subscription'}
+        {busy ? u.cancelling : u.cancel}
       </button>
       {error && <div role="alert" style={{ fontSize: 11, color: C.error, marginTop: 6 }}>{error}</div>}
     </div>

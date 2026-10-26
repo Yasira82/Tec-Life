@@ -14,6 +14,7 @@ import { Goals } from './Goals';
 import { Skills } from './Skills';
 import { Activity, piAmount, prettyType } from './Activity';
 import { Budget, Cashflow } from './Money';
+import { uiCopy } from '@/lib/life/ui-copy';
 
 // ── Home ─────────────────────────────────────────────────────────────────────
 //
@@ -272,7 +273,7 @@ export function RecentActivity({ onGo }: { onGo: (t: LifeTab) => void }) {
               <span style={{ width: 6, height: 6, borderRadius: 999, background: C.gold, flexShrink: 0 }} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 13.5, color: C.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {prettyType(ev.type)}
+                  {prettyType(ev.type, uiCopy(locale).ev)}
                 </div>
                 <div style={{ fontSize: 11, color: C.faint }}>{formatWhen(ev.created_at, locale, dayLabels)}</div>
               </div>
@@ -291,7 +292,7 @@ export function HomeView({ isPro, daysRemaining, onGo, identity }: {
   /** «أنا بتغيّر», placed between the tiles and the focus goal. */
   identity?: React.ReactNode;
 }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { goals, busy, addProgress } = useGoals();
   const { skills } = useSkills();
   // Home shows the ETA of ONE goal, so it reads the same trajectory the Goals
@@ -308,7 +309,7 @@ export function HomeView({ isPro, daysRemaining, onGo, identity }: {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10, marginTop: 14 }}>
         <Tile value={String(active)}        label={t.life.goals.active}  onClick={() => onGo('goals')} />
         <Tile value={String(skills.length)} label={t.life.home.skills}   onClick={() => onGo('skills')} />
-        <Tile value={`π ${fmtPi(tracked)}`} label={t.life.goals.tracked} onClick={() => onGo('goals')} />
+        <Tile value={`π ${fmtPi(tracked)}`} label={uiCopy(locale).tracked} onClick={() => onGo('goals')} />
       </div>
 
       {identity}

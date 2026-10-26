@@ -5,6 +5,7 @@ import { useActivity } from '@/lib-client/life/useLife';
 import { formatDay, formatTime, groupByDay } from '@/lib-client/format';
 import { useTranslation } from '@/lib/i18n';
 import { card } from './shared';
+import { uiCopy } from '@/lib/life/ui-copy';
 
 export const EVENT_LABEL: Record<string, string> = {
   'payment.completed': 'Payment completed',
@@ -13,7 +14,9 @@ export const EVENT_LABEL: Record<string, string> = {
   'kyc.verified':      'Identity verified',
 };
 
-export const prettyType = (t: string) => EVENT_LABEL[t] ?? t.replace(/\./g, ' · ');
+// `labels` is the reader's language (ui-copy.ts); EVENT_LABEL is the English fallback.
+export const prettyType = (t: string, labels?: Record<string, string>) =>
+  labels?.[t] ?? EVENT_LABEL[t] ?? t.replace(/\./g, ' · ');
 
 export const piAmount = (payload: Record<string, unknown> | null): string | null => {
   const a = payload?.amount;
@@ -70,7 +73,7 @@ export function Activity() {
                       </span>
                       <span style={{ flex: 1, minWidth: 0, fontSize: 14, color: C.text,
                                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {prettyType(ev.type)}
+                        {prettyType(ev.type, uiCopy(locale).ev)}
                       </span>
                       {amt && (
                         <span style={{ fontSize: 14, fontWeight: 800, color: C.gold,

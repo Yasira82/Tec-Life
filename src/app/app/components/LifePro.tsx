@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react';
 import {Icon} from '@yasser172/tec-ui';
 import { C, goldA, successA } from '@/lib-client/palette';
 import { CancelProButton } from '@/components/pro/CancelProButton';
+import { useTranslation } from '@/lib/i18n';
+import { uiCopy } from '@/lib/life/ui-copy';
 import {
   isHubNavigation,
   redirectToHubPayment,
@@ -36,6 +38,8 @@ const asText = (v: unknown): string => {
 type Status = 'idle' | 'creating' | 'paying' | 'success' | 'error';
 
 export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boolean; daysRemaining?: number | null }) {
+  const { locale } = useTranslation();
+  const u = uiCopy(locale);
   const [piReady, setPiReady] = useState(false);
   const [status,  setStatus]  = useState<Status>('idle');
   const [message, setMessage] = useState('');
@@ -56,7 +60,7 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
     const st = p.get('payment_status');
     if (!st) return;
     if (st === 'success') setStatus('success');
-    else if (st === 'error') { setStatus('error'); setMessage('Payment did not complete. Please try again.'); }
+    else if (st === 'error') { setStatus('error'); setMessage(''); }  // the words come from the reader's language at render
     window.history.replaceState({}, '', '/app');
   }, []);
 
@@ -88,11 +92,11 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
         setStatus('idle');
       } else {
         setStatus('error');
-        setMessage(asText(result.message) || 'Payment failed. Please try again.');
+        setMessage(asText(result.message) || u.paymentFailed);
       }
     } catch (err) {
       setStatus('error');
-      setMessage(asText(err) || 'Payment failed. Please try again.');
+      setMessage(asText(err) || u.paymentFailed);
     }
   };
 
@@ -112,14 +116,14 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
     const soon = typeof daysRemaining === 'number' && daysRemaining <= 7;
     return (
       <div style={{ ...card, borderColor: `${successA(0.4)}` }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: C.success, display: 'flex', alignItems: 'center', gap: 7 }}><Icon name="sprout" size={17} color={C.success} strokeWidth={1.9} />You’re on Life Pro</div>
+        <div style={{ fontSize: 15, fontWeight: 800, color: C.success, display: 'flex', alignItems: 'center', gap: 7 }}><Icon name="sprout" size={17} color={C.success} strokeWidth={1.9} />{u.onPro}</div>
         <div style={{ fontSize: 12, color: C.subtext, marginTop: 6 }}>
-          Unlimited goals, goal reminders, and personal economic reports are unlocked. Thanks for supporting TEC Life.
+          {u.onProBody}
         </div>
         {typeof daysRemaining === 'number' && (
           <div style={{ fontSize: 12, fontWeight: soon ? 700 : 600, color: soon ? C.gold : C.subtext, marginTop: 8 }}>
-            {soon ? '⏳ ' : ''}Expires in {daysRemaining} day{daysRemaining === 1 ? '' : 's'}
-            {soon ? ' — re-subscribe to keep Pro (one-time monthly payment, no auto-renewal).' : '.'}
+            {soon ? '⏳ ' : ''}{u.expires(daysRemaining)}
+            {soon ? <div style={{ fontWeight: 500, marginTop: 2 }}>{u.renewNote}</div> : null}
           </div>
         )}
         <CancelProButton />
@@ -130,9 +134,9 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
   if (status === 'success') {
     return (
       <div style={{ ...card, borderColor: `${successA(0.4)}` }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: C.success, display: 'flex', alignItems: 'center', gap: 7 }}><Icon name="check" size={17} color={C.success} strokeWidth={2} />Payment received</div>
+        <div style={{ fontSize: 15, fontWeight: 800, color: C.success, display: 'flex', alignItems: 'center', gap: 7 }}><Icon name="check" size={17} color={C.success} strokeWidth={2} />{u.paymentReceived}</div>
         <div style={{ fontSize: 12, color: C.subtext, marginTop: 6 }}>
-          Activating Life Pro… this can take a few seconds. Reopen the app if the ★ PRO badge isn’t showing yet.
+          {u.activating}
         </div>
       </div>
     );
@@ -157,14 +161,14 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 15, fontWeight: 800, color: C.text }}>Life Pro</div>
           <div style={{ fontSize: 12, color: C.subtext, marginTop: 2 }}>
-            Unlimited goals · Goal Insights
+            {u.proTagline}
           </div>
         </div>
         <div style={{ textAlign: 'end', flexShrink: 0 }}>
           <div style={{ fontSize: 18, fontWeight: 900, color: C.text, fontVariantNumeric: 'tabular-nums' }}>
             {PRICE}π
           </div>
-          <div style={{ fontSize: 10.5, color: C.faint }}>/ month</div>
+          <div style={{ fontSize: 10.5, color: C.faint }}>{u.perMonth}</div>
         </div>
       </div>
 
@@ -179,13 +183,13 @@ export function LifePro({ isPro = false, daysRemaining = null }: { isPro?: boole
           cursor: busy ? 'not-allowed' : 'pointer',
         }}
       >
-        {status === 'creating' ? 'Preparing…'
-          : status === 'paying' ? 'Confirm in Pi…'
-          : `Upgrade — ${PRICE}π`}
+        {status === 'creating' ? u.preparing
+          : status === 'paying' ? u.confirmInPi
+          : u.upgrade(PRICE)}
       </button>
 
       {status === 'error' && (
-        <div style={{ fontSize: 12, color: C.error, marginTop: 10 }}>{message}</div>
+        <div style={{ fontSize: 12, color: C.error, marginTop: 10 }}>{message || u.paymentFailed}</div>
       )}
     </div>
   );
