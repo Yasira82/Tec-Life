@@ -69,6 +69,8 @@ export const tr = {
       title: 'Gizlilik',
       shareTitle: 'Neler paylaşılabilir',
       shareNote: 'Hub’daki TEC AI yalnızca burada açtıklarını okur — sen açana kadar hepsi kapalı kalır.',
+      // Who answers, named (owner, 2026-10-30): TEC AI keeps Gemini for quality, so the switch says so.
+      shareProvider: 'TEC AI çoğunlukla Google’ın Gemini modeliyle yanıt verir: burada açtıkların sana yanıt verebilmesi için Google’a gönderilir ve Google bunları saklayıp hizmetlerini geliştirmek için kullanabilir. Life’ın kendi koçuyla konuşmaların oraya gitmez.',
       checkin: 'Haftalık kontrol', checkinDesc: 'Bir hedefte bir hafta adım atılmazsa TEC Alert’te hatırlatma (haftada en fazla bir kez) ve ayın ilk haftasında ayına kısa bir bakış.', journey: 'Yolculuğumu sakla', journeyDesc: 'Life ile yaptığın ve onayladığın konuşmaların özetlerini saklar; Life kaldığın yerden devam eder. Kapatmak hepsini siler.', conversations: 'Konuşmalarımı tam sakla', conversationsDesc: 'Life ile konuşmalarını şifreli ve tam olarak saklar; sonra devam edebilirsin. Kapatmak hepsini siler.',
       goals: 'Hedefler',
       skills: 'Beceriler',

@@ -69,6 +69,8 @@ export const ar = {
       title: 'الخصوصية',
       shareTitle: 'ما يمكن مشاركته',
       shareNote: 'لا يقرأ TEC AI في الـ Hub إلا ما تفعّله هنا — كل شيء مغلق حتى تفعّله.',
+      // Who answers, named (owner, 2026-10-30): TEC AI keeps Gemini for quality, so the switch says so.
+      shareProvider: 'يجيب TEC AI أساسًا باستخدام نموذج Gemini من Google: ما تفعّله هنا يُرسَل إلى Google ليجيبك، وقد تحتفظ به Google وتستخدمه لتحسين خدماتها. محادثاتك مع مدرّب Life نفسه لا تذهب إلى هناك.',
       checkin: 'متابعة أسبوعية', checkinDesc: 'تذكير في TEC Alert إذا مرّ أسبوع على هدف دون خطوة (مرة في الأسبوع على الأكثر)، ومراجعة قصيرة لشهرك في الأسبوع الأول من الشهر.', journey: 'الاحتفاظ بمسيرتي', journeyDesc: 'الاحتفاظ بخلاصات محادثات Life التي تؤكدها، ليكمل Life من حيث كنت. إيقافه يحذفها كلها.', conversations: 'الاحتفاظ بمحادثاتي كاملة', conversationsDesc: 'الاحتفاظ بمحادثات Life كاملة، مشفّرة، لتكملها لاحقًا. إيقافه يحذفها كلها.',
       goals: 'الأهداف',
       skills: 'المهارات',

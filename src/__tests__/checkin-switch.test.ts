@@ -38,3 +38,15 @@ describe('the note above the switches tells the truth', () => {
     expect(DICTIONARIES.en.life.privacy.shareNote).not.toMatch(/Nothing reads/);
   });
 });
+
+describe('the sharing switch names who answers (owner, 2026-10-30)', () => {
+  it('every language names Google Gemini, says it may be kept, and that Life\'s own conversations do not go there', () => {
+    for (const { code } of LOCALES) {
+      const t = DICTIONARIES[code].life.privacy.shareProvider;
+      expect(t, code).toMatch(/Gemini/);
+      expect(t, code).toMatch(/Google/);
+      expect(t, code).toMatch(/Life/);
+      if (code !== 'en') expect(t, code).not.toBe(DICTIONARIES.en.life.privacy.shareProvider);
+    }
+  });
+});

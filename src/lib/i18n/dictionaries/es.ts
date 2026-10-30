@@ -69,6 +69,8 @@ export const es = {
       title: 'Privacidad',
       shareTitle: 'Qué se puede compartir',
       shareNote: 'TEC AI en el Hub solo lee lo que actives aquí; todo sigue apagado hasta que lo enciendas.',
+      // Who answers, named (owner, 2026-10-30): TEC AI keeps Gemini for quality, so the switch says so.
+      shareProvider: 'TEC AI responde principalmente con el modelo Gemini de Google: lo que actives aquí se envía a Google para que pueda responderte, y Google puede conservarlo y usarlo para mejorar sus servicios. Tus conversaciones con el coach de Life no van allí.',
       checkin: 'Seguimiento semanal', checkinDesc: 'Un recordatorio en TEC Alert si una meta pasa una semana sin un paso (como mucho uno por semana) y un breve repaso de tu mes en su primera semana.', journey: 'Guardar mi trayectoria', journeyDesc: 'Guarda los resúmenes de las conversaciones con Life que confirmes, para que Life continúe desde donde estabas. Desactivarlo los borra todos.', conversations: 'Guardar mis conversaciones completas', conversationsDesc: 'Guarda las conversaciones con Life completas y cifradas, para continuarlas después. Desactivarlo las borra todas.',
       goals: 'Objetivos',
       skills: 'Habilidades',

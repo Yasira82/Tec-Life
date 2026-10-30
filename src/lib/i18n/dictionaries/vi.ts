@@ -69,6 +69,8 @@ export const vi = {
       title: 'Quyền riêng tư',
       shareTitle: 'Những gì có thể chia sẻ',
       shareNote: 'TEC AI trong Hub chỉ đọc những gì bạn bật ở đây — mọi mục đều tắt cho đến khi bạn bật.',
+      // Who answers, named (owner, 2026-10-30): TEC AI keeps Gemini for quality, so the switch says so.
+      shareProvider: 'TEC AI chủ yếu trả lời bằng mô hình Gemini của Google: những gì bạn bật ở đây được gửi đến Google để trả lời bạn, và Google có thể lưu lại và dùng để cải thiện dịch vụ của họ. Các cuộc trò chuyện của bạn với huấn luyện viên của Life không được gửi đến đó.',
       checkin: 'Nhắc hằng tuần', checkinDesc: 'Nhắc trong TEC Alert nếu một mục tiêu một tuần không có bước nào (tối đa mỗi tuần một lần), và bản tóm tắt ngắn về tháng của bạn vào tuần đầu tháng.', journey: 'Lưu hành trình của tôi', journeyDesc: 'Lưu các bản tóm tắt cuộc trò chuyện với Life mà bạn xác nhận, để Life tiếp tục từ chỗ bạn dừng lại. Tắt sẽ xoá tất cả.', conversations: 'Lưu toàn bộ cuộc trò chuyện', conversationsDesc: 'Lưu toàn bộ các cuộc trò chuyện với Life, đã mã hoá, để tiếp tục sau. Tắt sẽ xoá tất cả.',
       goals: 'Mục tiêu',
       skills: 'Kỹ năng',
