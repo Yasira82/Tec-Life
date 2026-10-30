@@ -287,10 +287,12 @@ export function RecentActivity({ onGo }: { onGo: (t: LifeTab) => void }) {
 }
 
 
-export function HomeView({ isPro, daysRemaining, onGo, identity }: {
+export function HomeView({ isPro, daysRemaining, onGo, identity, today }: {
   isPro: boolean; daysRemaining: number | null; onGo: (t: LifeTab) => void;
   /** «أنا بتغيّر», placed between the tiles and the focus goal. */
   identity?: React.ReactNode;
+  /** The small step, day by day — right under the tiles: the one thing to do today. */
+  today?: React.ReactNode;
 }) {
   const { t, locale } = useTranslation();
   const { goals, busy, addProgress } = useGoals();
@@ -311,6 +313,8 @@ export function HomeView({ isPro, daysRemaining, onGo, identity }: {
         <Tile value={String(skills.length)} label={t.life.home.skills}   onClick={() => onGo('skills')} />
         <Tile value={`π ${fmtPi(tracked)}`} label={uiCopy(locale).tracked} onClick={() => onGo('goals')} />
       </div>
+
+      {today}
 
       {identity}
 

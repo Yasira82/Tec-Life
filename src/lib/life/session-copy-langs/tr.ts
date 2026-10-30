@@ -17,6 +17,8 @@ export const tr: PersonCopy = {
   "rolesNote": "Başka insanlardan söz ederken onları adlarıyla değil, rolleriyle anlat — “müdürüm”, “bir arkadaşım” gibi.",
   "opener": "Seni dinlemek için buradayım. Bugün aklını ne meşgul ediyor, ya da hayatında neyin değişmesini isterdin? İstediğin yerden, kendi sözlerinle başla.",
   "placeholder": "Buraya yaz…",
+  "notMeant": "Demek istediğim bu değil",
+  "notMeantHint": "Başka kelimelerle söyle — ne demek istedin?",
   "send": "Gönder",
   "thinking": "Life yazıyor…",
   "endChat": "Sohbeti bitir",

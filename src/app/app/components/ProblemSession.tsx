@@ -87,6 +87,11 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
   const [feelings, setFeelings] = useState<{ feeling_start: Feeling | null; feeling_end: Feeling | null }>({ feeling_start: null, feeling_end: null });
   // Capabilities v1: Life's one proposal after a yes — shown under the reply it came with.
   const [proposal, setProposal] = useState<Proposal | null>(null);
+  // «مش ده قصدي» (owner, 2026-10-30): a misreading is corrected in the person's OWN new words.
+  // The tap starts the box with the phrase and asks them to say it another way — the model is
+  // never left to guess again from a bare "no".
+  const [correcting, setCorrecting] = useState(false);
+  const box = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => { void readJourney().then(setJourney); }, []);
   // Full conversations: kept only while the person has turned it on.
@@ -123,7 +128,7 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
     if (turns.length + 1 > MAX_MESSAGES) { setError(s.errLimit); return; }
     if (!counted.current.s2) { counted.current.s2 = true; countSession('s2_started'); }
     const next: Turn[] = [...turns, { role: 'user', content: text }];
-    setTurns(next); setDraft(''); setBusy(true); setError(null); setProposal(null);
+    setTurns(next); setDraft(''); setBusy(true); setError(null); setProposal(null); setCorrecting(false);
     const out = await talk(next);
     setBusy(false);
     if (out.ok) {
@@ -137,6 +142,17 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
     setTurns(turns); setDraft(text);
     setError(out.reason === 'busy' ? s.errBusy : out.reason === 'limit' ? s.errLimit : out.reason === 'capacity' ? s.errCapacity : s.errUnavailable);
   };
+
+  const notMeant = () => {
+    const lead = `${s.notMeant}. `;
+    setDraft((d) => (d.trim().startsWith(s.notMeant) ? d : (lead + d.trim()).slice(0, MAX_CHARS)));
+    setCorrecting(true);
+    setProposal(null);
+    box.current?.focus();
+  };
+  // Only under Life's latest reply, after the person has said something — never under the opener.
+  const lastTurn = turns[turns.length - 1];
+  const canCorrect = spoke && lastTurn?.role === 'assistant' && !busy;
 
   const finish = () => {
     // Drop every word before leaving, rather than trusting unmount to.
@@ -282,9 +298,16 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
             </div>
           )}
           <div>{turns.map(bubble)}</div>
+          {canCorrect && !correcting && (
+            <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: 6 }}>
+              <button type="button" onClick={notMeant}
+                style={{ ...ghostBtn, padding: '6px 10px', fontSize: 12.5 }}>{s.notMeant}</button>
+            </div>
+          )}
           {proposal && !busy && <ProposalCard proposal={proposal} s={s} onDone={() => setProposal(null)} />}
           {busy && <div role="status" style={{ fontSize: 12.5, color: C.subtext, marginTop: 10 }}>{s.thinking}</div>}
           {error && <div role="alert" style={{ fontSize: 13, color: C.text, marginTop: 10 }}>{error}</div>}
+          {correcting && !busy && <div role="status" style={{ fontSize: 12.5, color: C.subtext, marginTop: 10 }}>{s.notMeantHint}</div>}
           {fullSaveFailed && <div role="status" style={{ fontSize: 12, color: C.subtext, marginTop: 6 }}>{s.fullSaveFailed}</div>}
           {/* At the length cap, the way on is the summary — one tap to end and write it. */}
           {error === s.errLimit && spoke && (
@@ -292,8 +315,9 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
               onClick={() => { setError(null); setStep('end'); void writeSummary(); }}>{s.endAndKeep}</button>
           )}
           <textarea
+            ref={box}
             value={draft} onChange={(e) => setDraft(e.target.value.slice(0, MAX_CHARS))} maxLength={MAX_CHARS}
-            placeholder={s.placeholder} aria-label={s.placeholder} disabled={busy}
+            placeholder={correcting ? s.notMeantHint : s.placeholder} aria-label={s.placeholder} disabled={busy}
             autoComplete="off" spellCheck={false} translate="no" style={{ ...textArea, marginTop: 12 }}
           />
           <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>

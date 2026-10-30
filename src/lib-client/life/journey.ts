@@ -16,6 +16,8 @@ export interface JourneyEntry {
   step: string | null;
   step_outcome: JourneyOutcome | null;
   created_at: string;
+  /** The daily follow-up on the step (owner, 2026-10-30): the last two weeks of answers, oldest first. */
+  days?: { day: string; answer: JourneyOutcome }[];
   // "Before and after" v1 (owner, 2026-10-18) — all absent/null unless the person recorded one.
   measure_kind?: MeasureKind | null;
   measure_label?: string | null;
@@ -102,6 +104,19 @@ export async function setOutcome(id: string, step_outcome: JourneyOutcome): Prom
     const res = await fetch(`/api/bff/life/journey/${encodeURIComponent(id)}`, {
       method: 'PATCH', credentials: 'include', headers: json,
       body: JSON.stringify({ step_outcome }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+/** Today's answer about the step — one tap; tapping again the same day changes it. `day` is the person's own. */
+export async function setStepToday(id: string, day: string, answer: JourneyOutcome): Promise<boolean> {
+  try {
+    const res = await fetch(`/api/bff/life/journey/${encodeURIComponent(id)}/today`, {
+      method: 'PUT', credentials: 'include', headers: json,
+      body: JSON.stringify({ day, answer }),
     });
     return res.ok;
   } catch {
