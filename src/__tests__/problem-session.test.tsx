@@ -100,7 +100,10 @@ describe('the words go to one place only', () => {
       }
     }
     const sent = JSON.parse(talks()[0]!.body);
-    expect(Object.keys(sent)).toEqual(['messages']);
+    // The words and the device's clock — nothing else (awareness, owner 2026-10-30).
+    expect(Object.keys(sent)).toEqual(['messages', 'clock']);
+    expect(Object.keys(sent.clock).sort()).toEqual(['hour', 'today', 'weekday']);
+    expect(JSON.stringify(sent.clock)).not.toContain(MARKER);
     expect(sent.messages[0]).toEqual({ role: 'assistant', content: s.opener });
     expect(sent.messages.at(-1)).toEqual({ role: 'user', content: `my problem ${MARKER}` });
     expect(metrics()).toEqual(['s2_started']);

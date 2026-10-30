@@ -5,6 +5,7 @@
 // the component holds state and this file holds the one network door.
 import { readProposal, type Proposal } from './proposals';
 import { isFeeling, type Feeling } from './journey';
+import { clockNow } from '@/lib/life/awareness';
 
 export interface Turn { role: 'user' | 'assistant'; content: string }
 
@@ -24,7 +25,8 @@ export async function talk(messages: Turn[]): Promise<TalkResult> {
     const res = await fetch('/api/bff/life/talk', {
       method: 'POST', credentials: 'include', cache: 'no-store',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages }),
+      // The device's own hour, weekday and day — so Life knows morning from night (awareness).
+      body: JSON.stringify({ messages, clock: clockNow() }),
     });
     if (res.status === 429) return { ok: false, reason: 'busy' };
     if (res.status === 400) return { ok: false, reason: 'limit' };

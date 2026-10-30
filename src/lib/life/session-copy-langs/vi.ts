@@ -40,6 +40,7 @@ export const vi: PersonCopy = {
   "thanks": "Cảm ơn bạn.",
   "finish": "Hoàn tất",
   "memoryNote": "Life đọc những gì bạn chọn giữ lại — các bản tóm tắt và câu của bạn về con người bạn đang trở thành — để đồng hành cùng bạn từ chỗ bạn đang đứng. Chúng được gửi tới mô hình AI cùng với tin nhắn của bạn.",
+  "awareNote": "Life cũng thấy bước của bạn tuần này ra sao, các mục tiêu đang theo đuổi và giờ ở nơi bạn, để bắt đầu từ cuộc sống hôm nay của bạn. Những điều này cũng được gửi cùng tin nhắn của bạn.",
   "lastStepQ": "Lần trước bạn đã chọn một bước nhỏ: “{step}”. Bạn đã thử chưa?",
   "outDone": "Có",
   "outPartly": "Một phần",
