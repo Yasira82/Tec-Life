@@ -17,6 +17,8 @@ export const zh: PersonCopy = {
   "rolesNote": "提到其他人时，请用身份来描述——比如“我的上司”“一位朋友”——而不是名字。",
   "opener": "我在这里倾听你。今天你在想些什么，或者你希望生活中有什么改变？从哪里开始都可以，用你自己的话说。",
   "placeholder": "在这里输入…",
+  "notMeant": "我不是这个意思",
+  "notMeantHint": "换个说法告诉我——你的意思是什么？",
   "send": "发送",
   "thinking": "Life 正在输入…",
   "endChat": "结束对话",

@@ -25,6 +25,9 @@ export interface SessionCopy {
   agree: string; cancel: string;
   rolesNote: string; opener: string;
   placeholder: string; send: string; thinking: string; endChat: string;
+  /** The button under Life's reply, and the words it puts at the start of the box (the AI service
+   *  knows them as a correction — tec-ai-service understand.ts CORRECTION). */
+  notMeant: string; notMeantHint: string;
   you: string; life: string;
   errUnavailable: string; errBusy: string; errLimit: string; errCapacity: string;
   endTitle: string; support: string;
@@ -75,6 +78,7 @@ const en: SessionCopy = {
   opener:    'I’m here to listen. What’s on your mind today, or what do you wish would change in your life? Start anywhere, in your own words.',
 
   placeholder: 'Write here…',
+  notMeant: 'That\'s not what I meant', notMeantHint: 'Say it in other words — what did you mean?',
   send:        'Send',
   thinking:    'Life is writing…',
   endChat:     'End the conversation',
@@ -243,6 +247,7 @@ const ar: SessionCopy = {
   opener:    'أنا هنا لأسمعك. ما الذي يشغلك اليوم، أو ما الذي تتمنى أن يتغيّر في حياتك؟ ابدأ من أي مكان، وبكلماتك أنت.',
 
   placeholder: 'اكتب هنا…',
+  notMeant: 'مش ده قصدي', notMeantHint: 'قولها بكلام تاني — كان قصدك إيه؟',
   send:        'إرسال',
   thinking:    'Life يكتب…',
   endChat:     'إنهاء المحادثة',

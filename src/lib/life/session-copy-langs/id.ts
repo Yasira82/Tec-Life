@@ -17,6 +17,8 @@ export const id: PersonCopy = {
   "rolesNote": "Saat menyebut orang lain, gambarkan mereka dari perannya — “atasan saya”, “seorang teman” — bukan dari namanya.",
   "opener": "Aku di sini untuk mendengarkanmu. Apa yang sedang kamu pikirkan hari ini, atau apa yang ingin kamu ubah dalam hidupmu? Mulailah dari mana saja, dengan kata-katamu sendiri.",
   "placeholder": "Tulis di sini…",
+  "notMeant": "Bukan itu maksudku",
+  "notMeantHint": "Katakan dengan kata lain — apa maksudmu?",
   "send": "Kirim",
   "thinking": "Life sedang menulis…",
   "endChat": "Akhiri percakapan",

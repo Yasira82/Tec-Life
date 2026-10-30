@@ -17,6 +17,8 @@ export const pt: PersonCopy = {
   "rolesNote": "Ao mencionar outras pessoas, descreva-as pelo papel — “meu chefe”, “uma amiga” — e não pelo nome.",
   "opener": "Estou aqui para te ouvir. O que está na sua cabeça hoje, ou o que você gostaria que mudasse na sua vida? Comece por onde quiser, com suas próprias palavras.",
   "placeholder": "Escreva aqui…",
+  "notMeant": "Não foi isso que eu quis dizer",
+  "notMeantHint": "Diga com outras palavras: o que você quis dizer?",
   "send": "Enviar",
   "thinking": "O Life está escrevendo…",
   "endChat": "Encerrar a conversa",

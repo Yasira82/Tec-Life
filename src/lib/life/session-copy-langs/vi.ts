@@ -17,6 +17,8 @@ export const vi: PersonCopy = {
   "rolesNote": "Khi nhắc đến người khác, hãy mô tả họ theo vai trò — “sếp tôi”, “một người bạn” — thay vì nêu tên.",
   "opener": "Tôi ở đây để lắng nghe bạn. Hôm nay điều gì đang khiến bạn bận tâm, hay bạn mong điều gì thay đổi trong cuộc sống? Hãy bắt đầu từ bất cứ đâu, bằng lời của chính bạn.",
   "placeholder": "Viết ở đây…",
+  "notMeant": "Ý tôi không phải vậy",
+  "notMeantHint": "Hãy nói bằng cách khác — ý bạn là gì?",
   "send": "Gửi",
   "thinking": "Life đang viết…",
   "endChat": "Kết thúc cuộc trò chuyện",
