@@ -9,6 +9,7 @@ import { useSubscription } from '@/lib-client/life/useLife';
 import { useMe } from '@/lib-client/hooks/useMe';
 import { BottomNav, type LifeTab } from './components/BottomNav';
 import { Becoming } from './components/Becoming';
+import { StepToday } from './components/StepToday';
 import { SettingsView } from './components/SettingsView';
 import { useTranslation } from '@/lib/i18n';
 import { isProPlan } from './components/shared';
@@ -125,7 +126,7 @@ export default function LifeHome() {
           {tab === 'home' && !inSession && (
             <>
               <ProblemSessionEntry onStart={() => openSession()} onContinue={openSession} onMenu={() => setMenuOpen(true)} />
-              <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={goTo} identity={<Becoming />} />
+              <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={goTo} today={<StepToday />} identity={<Becoming />} />
             </>
           )}
           <JourneyDrawer open={menuOpen} onClose={() => setMenuOpen(false)} onNew={() => openSession()} onContinue={openSession}
