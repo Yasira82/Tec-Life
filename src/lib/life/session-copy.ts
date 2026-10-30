@@ -35,6 +35,8 @@ export interface SessionCopy {
   clearerQ: string; clearerYes: string; clearerSomewhat: string; clearerNo: string; thanks: string;
   finish: string;
   memoryNote: string;
+  /** Awareness (2026-10-30): what else the coach sees while the journey is kept. */
+  awareNote: string;
   lastStepQ: string; outDone: string; outPartly: string; outNotYet: string; outThanks: string;
   keepTitle: string; endAndKeep: string; keepHint: string; keepWrite: string; keepWriting: string; keepSummaryFailed: string;
   fProblem: string; fUnderstanding: string; fStep: string;
@@ -104,6 +106,8 @@ const en: SessionCopy = {
   finish: 'Finish',
 
   memoryNote: "Life reads what you chose to keep — your summaries and your sentence about who you are becoming — so it can coach you from where you are. They are sent to the AI model with your messages.",
+
+  awareNote: "Life also sees how your step went this week, your active goals and the time of day where you are, so it can start from your life today. They are sent with your messages too.",
   lastStepQ:  'Last time you chose a small step: “{step}”. Did you try it?',
   outDone: 'Yes', outPartly: 'Partly', outNotYet: 'Not yet',
   outThanks: 'Noted. Life will continue from there.',
@@ -273,6 +277,8 @@ const ar: SessionCopy = {
   finish: 'إنهاء',
 
   memoryNote: "يقرأ Life ما اخترت أن تحتفظ به — خلاصاتك وجملتك عمّن تصبح — ليدرّبك من حيث أنت. تُرسَل إلى نموذج الذكاء الاصطناعي مع رسائلك.",
+
+  awareNote: "ويرى Life أيضًا كيف سارت خطوتك هذا الأسبوع، وأهدافك النشطة، والوقت عندك، ليبدأ من حياتك اليوم. تُرسَل هي أيضًا مع رسائلك.",
   lastStepQ:  'في المرة السابقة اخترت خطوة صغيرة: «{step}». هل جرّبتها؟',
   outDone: 'نعم', outPartly: 'جزئيًا', outNotYet: 'ليس بعد',
   outThanks: 'سُجِّل ذلك. سيكمل Life من هنا.',

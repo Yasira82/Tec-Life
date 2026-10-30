@@ -69,6 +69,8 @@ export const id = {
       title: 'Privasi',
       shareTitle: 'Apa yang boleh dibagikan',
       shareNote: 'TEC AI di Hub hanya membaca yang kamu nyalakan di sini — semuanya mati sampai kamu menyalakannya.',
+      // Who answers, named (owner, 2026-10-30): TEC AI keeps Gemini for quality, so the switch says so.
+      shareProvider: 'TEC AI terutama menjawab dengan model Gemini dari Google: yang kamu nyalakan di sini dikirim ke Google agar bisa menjawabmu, dan Google dapat menyimpannya serta memakainya untuk meningkatkan layanannya. Percakapanmu dengan coach Life sendiri tidak dikirim ke sana.',
       checkin: 'Pengingat mingguan', checkinDesc: 'Pengingat di TEC Alert jika sebuah tujuan seminggu tanpa langkah (paling banyak sekali seminggu), dan ulasan singkat bulanmu di minggu pertama.', journey: 'Simpan perjalananku', journeyDesc: 'Simpan ringkasan percakapan dengan Life yang kamu konfirmasi, agar Life melanjutkan dari tempatmu berhenti. Mematikannya menghapus semuanya.', conversations: 'Simpan percakapan lengkapku', conversationsDesc: 'Simpan percakapan dengan Life secara lengkap dan terenkripsi, agar bisa dilanjutkan nanti. Mematikannya menghapus semuanya.',
       goals: 'Tujuan',
       skills: 'Keterampilan',

@@ -40,6 +40,7 @@ export const tr: PersonCopy = {
   "thanks": "Teşekkürler.",
   "finish": "Bitir",
   "memoryNote": "Life, olduğun yerden sana koçluk yapabilmek için saklamayı seçtiklerini — özetlerini ve olmakta olduğun kişi hakkındaki cümleni — okur. Bunlar mesajlarınla birlikte yapay zekâ modeline gönderilir.",
+  "awareNote": "Life ayrıca bu hafta adımının nasıl gittiğini, aktif hedeflerini ve bulunduğun yerdeki saati görür; böylece bugünkü hayatından başlar. Bunlar da mesajlarınla birlikte gönderilir.",
   "lastStepQ": "Geçen sefer küçük bir adım seçmiştin: “{step}”. Denedin mi?",
   "outDone": "Evet",
   "outPartly": "Kısmen",

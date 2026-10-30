@@ -75,6 +75,29 @@ describe('POST /api/bff/life/talk — the memory comes from Life, not from the p
       spy.mockRestore();
     }
   });
+
+  it('awareness (2026-10-30): with keeping on, the step\'s week and active goals are read here and attached; an awareness sent by the page is ignored', async () => {
+    const step = { ...NOTE, step_outcome: null, created_at: new Date(Date.now() - 2 * 86_400_000).toISOString(), days: [] };
+    const spy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (u) => {
+      const url = String(u);
+      if (url.endsWith('/life/journey')) return ok({ data: { keeping: true, entries: [step] } });
+      if (url.endsWith('/life/goals')) return ok({ data: { goals: [{ title: 'Save', status: 'ACTIVE', progress: 1, target_amount: 10 }] } });
+      return ok({ data: { reply: 'hi' } });
+    });
+    const { POST } = await import('@/app/api/bff/life/talk/route');
+    await POST(makeReq('POST', session, { messages: [{ role: 'user', content: 'x' }], awareness: { since: 999 }, clock: { hour: 9, weekday: 1, today: new Date().toISOString().slice(0, 10) } }));
+    const a = talkBody(spy).awareness;
+    expect(a).toMatchObject({ hour: 9, weekday: 1, since: 2, step: { text: 's' }, goals: [{ title: 'Save', progress: 1, target: 10, next: null }] });
+  });
+
+  it('awareness: keeping off → no goals read and nothing attached', async () => {
+    const spy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (u) =>
+      String(u).endsWith('/life/journey') ? ok({ data: { keeping: false, entries: [] } }) : ok({ data: { reply: 'hi' } }));
+    const { POST } = await import('@/app/api/bff/life/talk/route');
+    await POST(makeReq('POST', session, { messages: [{ role: 'user', content: 'x' }], clock: { hour: 9, weekday: 1, today: new Date().toISOString().slice(0, 10) } }));
+    expect(spy.mock.calls.some((c) => String(c[0]).endsWith('/life/goals'))).toBe(false);
+    expect(talkBody(spy).awareness).toBeUndefined();
+  });
 });
 
 describe('the JOURNEY switch', () => {

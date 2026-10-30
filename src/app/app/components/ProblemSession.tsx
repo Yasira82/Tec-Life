@@ -257,6 +257,10 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
           {journey?.keeping && journey.entries.length > 0 && (
             <p role="note" style={{ fontSize: 13, color: C.subtext, lineHeight: 1.55, marginTop: 8 }}>{s.memoryNote}</p>
           )}
+          {/* Awareness goes with keeping (goals too, even before a first summary) — so the note does. */}
+          {journey?.keeping && (
+            <p role="note" style={{ fontSize: 13, color: C.subtext, lineHeight: 1.55, marginTop: 6 }}>{s.awareNote}</p>
+          )}
           {/* Always shown, never triggered by what was written. */}
           <p style={{ fontSize: 12.5, color: C.subtext, lineHeight: 1.5, marginTop: 12 }}>{s.support}</p>
           <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}>

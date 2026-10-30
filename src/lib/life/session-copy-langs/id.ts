@@ -40,6 +40,7 @@ export const id: PersonCopy = {
   "thanks": "Terima kasih.",
   "finish": "Selesai",
   "memoryNote": "Life membaca apa yang kamu pilih untuk disimpan — ringkasanmu dan kalimatmu tentang dirimu yang sedang kamu bangun — agar bisa membimbingmu dari tempatmu sekarang. Semuanya dikirim ke model AI bersama pesanmu.",
+  "awareNote": "Life juga melihat bagaimana langkahmu minggu ini, tujuan aktifmu, dan waktu di tempatmu, agar bisa mulai dari hidupmu hari ini. Ini juga dikirim bersama pesanmu.",
   "lastStepQ": "Terakhir kali kamu memilih satu langkah kecil: “{step}”. Apakah sudah kamu coba?",
   "outDone": "Ya",
   "outPartly": "Sebagian",

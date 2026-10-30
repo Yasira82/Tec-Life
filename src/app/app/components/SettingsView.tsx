@@ -170,6 +170,7 @@ function Privacy() {
       <div style={{ padding: '14px 16px' }}>
         <div style={{ fontSize: 14, fontWeight: 700, color: C.text }}>{p.shareTitle}</div>
         <p style={{ fontSize: 12, color: C.subtext, margin: '6px 0 0', lineHeight: 1.6 }}>{p.shareNote}</p>
+        <p role="note" style={{ fontSize: 12, color: C.text, margin: '6px 0 0', lineHeight: 1.6 }}>{p.shareProvider}</p>
       </div>
 
       {/* The live window, directly under the sentence about it and directly

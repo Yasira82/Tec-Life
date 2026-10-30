@@ -69,6 +69,8 @@ export const zh = {
       title: '隐私',
       shareTitle: '可以分享的内容',
       shareNote: 'Hub 里的 TEC AI 只读取你在这里打开的内容——每一项在你打开之前都是关闭的。',
+      // Who answers, named (owner, 2026-10-30): TEC AI keeps Gemini for quality, so the switch says so.
+      shareProvider: 'TEC AI 主要使用 Google 的 Gemini 模型来回答：你在这里打开的内容会发送给 Google 以便回答你，Google 可能会保留并用于改进其服务。你和 Life 教练的对话不会发送到那里。',
       checkin: '每周回顾', checkinDesc: '如果某个目标一周没有进展，在 TEC Alert 里提醒（每周最多一次）；每月第一周还有一份简短的月度回顾。', journey: '保留我的历程', journeyDesc: '保留你确认过的 Life 对话摘要，让 Life 从你上次停下的地方继续。关闭后将全部删除。', conversations: '完整保留我的对话', conversationsDesc: '加密完整保留你与 Life 的对话，以便之后继续。关闭后将全部删除。',
       goals: '目标',
       skills: '技能',

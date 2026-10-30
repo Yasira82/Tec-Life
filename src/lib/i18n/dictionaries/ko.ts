@@ -69,6 +69,8 @@ export const ko = {
       title: '프라이버시',
       shareTitle: '공유할 수 있는 것',
       shareNote: 'Hub의 TEC AI는 여기서 켠 항목만 읽어요 — 켜기 전까지는 모두 꺼져 있어요.',
+      // Who answers, named (owner, 2026-10-30): TEC AI keeps Gemini for quality, so the switch says so.
+      shareProvider: 'TEC AI는 주로 Google의 Gemini 모델로 답해요: 여기서 켠 항목은 답을 위해 Google로 보내지며, Google이 이를 보관하고 서비스 개선에 사용할 수 있어요. Life 코치와 나눈 대화는 그곳으로 가지 않아요.',
       checkin: '주간 체크인', checkinDesc: '목표에 일주일 동안 진전이 없으면 TEC Alert에서 알려 드리고(주 1회까지), 매달 첫 주에는 지난달을 짧게 돌아봐 드려요.', journey: '내 여정 보관', journeyDesc: '확인한 Life 대화 요약을 보관하여 Life가 이어서 대화할 수 있게 합니다. 끄면 모두 삭제됩니다.', conversations: '대화 전체 보관', conversationsDesc: 'Life와의 대화를 암호화하여 전체 보관하고 나중에 이어갈 수 있습니다. 끄면 모두 삭제됩니다.',
       goals: '목표',
       skills: '스킬',

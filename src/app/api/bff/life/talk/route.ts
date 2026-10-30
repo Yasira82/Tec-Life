@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { forwardLife, readGateway } from '@/lib/bff/lifeGateway';
 import { buildProfile } from '@/lib/life/profile';
+import { buildAwareness, parseClock } from '@/lib/life/awareness';
 
-// POST /api/bff/life/talk — Life's conversation. Only `messages` comes from the page;
+// POST /api/bff/life/talk — Life's conversation. Only `messages` (and the page's clock) come from the page;
 // the AI service checks its shape, answers from Groq, and stores nothing. This route
 // logs nothing of the body: `forwardLife` logs the path and the status only.
 //
@@ -30,8 +31,22 @@ export async function POST(req: NextRequest) {
     ({ problem, understanding, step, step_outcome, created_at }));
   const statement = self.ok ? (self.data as { statement?: unknown } | null)?.statement : null;
   const profile = keeping ? buildProfile(entries, statement) : null;
+  // Awareness (owner, 2026-10-30): where their life is now — the step's week, their active goals,
+  // days since the last kept conversation, their part of the day. Same switch as the memory: only
+  // while the journey is kept. The page sends its clock and nothing else; a failed goals read only
+  // leaves the goals out.
+  let awareness = null;
+  if (keeping) {
+    const goals = await readGateway(req, '/api/identity/life/goals');
+    const rows = goals.ok ? ((goals.data as { goals?: unknown } | null)?.goals ?? []) : [];
+    awareness = buildAwareness({
+      entries: entries as never,
+      goals: Array.isArray(rows) ? rows as never : [],
+      clock: parseClock((body as { clock?: unknown })?.clock),
+    });
+  }
 
   return forwardLife(req, 'POST', '/api/identity/ai/life/talk', {
-    messages, ...(memory.length ? { memory } : {}), ...(profile ? { profile } : {}),
+    messages, ...(memory.length ? { memory } : {}), ...(profile ? { profile } : {}), ...(awareness ? { awareness } : {}),
   });
 }
