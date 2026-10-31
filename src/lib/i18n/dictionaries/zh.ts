@@ -30,7 +30,7 @@ export const zh = {
     welcome:     '欢迎',
     welcomeName: '欢迎，{name}',
     subtitle:    '一步一步，成就更好的自己',
-    nav: { home: '首页', goals: '目标', skills: '技能', activity: '动态', settings: '设置' },
+    nav: { home: '首页', goals: '我的未来', skills: '技能', activity: '动态', settings: '设置' },
     home: {
       focus: '当前焦点',
       focusHint: '最接近完成',
@@ -45,7 +45,7 @@ export const zh = {
     },
     goals: {
       reached: '已达成目标', markDone: '标记完成',
-      title: '目标', hint: '设定目标 · 跟踪进度',
+      title: '我的未来', hint: '你想成为的人 · 带你到达的目标',
       active: '进行中', completed: '已完成', tracked: 'π 已跟踪',
       insights: '目标分析',
       completion: '完成率',

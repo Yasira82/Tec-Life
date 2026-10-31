@@ -37,7 +37,7 @@ export const en = {
     welcome:     'Welcome',
     welcomeName: 'Welcome, {name}',
     subtitle:    'build yourself, one step at a time',
-    nav: { home: 'Home', goals: 'Goals', skills: 'Skills', activity: 'Activity', settings: 'Settings' },
+    nav: { home: 'Home', goals: 'My future', skills: 'Skills', activity: 'Activity', settings: 'Settings' },
     home: {
       focus: 'Your focus',
       focusHint: 'closest to done',
@@ -52,7 +52,7 @@ export const en = {
     },
     goals: {
       reached: 'Target reached', markDone: 'Mark done',
-      title: 'Goals', hint: 'set a target · track your progress',
+      title: 'My future', hint: 'who you want to be · the goals that take you there',
       active: 'Active', completed: 'Completed', tracked: 'π tracked',
       insights: 'Goal insights',
       completion: 'Completion',

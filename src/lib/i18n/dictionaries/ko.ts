@@ -30,7 +30,7 @@ export const ko = {
     welcome:     '환영합니다',
     welcomeName: '환영합니다, {name}님',
     subtitle:    '한 걸음씩 나를 만들어 가요',
-    nav: { home: '홈', goals: '목표', skills: '기술', activity: '활동', settings: '설정' },
+    nav: { home: '홈', goals: '나의 미래', skills: '기술', activity: '활동', settings: '설정' },
     home: {
       focus: '지금 집중',
       focusHint: '완료에 가장 가까운',
@@ -45,7 +45,7 @@ export const ko = {
     },
     goals: {
       reached: '목표 달성', markDone: '완료로 표시',
-      title: '목표', hint: '목표 설정 · 진행 상황 추적',
+      title: '나의 미래', hint: '되고 싶은 나 · 그곳으로 가는 목표',
       active: '진행 중', completed: '완료', tracked: 'π 추적됨',
       insights: '목표 분석',
       completion: '완료율',

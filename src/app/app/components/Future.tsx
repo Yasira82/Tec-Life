@@ -68,8 +68,9 @@ export function Future({ future, onChange }: { future: FutureData; onChange: (f:
       ...card, marginTop: 4, borderRadius: 22,
       background: identityA(0.10), border: `1px solid ${identityA(0.32)}`,
     }}>
-      <div style={{ fontSize: 13, fontWeight: 700, color: C.identityInk }}>{f.title}</div>
-      <div style={{ fontSize: 12, color: C.subtext, marginTop: 2, lineHeight: 1.5 }}>{f.hint}</div>
+      {/* No heading: the tab's band already says «مستقبلي» (CLAUDE.md — never repeat the band's title).
+          Only the line saying what Life does with it. */}
+      <div style={{ fontSize: 12, color: C.subtext, lineHeight: 1.5 }}>{f.hint}</div>
 
       <div style={{ marginTop: 12 }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: C.identityInk, marginBottom: 4 }}>{f.visionLabel}</div>

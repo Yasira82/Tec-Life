@@ -30,7 +30,7 @@ export const fr = {
     welcome:     'Bienvenue',
     welcomeName: 'Bienvenue, {name}',
     subtitle:    'construisez-vous, pas à pas',
-    nav: { home: 'Accueil', goals: 'Objectifs', skills: 'Compétences', activity: 'Activité', settings: 'Réglages' },
+    nav: { home: 'Accueil', goals: 'Mon avenir', skills: 'Compétences', activity: 'Activité', settings: 'Réglages' },
     home: {
       focus: 'Votre priorité',
       focusHint: 'le plus proche du but',
@@ -45,7 +45,7 @@ export const fr = {
     },
     goals: {
       reached: 'Objectif atteint', markDone: 'Marquer terminé',
-      title: 'Objectifs', hint: 'fixez une cible · suivez vos progrès',
+      title: 'Mon avenir', hint: 'qui vous voulez être · les objectifs qui vous y mènent',
       active: 'Actifs', completed: 'Atteints', tracked: 'π suivis',
       insights: 'Analyse des objectifs',
       completion: 'Réalisation',
