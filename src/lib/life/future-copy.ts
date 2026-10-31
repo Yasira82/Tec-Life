@@ -14,6 +14,10 @@ export interface FutureCopy {
   edit: string; save: string; cancel: string; failed: string;
   goalArea: string; noArea: string;
   area: Record<LifeArea, string>;
+  /** On Home: the active goals serving an area — a count, never a score. */
+  goalsIn: (n: number) => string;
+  /** On Home: a chosen area with no active goal yet. */
+  noGoalYet: string;
 }
 
 const en: FutureCopy = {
@@ -23,6 +27,7 @@ const en: FutureCopy = {
   edit: 'Edit', save: 'Save', cancel: 'Cancel', failed: 'Could not save — try again.',
   goalArea: 'Area', noArea: 'No area',
   area: { HEALTH: 'Health', WORK: 'Work', FAMILY: 'Family', FAITH: 'Faith', MONEY: 'Money', LEARNING: 'Learning' },
+  goalsIn: (n) => `${n} goal${n === 1 ? '' : 's'}`, noGoalYet: 'no goal yet',
 };
 
 const ar: FutureCopy = {
@@ -32,6 +37,7 @@ const ar: FutureCopy = {
   edit: 'تعديل', save: 'حفظ', cancel: 'إلغاء', failed: 'تعذّر الحفظ — حاول مرة أخرى.',
   goalArea: 'المجال', noArea: 'بلا مجال',
   area: { HEALTH: 'الصحة', WORK: 'العمل', FAMILY: 'الأسرة', FAITH: 'الدين', MONEY: 'المال', LEARNING: 'التعلّم' },
+  goalsIn: (n) => (n === 1 ? 'هدف واحد' : n === 2 ? 'هدفان' : n <= 10 ? `${n} أهداف` : `${n} هدفًا`), noGoalYet: 'لا هدف بعد',
 };
 
 const es: FutureCopy = {
@@ -41,6 +47,7 @@ const es: FutureCopy = {
   edit: 'Editar', save: 'Guardar', cancel: 'Cancelar', failed: 'No se pudo guardar — inténtalo de nuevo.',
   goalArea: 'Área', noArea: 'Sin área',
   area: { HEALTH: 'Salud', WORK: 'Trabajo', FAMILY: 'Familia', FAITH: 'Fe', MONEY: 'Dinero', LEARNING: 'Aprendizaje' },
+  goalsIn: (n) => `${n} meta${n === 1 ? '' : 's'}`, noGoalYet: 'aún sin meta',
 };
 
 const fr: FutureCopy = {
@@ -50,6 +57,7 @@ const fr: FutureCopy = {
   edit: 'Modifier', save: 'Enregistrer', cancel: 'Annuler', failed: 'Échec de l’enregistrement — réessayez.',
   goalArea: 'Domaine', noArea: 'Aucun domaine',
   area: { HEALTH: 'Santé', WORK: 'Travail', FAMILY: 'Famille', FAITH: 'Foi', MONEY: 'Argent', LEARNING: 'Apprentissage' },
+  goalsIn: (n) => `${n} objectif${n > 1 ? 's' : ''}`, noGoalYet: 'pas encore d’objectif',
 };
 
 const pt: FutureCopy = {
@@ -59,6 +67,7 @@ const pt: FutureCopy = {
   edit: 'Editar', save: 'Salvar', cancel: 'Cancelar', failed: 'Não foi possível salvar — tente de novo.',
   goalArea: 'Área', noArea: 'Sem área',
   area: { HEALTH: 'Saúde', WORK: 'Trabalho', FAMILY: 'Família', FAITH: 'Fé', MONEY: 'Dinheiro', LEARNING: 'Aprendizado' },
+  goalsIn: (n) => `${n} meta${n === 1 ? '' : 's'}`, noGoalYet: 'ainda sem meta',
 };
 
 const tr: FutureCopy = {
@@ -68,6 +77,7 @@ const tr: FutureCopy = {
   edit: 'Düzenle', save: 'Kaydet', cancel: 'Vazgeç', failed: 'Kaydedilemedi — tekrar dene.',
   goalArea: 'Alan', noArea: 'Alan yok',
   area: { HEALTH: 'Sağlık', WORK: 'İş', FAMILY: 'Aile', FAITH: 'İnanç', MONEY: 'Para', LEARNING: 'Öğrenme' },
+  goalsIn: (n) => `${n} hedef`, noGoalYet: 'henüz hedef yok',
 };
 
 const ru: FutureCopy = {
@@ -77,6 +87,7 @@ const ru: FutureCopy = {
   edit: 'Изменить', save: 'Сохранить', cancel: 'Отмена', failed: 'Не удалось сохранить — попробуйте ещё раз.',
   goalArea: 'Сфера', noArea: 'Без сферы',
   area: { HEALTH: 'Здоровье', WORK: 'Работа', FAMILY: 'Семья', FAITH: 'Вера', MONEY: 'Деньги', LEARNING: 'Учёба' },
+  goalsIn: (n) => `целей: ${n}`, noGoalYet: 'пока нет цели',
 };
 
 const hi: FutureCopy = {
@@ -86,6 +97,7 @@ const hi: FutureCopy = {
   edit: 'बदलें', save: 'सहेजें', cancel: 'रद्द करें', failed: 'सहेजा नहीं जा सका — फिर कोशिश करें।',
   goalArea: 'क्षेत्र', noArea: 'कोई क्षेत्र नहीं',
   area: { HEALTH: 'स्वास्थ्य', WORK: 'काम', FAMILY: 'परिवार', FAITH: 'आस्था', MONEY: 'पैसा', LEARNING: 'सीखना' },
+  goalsIn: (n) => `${n} लक्ष्य`, noGoalYet: 'अभी कोई लक्ष्य नहीं',
 };
 
 const id: FutureCopy = {
@@ -95,6 +107,7 @@ const id: FutureCopy = {
   edit: 'Ubah', save: 'Simpan', cancel: 'Batal', failed: 'Gagal menyimpan — coba lagi.',
   goalArea: 'Bidang', noArea: 'Tanpa bidang',
   area: { HEALTH: 'Kesehatan', WORK: 'Pekerjaan', FAMILY: 'Keluarga', FAITH: 'Iman', MONEY: 'Keuangan', LEARNING: 'Belajar' },
+  goalsIn: (n) => `${n} tujuan`, noGoalYet: 'belum ada tujuan',
 };
 
 const vi: FutureCopy = {
@@ -104,6 +117,7 @@ const vi: FutureCopy = {
   edit: 'Sửa', save: 'Lưu', cancel: 'Hủy', failed: 'Không lưu được — thử lại.',
   goalArea: 'Lĩnh vực', noArea: 'Không có',
   area: { HEALTH: 'Sức khỏe', WORK: 'Công việc', FAMILY: 'Gia đình', FAITH: 'Đức tin', MONEY: 'Tiền bạc', LEARNING: 'Học tập' },
+  goalsIn: (n) => `${n} mục tiêu`, noGoalYet: 'chưa có mục tiêu',
 };
 
 const ko: FutureCopy = {
@@ -113,6 +127,7 @@ const ko: FutureCopy = {
   edit: '수정', save: '저장', cancel: '취소', failed: '저장하지 못했어요 — 다시 시도하세요.',
   goalArea: '영역', noArea: '영역 없음',
   area: { HEALTH: '건강', WORK: '일', FAMILY: '가족', FAITH: '신앙', MONEY: '돈', LEARNING: '배움' },
+  goalsIn: (n) => `목표 ${n}개`, noGoalYet: '아직 목표 없음',
 };
 
 const zh: FutureCopy = {
@@ -122,6 +137,7 @@ const zh: FutureCopy = {
   edit: '编辑', save: '保存', cancel: '取消', failed: '保存失败——请重试。',
   goalArea: '领域', noArea: '无领域',
   area: { HEALTH: '健康', WORK: '工作', FAMILY: '家庭', FAITH: '信仰', MONEY: '金钱', LEARNING: '学习' },
+  goalsIn: (n) => `${n} 个目标`, noGoalYet: '还没有目标',
 };
 
 const COPY: Record<Locale, FutureCopy> = { en, ar, es, fr, pt, tr, ru, hi, id, vi, ko, zh };

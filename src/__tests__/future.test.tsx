@@ -86,3 +86,47 @@ describe('the card', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 });
+
+describe('the owner\'s phone, 2026-10-31', () => {
+  it('opening the editor brings Save into view above the bottom bar', async () => {
+    const scroll = vi.fn();
+    Element.prototype.scrollIntoView = scroll;
+    render(<Future future={{ vision: null, areas: [] }} onChange={() => undefined} />);
+    fireEvent.click(screen.getAllByRole('button', { name: f.edit })[1]!);
+    await vi.waitFor(() => expect(scroll).toHaveBeenCalledWith({ block: 'nearest', behavior: 'smooth' }));
+    expect((screen.getByTestId('future-actions') as HTMLElement).style.scrollMarginBottom).toBe('130px');
+  });
+});
+
+describe('«مستقبلي» on Home — part 2', () => {
+  const serve = (future: unknown) => vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ data: future }) }) as Response));
+
+  it('the vision, and each area with its active goals counted — an area with none says so', async () => {
+    const { FutureOnHome } = await import('../app/app/components/Future');
+    serve({ vision: 'A calmer father', areas: [{ area: 'HEALTH', note: null }, { area: 'FAITH', note: null }] });
+    const onOpen = vi.fn();
+    render(<FutureOnHome goals={[{ status: 'ACTIVE', area: 'HEALTH' }, { status: 'ACTIVE', area: 'HEALTH' }, { status: 'DONE', area: 'FAITH' }]} onOpen={onOpen} />);
+    expect(await screen.findByText('A calmer father')).toBeTruthy();
+    expect(screen.getByTestId('future-home-HEALTH').textContent).toBe(`${f.area.HEALTH} · ${f.goalsIn(2)}`);
+    expect(screen.getByTestId('future-home-FAITH').textContent).toBe(`${f.area.FAITH} · ${f.noGoalYet}`);
+    fireEvent.click(screen.getByTestId('future-home'));
+    expect(onOpen).toHaveBeenCalled();
+  });
+
+  it('nothing written or chosen → nothing on Home', async () => {
+    const { FutureOnHome } = await import('../app/app/components/Future');
+    serve({ vision: null, areas: [] });
+    const { container } = render(<FutureOnHome goals={[]} onOpen={() => undefined} />);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(container.querySelector('[data-testid="future-home"]')).toBeNull();
+  });
+
+  it('every language counts goals with no placeholder left', () => {
+    for (const { code } of LOCALES) {
+      for (const n of [1, 2, 3, 11]) expect(futureCopy(code).goalsIn(n), code).toMatch(String(n === 1 || (code === 'ar' && n === 2) ? '' : n));
+      expect(futureCopy(code).noGoalYet, code).toBeTruthy();
+    }
+    expect(futureCopy('ar').goalsIn(1)).toBe('هدف واحد');
+    expect(futureCopy('ar').goalsIn(3)).toBe('3 أهداف');
+  });
+});

@@ -15,6 +15,7 @@ import { Skills } from './Skills';
 import { Activity, piAmount, prettyType } from './Activity';
 import { Budget, Cashflow } from './Money';
 import { uiCopy } from '@/lib/life/ui-copy';
+import { FutureOnHome } from './Future';
 
 // ── Home ─────────────────────────────────────────────────────────────────────
 //
@@ -317,6 +318,9 @@ export function HomeView({ isPro, daysRemaining, onGo, identity, today }: {
       {today}
 
       {identity}
+
+      {/* «مستقبلي» — where they are heading, and which areas have a goal on the way. */}
+      <FutureOnHome goals={goals} onOpen={() => onGo('goals')} />
 
       <Focus goals={goals} busy={busy} eta={eta} onLog={addProgress} onGo={onGo} />
       {/* L1 — the person's caps and the month's in/out, each amount from the
