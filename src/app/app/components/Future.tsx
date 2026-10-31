@@ -6,7 +6,7 @@
 // serves — KB audits/LIFE_MEMORY_AND_HUMAN_BUILDING_2026-10-23.md §6 step 4. Everything here is
 // the person's own words or a choice from a closed list; nothing is suggested, scored or judged.
 // Read from Life with the session; nothing at all is shown when it cannot be read.
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { C, goldA, identityA } from '@/lib-client/palette';
 import { useTranslation } from '@/lib/i18n';
 import { futureCopy, LIFE_AREAS, type LifeArea } from '@/lib/life/future-copy';
@@ -30,6 +30,12 @@ export function Future({ future, onChange }: { future: FutureData; onChange: (f:
   const [chosen, setChosen] = useState<Partial<Record<LifeArea, string>>>({});
   const [saving, setSaving] = useState(false);
   const [failed, setFailed] = useState(false);
+  // Save / Cancel sit at the end of the editor, where the floating bottom bar covers them on a phone
+  // (owner, 2026-10-31). Opening the editor, or moving into one of its fields, brings them into view
+  // above the bar — `scrollMarginBottom` is the bar's height plus a little air.
+  const actionsRef = useRef<HTMLDivElement>(null);
+  const showActions = () => setTimeout(() => actionsRef.current?.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' }), 50);
+  useEffect(() => { if (editing) showActions(); }, [editing]);
 
   const openVision = () => { setVision(future.vision ?? ''); setFailed(false); setEditing('vision'); };
   const openAreas = () => {
@@ -55,7 +61,7 @@ export function Future({ future, onChange }: { future: FutureData; onChange: (f:
   const actions = (
     <>
       {failed && <div role="alert" style={{ fontSize: 12.5, color: C.text, marginTop: 6 }}>{f.failed}</div>}
-      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+      <div ref={actionsRef} data-testid="future-actions" style={{ display: 'flex', gap: 8, marginTop: 8, scrollMarginBottom: 130 }}>
         <button type="button" style={smallBtn} disabled={saving} onClick={() => void save()}>{f.save}</button>
         <button type="button" style={smallBtn} disabled={saving} onClick={() => setEditing(null)}>{f.cancel}</button>
       </div>
@@ -77,7 +83,7 @@ export function Future({ future, onChange }: { future: FutureData; onChange: (f:
         {editing === 'vision' ? (
           <>
             <textarea value={vision} maxLength={300} disabled={saving} placeholder={f.visionPh} aria-label={f.visionLabel}
-              onChange={(e) => setVision(e.target.value.slice(0, 300))} autoComplete="off" spellCheck={false} translate="no"
+              onChange={(e) => setVision(e.target.value.slice(0, 300))} onFocus={showActions} autoComplete="off" spellCheck={false} translate="no"
               style={{ ...field, minHeight: 64, resize: 'vertical' }} />
             {actions}
           </>
@@ -112,7 +118,7 @@ export function Future({ future, onChange }: { future: FutureData; onChange: (f:
               <label key={a} style={{ display: 'block', marginTop: 10 }}>
                 <span style={{ fontSize: 12, fontWeight: 700, color: C.text }}>{f.area[a]}</span>
                 <input value={chosen[a] ?? ''} maxLength={160} disabled={saving} placeholder={f.notePh}
-                  onChange={(e) => setChosen((c) => ({ ...c, [a]: e.target.value.slice(0, 160) }))}
+                  onChange={(e) => setChosen((c) => ({ ...c, [a]: e.target.value.slice(0, 160) }))} onFocus={showActions}
                   autoComplete="off" translate="no" style={{ ...field, marginTop: 4 }} />
               </label>
             ))}

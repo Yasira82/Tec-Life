@@ -86,3 +86,14 @@ describe('the card', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 });
+
+describe('the owner\'s phone, 2026-10-31', () => {
+  it('opening the editor brings Save into view above the bottom bar', async () => {
+    const scroll = vi.fn();
+    Element.prototype.scrollIntoView = scroll;
+    render(<Future future={{ vision: null, areas: [] }} onChange={() => undefined} />);
+    fireEvent.click(screen.getAllByRole('button', { name: f.edit })[1]!);
+    await vi.waitFor(() => expect(scroll).toHaveBeenCalledWith({ block: 'nearest', behavior: 'smooth' }));
+    expect((screen.getByTestId('future-actions') as HTMLElement).style.scrollMarginBottom).toBe('130px');
+  });
+});
