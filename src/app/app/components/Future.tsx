@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from 'react';
 import { C, goldA, identityA } from '@/lib-client/palette';
 import { useTranslation } from '@/lib/i18n';
 import { futureCopy, LIFE_AREAS, type LifeArea } from '@/lib/life/future-copy';
-import { saveAreas, saveVision, type Future as FutureData } from '@/lib-client/life/future';
+import { readFuture, saveAreas, saveVision, type Future as FutureData } from '@/lib-client/life/future';
 import { card } from './shared';
 
 const smallBtn = {
@@ -140,5 +140,47 @@ export function Future({ future, onChange }: { future: FutureData; onChange: (f:
         )}
       </div>
     </section>
+  );
+}
+
+/**
+ * «مستقبلي» on Home (owner, 2026-10-31, part 2): the vision in their words, and each chosen area with
+ * how many active goals serve it — a count, never a score; an area with none says so plainly. The
+ * whole card is one button to the «مستقبلي» tab. Nothing at all until they wrote or chose something.
+ */
+export function FutureOnHome({ goals, onOpen }: { goals: { status: string; area?: LifeArea | null }[]; onOpen: () => void }) {
+  const { locale } = useTranslation();
+  const f = futureCopy(locale);
+  const [future, setFuture] = useState<FutureData | null>(null);
+  useEffect(() => { void readFuture().then(setFuture); }, []);
+  if (!future || (!future.vision && future.areas.length === 0)) return null;
+  const count = (a: LifeArea) => goals.filter((g) => g.status === 'ACTIVE' && g.area === a).length;
+
+  return (
+    <button type="button" onClick={onOpen} data-testid="future-home" className="tec-rise" style={{
+      ...card, display: 'block', width: '100%', textAlign: 'start', font: 'inherit', cursor: 'pointer', marginTop: 14,
+      borderRadius: 22, background: identityA(0.08), border: `1px solid ${identityA(0.28)}`,
+    }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: C.identityInk }}>{f.title}</div>
+      {future.vision && (
+        <div translate="no" style={{ fontSize: 16, fontWeight: 700, color: C.text, lineHeight: 1.5, marginTop: 6 }}><bdi>{future.vision}</bdi></div>
+      )}
+      {future.areas.length > 0 && (
+        <ul style={{ listStyle: 'none', padding: 0, margin: '10px 0 0', display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {future.areas.map(({ area }) => {
+            const n = count(area);
+            return (
+              <li key={area} data-testid={`future-home-${area}`} style={{
+                borderRadius: 999, padding: '5px 11px', fontSize: 12.5,
+                background: n ? goldA(0.12) : 'transparent', border: `1px solid ${n ? goldA(0.35) : C.border}`,
+                color: n ? C.gold : C.subtext,
+              }}>
+                <b>{f.area[area]}</b> · {n ? f.goalsIn(n) : f.noGoalYet}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </button>
   );
 }
