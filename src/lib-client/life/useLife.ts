@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import type { LifeArea } from '@/lib/life/future-copy';
 
 // TEC Life (C-106) client hooks. Self-declared personal context — the caller's own
 // goals + preferences only (server scopes by session; the client never sends identity).
@@ -15,6 +16,7 @@ export interface Goal {
   target_date:   string | null;
   target_amount: number | null; // optional π target — enables progress tracking
   progress:      number;        // π logged toward the target
+  area?:         LifeArea | null; // «مستقبلي»: the life area it serves, if the person chose one
   created_at:    string;
   updated_at:    string;
 }
@@ -70,7 +72,7 @@ export function useGoals() {
     }
   }, [reload]);
 
-  const addGoal = useCallback((title: string, targetAmount?: number, description?: string) =>
+  const addGoal = useCallback((title: string, targetAmount?: number, description?: string, area?: LifeArea | null) =>
     mutate(() => fetch('/api/bff/life/goals', {
       method: 'POST', credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -78,7 +80,15 @@ export function useGoals() {
         title,
         ...(targetAmount && targetAmount > 0 ? { target_amount: targetAmount } : {}),
         ...(description ? { description } : {}),
+        ...(area ? { area } : {}),
       }),
+    })), [mutate]);
+
+  const setArea = useCallback((id: string, area: LifeArea | null) =>
+    mutate(() => fetch(`/api/bff/life/goals/${id}`, {
+      method: 'PATCH', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ area }),
     })), [mutate]);
 
   /** A goal's steps live in its description (lib/life/steps.ts); ticking one rewrites it. */
@@ -107,7 +117,7 @@ export function useGoals() {
     mutate(() => fetch(`/api/bff/life/goals/${id}`, { method: 'DELETE', credentials: 'include' })),
     [mutate]);
 
-  return { goals, loading, error, busy, reload, addGoal, addProgress, setStatus, setDescription, removeGoal };
+  return { goals, loading, error, busy, reload, addGoal, addProgress, setStatus, setDescription, setArea, removeGoal };
 }
 
 // ── Skills (C-106 §4) ────────────────────────────────────────

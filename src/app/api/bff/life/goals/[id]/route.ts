@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { forwardLife } from '@/lib/bff/lifeGateway';
+import { LIFE_AREAS } from '@/lib/life/future-copy';
 
 // PATCH  /api/bff/life/goals/:id  → update own goal (ownership enforced server-side).
 // DELETE /api/bff/life/goals/:id  → delete own goal.
@@ -11,6 +12,7 @@ const UpdateGoalSchema = z.object({
   target_date:   z.string().nullable().optional(),
   target_amount: z.number().positive().max(1_000_000_000).nullable().optional(),
   progress:      z.number().min(0).max(1_000_000_000).optional(),
+  area:          z.enum(LIFE_AREAS).nullable().optional(), // «مستقبلي»: the area this goal serves
 });
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

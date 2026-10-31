@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // The Hub's assistant (C-104 V1) prefills its composer from `?q=` — Life asks on the
 // goal's behalf and never grows an AI surface of its own (C-104 §5.6: a third surface
@@ -19,18 +19,26 @@ import { type GoalPrefill } from '@/lib/life/prefill';
 import { sessionCopy } from '@/lib/life/session-copy';
 import { countSession } from '@/lib-client/life/sessionCounter';
 import { parseSteps, toggleStep, withSteps } from '@/lib/life/steps';
+import { Future } from './Future';
+import { readFuture, type Future as FutureData } from '@/lib-client/life/future';
+import { futureCopy, type LifeArea } from '@/lib/life/future-copy';
 
 // One goal row. If it has a π target, shows a progress bar + a compact "log progress"
 // control (the momentum loop). Ownership + clamping/auto-complete are server-side.
 export function GoalItem({
-  goal, first, busy, onToggle, onDelete, onLog, onSteps,
+  goal, first, busy, onToggle, onDelete, onLog, onSteps, areas = [], onArea,
 }: {
   goal: Goal; first: boolean; busy: boolean;
   onToggle: () => void; onDelete: () => void; onLog: (delta: number) => void;
   /** Ticking a step rewrites the goal's description (lib/life/steps.ts). */
   onSteps?: (description: string) => void;
+  /** «مستقبلي»: the areas the person chose — the goal can serve one of them. */
+  areas?: LifeArea[]; onArea?: (area: LifeArea | null) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const fc = futureCopy(locale);
+  // The goal's own area stays selectable even if it is no longer among the chosen ones.
+  const areaOptions = goal.area && !areas.includes(goal.area) ? [...areas, goal.area] : areas;
   const steps = parseSteps(goal.description);
   const stepsDone = steps.filter((s) => s.done).length;
   const [amt, setAmt] = useState('');
@@ -80,6 +88,20 @@ export function GoalItem({
         <button onClick={onDelete} title={t.life.goals.deleteGoal} aria-label={t.life.goals.deleteGoal}
           style={{ background: 'none', border: 'none', color: C.subtext, cursor: 'pointer', fontSize: 16, flexShrink: 0 }}>×</button>
       </div>
+
+      {(areaOptions.length > 0 && onArea) ? (
+        <div style={{ marginTop: 6, marginLeft: 30 }}>
+          <select aria-label={fc.goalArea} data-testid={`goal-area-${goal.id}`} value={goal.area ?? ''} disabled={busy}
+            onChange={(e) => onArea((e.target.value || null) as LifeArea | null)}
+            style={{ background: C.bg, color: goal.area ? C.identityInk : C.subtext, border: `1px solid ${C.border}`, borderRadius: 999,
+                     padding: '3px 10px', fontSize: 12, fontWeight: 700, fontFamily: 'inherit' }}>
+            <option value="">{fc.noArea}</option>
+            {areaOptions.map((a) => <option key={a} value={a}>{fc.area[a]}</option>)}
+          </select>
+        </div>
+      ) : goal.area && (
+        <div style={{ marginTop: 4, marginLeft: 30, fontSize: 12, fontWeight: 700, color: C.identityInk }}>{fc.area[goal.area]}</div>
+      )}
 
       {steps.length > 0 && (
         <div data-testid={`goal-steps-${goal.id}`} style={{ marginTop: 8, marginLeft: 30 }}>
@@ -142,7 +164,13 @@ export function GoalItem({
 
 export function Goals({ isPro, prefill, onPrefillUsed }: { isPro: boolean; prefill?: GoalPrefill | null; onPrefillUsed?: () => void }) {
   const { t, locale } = useTranslation();
-  const { goals, loading, error, busy, addGoal, addProgress, setStatus, setDescription, removeGoal } = useGoals();
+  const { goals, loading, error, busy, addGoal, addProgress, setStatus, setDescription, setArea, removeGoal } = useGoals();
+  // «مستقبلي» — the vision and the chosen areas sit above the goals they give a direction to.
+  const [future, setFuture] = useState<FutureData | null>(null);
+  const [area, setNewArea] = useState<LifeArea | ''>('');
+  useEffect(() => { void readFuture().then(setFuture); }, []);
+  const chosenAreas = future?.areas.map((a) => a.area) ?? [];
+  const fc = futureCopy(locale);
   // A3 (C-104 §10.1): a goal TEC AI proposed arrives as text in the form, and
   // nothing is saved until the person taps Add — the same submit as a typed goal.
   const [title,  setTitle]  = useState(prefill?.title ?? '');
@@ -179,7 +207,9 @@ export function Goals({ isPro, prefill, onPrefillUsed }: { isPro: boolean; prefi
     setTarget('');
     setSteps([]);
     setSuggested(false);
-    await addGoal(name, Number.isFinite(amt) && amt > 0 ? amt : undefined, description);
+    const goalArea = area || null;
+    setNewArea('');
+    await addGoal(name, Number.isFinite(amt) && amt > 0 ? amt : undefined, description, goalArea);
     // Only after the goal is saved: clearing the prefill remounts this form (empty), and
     // the remount reads the list again — with the new goal in it.
     if (suggested && prefill?.from === 'journey') countSession('g_from_step');
@@ -188,6 +218,8 @@ export function Goals({ isPro, prefill, onPrefillUsed }: { isPro: boolean; prefi
 
   return (
     <section style={{ marginTop: 4 }}>
+      {future && <Future future={future} onChange={setFuture} />}
+
       {/* A bare strip on the page ground, like Home. The Goals tab opened with
           the SAME grey card the Home tab opens with, holding the same three
           numbers — so the two screens were indistinguishable at a glance. */}
@@ -219,6 +251,13 @@ export function Goals({ isPro, prefill, onPrefillUsed }: { isPro: boolean; prefi
           inputMode="decimal"
           placeholder={t.life.goals.targetPlaceholder}
         />}
+        {chosenAreas.length > 0 && (
+          <select aria-label={fc.goalArea} data-testid="goal-new-area" value={area} onChange={(e) => setNewArea(e.target.value as LifeArea | '')}
+            style={{ ...inputStyle, background: C.surface, borderRadius: 12, padding: '11px 13px', flex: '0 0 auto', width: 'auto' }}>
+            <option value="">{fc.noArea}</option>
+            {chosenAreas.map((a) => <option key={a} value={a}>{fc.area[a]}</option>)}
+          </select>
+        )}
         <button style={{ ...goldBtn, borderRadius: 12, padding: '11px 18px', opacity: busy || !title.trim() ? 0.55 : 1 }}
           onClick={submit} disabled={busy || !title.trim()}>{t.life.goals.add}</button>
       </div>
@@ -263,6 +302,7 @@ export function Goals({ isPro, prefill, onPrefillUsed }: { isPro: boolean; prefi
                   onDelete={() => removeGoal(g.id)}
                   onLog={(delta) => addProgress(g.id, delta)}
                   onSteps={(d) => setDescription(g.id, d)}
+                  areas={chosenAreas} onArea={(a) => setArea(g.id, a)}
                 />
               ))}
             </div>
