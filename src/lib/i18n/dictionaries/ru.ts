@@ -30,7 +30,7 @@ export const ru = {
     welcome:     'Добро пожаловать',
     welcomeName: 'Добро пожаловать, {name}',
     subtitle:    'стройте себя шаг за шагом',
-    nav: { home: 'Главная', goals: 'Цели', skills: 'Навыки', activity: 'Активность', settings: 'Настройки' },
+    nav: { home: 'Главная', goals: 'Моё будущее', skills: 'Навыки', activity: 'Активность', settings: 'Настройки' },
     home: {
       focus: 'Ваш фокус',
       focusHint: 'ближе всего к цели',
@@ -45,7 +45,7 @@ export const ru = {
     },
     goals: {
       reached: 'Цель достигнута', markDone: 'Отметить готово',
-      title: 'Цели', hint: 'поставьте цель · следите за прогрессом',
+      title: 'Моё будущее', hint: 'кем вы хотите быть · цели, которые ведут туда',
       active: 'Активные', completed: 'Достигнутые', tracked: 'π отслежено',
       insights: 'Анализ целей',
       completion: 'Выполнение',

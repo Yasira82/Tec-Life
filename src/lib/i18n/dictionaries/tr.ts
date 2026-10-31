@@ -30,7 +30,7 @@ export const tr = {
     welcome:     'Hoş geldin',
     welcomeName: 'Hoş geldin, {name}',
     subtitle:    'kendini adım adım inşa et',
-    nav: { home: 'Ana sayfa', goals: 'Hedefler', skills: 'Beceriler', activity: 'Etkinlik', settings: 'Ayarlar' },
+    nav: { home: 'Ana sayfa', goals: 'Geleceğim', skills: 'Beceriler', activity: 'Etkinlik', settings: 'Ayarlar' },
     home: {
       focus: 'Odağın',
       focusHint: 'tamamlanmaya en yakın',
@@ -45,7 +45,7 @@ export const tr = {
     },
     goals: {
       reached: 'Hedefe ulaşıldı', markDone: 'Bitti işaretle',
-      title: 'Hedefler', hint: 'bir hedef koy · ilerlemeni izle',
+      title: 'Geleceğim', hint: 'kim olmak istediğin · seni oraya götüren hedefler',
       active: 'Aktif', completed: 'Tamamlandı', tracked: 'π izlenen',
       insights: 'Hedef analizi',
       completion: 'Tamamlanma',

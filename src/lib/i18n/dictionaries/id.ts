@@ -30,7 +30,7 @@ export const id = {
     welcome:     'Selamat datang',
     welcomeName: 'Selamat datang, {name}',
     subtitle:    'bangun dirimu, selangkah demi selangkah',
-    nav: { home: 'Beranda', goals: 'Tujuan', skills: 'Keterampilan', activity: 'Aktivitas', settings: 'Pengaturan' },
+    nav: { home: 'Beranda', goals: 'Masa depanku', skills: 'Keterampilan', activity: 'Aktivitas', settings: 'Pengaturan' },
     home: {
       focus: 'Fokus kamu',
       focusHint: 'paling dekat selesai',
@@ -45,7 +45,7 @@ export const id = {
     },
     goals: {
       reached: 'Target tercapai', markDone: 'Tandai selesai',
-      title: 'Tujuan', hint: 'tetapkan target · pantau kemajuan',
+      title: 'Masa depanku', hint: 'ingin menjadi siapa · tujuan yang membawamu ke sana',
       active: 'Aktif', completed: 'Selesai', tracked: 'π terlacak',
       insights: 'Analisis tujuan',
       completion: 'Penyelesaian',

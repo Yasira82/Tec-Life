@@ -84,13 +84,13 @@ test.describe('Life, signed in', () => {
   test('home shows the empty focus and the tabs', async ({ page }) => {
     await page.goto('/app');
     await expect(page.getByText('No goals yet').first()).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Goals', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'My future', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Skills', exact: true })).toBeVisible();
   });
 
   test('a goal is added, logged against, and reaches its target', async ({ page }) => {
     await page.goto('/app');
-    await page.getByRole('button', { name: 'Goals', exact: true }).click();
+    await page.getByRole('button', { name: 'My future', exact: true }).click();
     await page.getByPlaceholder('Add a goal').fill('Save 10 π');
     await page.getByPlaceholder('π target (opt)').fill('10');
     await page.getByRole('button', { name: 'Add', exact: true }).click();
@@ -146,6 +146,6 @@ test.describe('Life, signed out', () => {
     await page.goto('/app');
     await expect(page.getByRole('button', { name: 'Sign in with Pi' })).toBeVisible();
     await expect(page.getByText('No goals yet')).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Goals', exact: true })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'My future', exact: true })).toHaveCount(0);
   });
 });

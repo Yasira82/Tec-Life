@@ -30,7 +30,7 @@ export const hi = {
     welcome:     'स्वागत है',
     welcomeName: 'स्वागत है, {name}',
     subtitle:    'खुद को कदम-दर-कदम बनाइए',
-    nav: { home: 'होम', goals: 'लक्ष्य', skills: 'कौशल', activity: 'गतिविधि', settings: 'सेटिंग्स' },
+    nav: { home: 'होम', goals: 'मेरा भविष्य', skills: 'कौशल', activity: 'गतिविधि', settings: 'सेटिंग्स' },
     home: {
       focus: 'आपका फ़ोकस',
       focusHint: 'पूरा होने के सबसे क़रीब',
@@ -45,7 +45,7 @@ export const hi = {
     },
     goals: {
       reached: 'लक्ष्य पूरा', markDone: 'पूरा चिह्नित करें',
-      title: 'लक्ष्य', hint: 'लक्ष्य तय करें · प्रगति देखें',
+      title: 'मेरा भविष्य', hint: 'आप कौन बनना चाहते हैं · वहाँ पहुँचाने वाले लक्ष्य',
       active: 'सक्रिय', completed: 'पूर्ण', tracked: 'π ट्रैक किया',
       insights: 'लक्ष्य विश्लेषण',
       completion: 'पूर्णता',

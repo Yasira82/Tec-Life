@@ -46,6 +46,8 @@ const nextStep = (description: unknown): string | null => {
 export function buildAwareness(input: {
   entries: (JourneyEntry & { days?: StepDay[] })[];
   goals: GoalRow[];
+  /** «مستقبلي»: their vision and the areas they chose (owner, 2026-10-31). */
+  future?: { vision: string | null; areas: { area: string; note: string | null }[] } | null;
   clock: Clock | null;
   now?: Date;
 }) {
@@ -84,6 +86,8 @@ export function buildAwareness(input: {
     ...(since !== null ? { since } : {}),
     ...(step ? { step } : {}),
     ...(goals.length ? { goals } : {}),
+    ...(input.future?.vision ? { vision: input.future.vision } : {}),
+    ...(input.future?.areas.length ? { areas: input.future.areas } : {}),
   };
   return Object.keys(out).length ? out : null;
 }

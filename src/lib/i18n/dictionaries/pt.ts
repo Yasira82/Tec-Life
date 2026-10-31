@@ -30,7 +30,7 @@ export const pt = {
     welcome:     'Bem-vindo',
     welcomeName: 'Bem-vindo, {name}',
     subtitle:    'construa-se, passo a passo',
-    nav: { home: 'Início', goals: 'Metas', skills: 'Habilidades', activity: 'Atividade', settings: 'Ajustes' },
+    nav: { home: 'Início', goals: 'Meu futuro', skills: 'Habilidades', activity: 'Atividade', settings: 'Ajustes' },
     home: {
       focus: 'Seu foco',
       focusHint: 'mais perto de concluir',
@@ -45,7 +45,7 @@ export const pt = {
     },
     goals: {
       reached: 'Meta alcançada', markDone: 'Marcar concluída',
-      title: 'Metas', hint: 'defina um alvo · acompanhe seu progresso',
+      title: 'Meu futuro', hint: 'quem você quer ser · as metas que levam até lá',
       active: 'Ativas', completed: 'Concluídas', tracked: 'π acompanhados',
       insights: 'Análise de metas',
       completion: 'Conclusão',

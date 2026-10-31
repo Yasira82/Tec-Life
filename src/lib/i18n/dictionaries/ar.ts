@@ -30,7 +30,7 @@ export const ar = {
     welcome:     'مرحباً',
     welcomeName: 'مرحباً، {name}',
     subtitle:    'ابنِ نفسك خطوة بخطوة',
-    nav: { home: 'الرئيسية', goals: 'الأهداف', skills: 'المهارات', activity: 'النشاط', settings: 'الإعدادات' },
+    nav: { home: 'الرئيسية', goals: 'مستقبلي', skills: 'المهارات', activity: 'النشاط', settings: 'الإعدادات' },
     home: {
       focus: 'تركيزك',
       focusHint: 'الأقرب للاكتمال',
@@ -45,7 +45,7 @@ export const ar = {
     },
     goals: {
       reached: 'وصلت إلى الهدف', markDone: 'حدّده مكتملًا',
-      title: 'الأهداف', hint: 'حدد هدفاً · وتابع تقدمك',
+      title: 'مستقبلي', hint: 'من تريد أن تكون · والأهداف التي توصلك',
       active: 'نشط', completed: 'مكتمل', tracked: 'π متتبَّع',
       insights: 'تحليل الأهداف',
       completion: 'نسبة الإنجاز',

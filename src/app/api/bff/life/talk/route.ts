@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { forwardLife, readGateway } from '@/lib/bff/lifeGateway';
 import { buildProfile } from '@/lib/life/profile';
 import { buildAwareness, parseClock } from '@/lib/life/awareness';
+import { parseFuture } from '@/lib/life/future';
 
 // POST /api/bff/life/talk — Life's conversation. Only `messages` (and the page's clock) come from the page;
 // the AI service checks its shape, answers from Groq, and stores nothing. This route
@@ -37,11 +38,13 @@ export async function POST(req: NextRequest) {
   // leaves the goals out.
   let awareness = null;
   if (keeping) {
-    const goals = await readGateway(req, '/api/identity/life/goals');
+    const [goals, future] = await Promise.all([readGateway(req, '/api/identity/life/goals'), readGateway(req, '/api/identity/life/future')]);
     const rows = goals.ok ? ((goals.data as { goals?: unknown } | null)?.goals ?? []) : [];
     awareness = buildAwareness({
       entries: entries as never,
       goals: Array.isArray(rows) ? rows as never : [],
+      // «مستقبلي» (owner, 2026-10-31): their vision and chosen areas; a failed read leaves them out.
+      future: future.ok ? parseFuture(future.data) : null,
       clock: parseClock((body as { clock?: unknown })?.clock),
     });
   }

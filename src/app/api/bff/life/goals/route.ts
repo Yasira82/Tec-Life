@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { forwardLife } from '@/lib/bff/lifeGateway';
+import { LIFE_AREAS } from '@/lib/life/future-copy';
 
 // GET  /api/bff/life/goals  → the caller's own goals (C-106; scoped by session).
 // POST /api/bff/life/goals  → create a self-declared goal.
@@ -13,6 +14,7 @@ const CreateGoalSchema = z.object({
   description:   z.string().max(2000).optional(),
   target_date:   z.string().optional(),
   target_amount: z.number().positive().max(1_000_000_000).optional(),
+  area:          z.enum(LIFE_AREAS).nullable().optional(), // «مستقبلي»: the area this goal serves
 });
 
 export async function POST(req: NextRequest) {

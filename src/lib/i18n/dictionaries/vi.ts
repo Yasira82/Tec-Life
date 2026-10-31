@@ -30,7 +30,7 @@ export const vi = {
     welcome:     'Chào mừng',
     welcomeName: 'Chào mừng, {name}',
     subtitle:    'xây dựng bản thân từng bước một',
-    nav: { home: 'Trang chủ', goals: 'Mục tiêu', skills: 'Kỹ năng', activity: 'Hoạt động', settings: 'Cài đặt' },
+    nav: { home: 'Trang chủ', goals: 'Tương lai', skills: 'Kỹ năng', activity: 'Hoạt động', settings: 'Cài đặt' },
     home: {
       focus: 'Trọng tâm của bạn',
       focusHint: 'gần hoàn thành nhất',
@@ -45,7 +45,7 @@ export const vi = {
     },
     goals: {
       reached: 'Đã đạt mục tiêu', markDone: 'Đánh dấu xong',
-      title: 'Mục tiêu', hint: 'đặt mục tiêu · theo dõi tiến độ',
+      title: 'Tương lai', hint: 'bạn muốn trở thành ai · những mục tiêu đưa bạn tới đó',
       active: 'Đang thực hiện', completed: 'Hoàn thành', tracked: 'π đã theo dõi',
       insights: 'Phân tích mục tiêu',
       completion: 'Hoàn thành',
