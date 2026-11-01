@@ -27,7 +27,7 @@ describe('Goal insights in Arabic', () => {
 
   it('no English left hard-coded in the two components', () => {
     const src = ['LifeInsights', 'Goals'].map((f) => readFileSync(`src/app/app/components/${f}.tsx`, 'utf8')).join('\n');
-    for (const s of ['>Goal insights<', "'Completion'", "'Reached'", "'Archived'", 'Funding toward targets', '"+ π amount"', '>\n                Log', 'Free plan is limited', 'title="Delete"']) {
+    for (const s of ['>Goal insights<', "'Completion'", "'Reached'", "'Archived'", 'Funding toward targets', '"+ π amount"', '>\n                Log', 'Free plan is limited', 'title="Delete"', "'Mark active'", "'Mark done'", 'Free plan: {activeCount}']) {
       expect(src).not.toContain(s);
     }
   });
