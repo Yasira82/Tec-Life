@@ -16,6 +16,10 @@ export interface UiCopy {
   tracked: string;
   focus: Record<'Saving' | 'Earning' | 'Learning' | 'Building' | 'Trading', string>;
   showWeeks: string;
+  /** The goal's tick, read aloud / on hover (Goals.tsx) — was English in every language. */
+  markDone: string; markActive: string;
+  /** Under the composer, one goal before the free cap. `{n}` active of `{max}`. */
+  freeNear: (n: number, max: number) => string;
 }
 
 const en: UiCopy = {
@@ -31,6 +35,7 @@ const en: UiCopy = {
   tracked: 'tracked',
   focus: { Saving: 'Saving', Earning: 'Earning', Learning: 'Learning', Building: 'Building', Trading: 'Trading' },
   showWeeks: 'Week by week',
+  markDone: 'Mark done', markActive: 'Mark active', freeNear: (n, m) => `Free plan: ${n} of ${m} active goals. Life Pro = unlimited.`,
 };
 
 const ar: UiCopy = {
@@ -46,6 +51,7 @@ const ar: UiCopy = {
   tracked: 'متتبَّع',
   focus: { Saving: 'الادخار', Earning: 'الكسب', Learning: 'التعلّم', Building: 'البناء', Trading: 'التجارة' },
   showWeeks: 'أسبوعًا بأسبوع',
+  markDone: 'تحديد كمكتمل', markActive: 'إعادته نشطًا', freeNear: (n, m) => `الخطة المجانية: ${n} من ${m} أهداف نشطة. Life Pro = بلا حد.`,
 };
 
 const es: UiCopy = {
@@ -61,6 +67,7 @@ const es: UiCopy = {
   tracked: 'registrados',
   focus: { Saving: 'Ahorrar', Earning: 'Ganar', Learning: 'Aprender', Building: 'Construir', Trading: 'Comerciar' },
   showWeeks: 'Semana a semana',
+  markDone: 'Marcar como hecha', markActive: 'Marcar como activa', freeNear: (n, m) => `Plan gratis: ${n} de ${m} metas activas. Life Pro = sin límite.`,
 };
 
 const fr: UiCopy = {
@@ -76,6 +83,7 @@ const fr: UiCopy = {
   tracked: 'suivis',
   focus: { Saving: 'Épargner', Earning: 'Gagner', Learning: 'Apprendre', Building: 'Construire', Trading: 'Commercer' },
   showWeeks: 'Semaine par semaine',
+  markDone: 'Marquer comme fait', markActive: 'Marquer comme actif', freeNear: (n, m) => `Offre gratuite : ${n} sur ${m} objectifs actifs. Life Pro = illimité.`,
 };
 
 const pt: UiCopy = {
@@ -91,6 +99,7 @@ const pt: UiCopy = {
   tracked: 'registrados',
   focus: { Saving: 'Poupar', Earning: 'Ganhar', Learning: 'Aprender', Building: 'Construir', Trading: 'Negociar' },
   showWeeks: 'Semana a semana',
+  markDone: 'Marcar como feita', markActive: 'Marcar como ativa', freeNear: (n, m) => `Plano grátis: ${n} de ${m} metas ativas. Life Pro = ilimitado.`,
 };
 
 const tr: UiCopy = {
@@ -106,6 +115,7 @@ const tr: UiCopy = {
   tracked: 'takip edilen',
   focus: { Saving: 'Birikim', Earning: 'Kazanç', Learning: 'Öğrenme', Building: 'İnşa', Trading: 'Ticaret' },
   showWeeks: 'Hafta hafta',
+  markDone: 'Tamamlandı işaretle', markActive: 'Aktif işaretle', freeNear: (n, m) => `Ücretsiz plan: ${m} aktif hedeften ${n}. Life Pro = sınırsız.`,
 };
 
 const ru: UiCopy = {
@@ -121,6 +131,7 @@ const ru: UiCopy = {
   tracked: 'отслежено',
   focus: { Saving: 'Сбережения', Earning: 'Заработок', Learning: 'Учёба', Building: 'Создание', Trading: 'Торговля' },
   showWeeks: 'По неделям',
+  markDone: 'Отметить выполненной', markActive: 'Вернуть в активные', freeNear: (n, m) => `Бесплатный план: ${n} из ${m} активных целей. Life Pro — без ограничений.`,
 };
 
 const id: UiCopy = {
@@ -136,6 +147,7 @@ const id: UiCopy = {
   tracked: 'tercatat',
   focus: { Saving: 'Menabung', Earning: 'Menghasilkan', Learning: 'Belajar', Building: 'Membangun', Trading: 'Berdagang' },
   showWeeks: 'Per minggu',
+  markDone: 'Tandai selesai', markActive: 'Tandai aktif', freeNear: (n, m) => `Paket gratis: ${n} dari ${m} tujuan aktif. Life Pro = tanpa batas.`,
 };
 
 const vi: UiCopy = {
@@ -151,6 +163,7 @@ const vi: UiCopy = {
   tracked: 'đã theo dõi',
   focus: { Saving: 'Tiết kiệm', Earning: 'Kiếm tiền', Learning: 'Học tập', Building: 'Xây dựng', Trading: 'Giao dịch' },
   showWeeks: 'Theo từng tuần',
+  markDone: 'Đánh dấu xong', markActive: 'Đánh dấu đang làm', freeNear: (n, m) => `Gói miễn phí: ${n}/${m} mục tiêu đang làm. Life Pro = không giới hạn.`,
 };
 
 const ko: UiCopy = {
@@ -166,6 +179,7 @@ const ko: UiCopy = {
   tracked: '기록됨',
   focus: { Saving: '저축', Earning: '수입', Learning: '학습', Building: '만들기', Trading: '거래' },
   showWeeks: '주별 보기',
+  markDone: '완료로 표시', markActive: '진행 중으로 표시', freeNear: (n, m) => `무료 플랜: 진행 중 목표 ${m}개 중 ${n}개. Life Pro = 무제한.`,
 };
 
 const hi: UiCopy = {
@@ -181,6 +195,7 @@ const hi: UiCopy = {
   tracked: 'दर्ज',
   focus: { Saving: 'बचत', Earning: 'कमाई', Learning: 'सीखना', Building: 'बनाना', Trading: 'व्यापार' },
   showWeeks: 'हफ़्ते-दर-हफ़्ते',
+  markDone: 'पूरा चिह्नित करें', markActive: 'सक्रिय चिह्नित करें', freeNear: (n, m) => `मुफ़्त प्लान: ${m} में से ${n} सक्रिय लक्ष्य। Life Pro = असीमित।`,
 };
 
 const zh: UiCopy = {
@@ -196,6 +211,7 @@ const zh: UiCopy = {
   tracked: '已记录',
   focus: { Saving: '储蓄', Earning: '赚钱', Learning: '学习', Building: '创造', Trading: '交易' },
   showWeeks: '按周查看',
+  markDone: '标记为完成', markActive: '标记为进行中', freeNear: (n, m) => `免费版：${n}/${m} 个进行中的目标。Life Pro 不限数量。`,
 };
 
 const COPY: Record<Locale, UiCopy> = { en, ar, es, fr, pt, tr, ru, id, vi, ko, hi, zh };

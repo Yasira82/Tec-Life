@@ -22,6 +22,7 @@ import { parseSteps, toggleStep, withSteps } from '@/lib/life/steps';
 import { Future } from './Future';
 import { readFuture, type Future as FutureData } from '@/lib-client/life/future';
 import { futureCopy, type LifeArea } from '@/lib/life/future-copy';
+import { uiCopy } from '@/lib/life/ui-copy';
 
 // One goal row. If it has a π target, shows a progress bar + a compact "log progress"
 // control (the momentum loop). Ownership + clamping/auto-complete are server-side.
@@ -61,7 +62,8 @@ export function GoalItem({
     <div style={{ padding: '12px 0', borderTop: first ? 'none' : `1px solid ${C.border}` }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <button
-          title={goal.status === 'DONE' ? 'Mark active' : 'Mark done'}
+          title={goal.status === 'DONE' ? uiCopy(locale).markActive : uiCopy(locale).markDone}
+          aria-label={goal.status === 'DONE' ? uiCopy(locale).markActive : uiCopy(locale).markDone}
           onClick={onToggle}
           style={{ width: 20, height: 20, borderRadius: 6, cursor: 'pointer', flexShrink: 0,
                    border: `2px solid ${STATUS_COLOR[goal.status]}`,
@@ -201,7 +203,7 @@ export function Goals({ isPro, prefill, onPrefillUsed }: { isPro: boolean; prefi
       return;
     }
     setGate(null);
-    const amt = parseFloat(target);
+    const amt = area === '' || area === 'MONEY' ? parseFloat(target) : NaN;
     const description = steps.length ? withSteps('', steps.map((text) => ({ text, done: false }))) : undefined;
     setTitle('');
     setTarget('');
@@ -243,7 +245,9 @@ export function Goals({ isPro, prefill, onPrefillUsed }: { isPro: boolean; prefi
         />
         {/* A step from My journey is a habit, not a sum: no π field (owner, 2026-10-19 —
             "quit smoking, and set a goal in π?"). The goal is ticked when done. */}
-        {!(suggested && prefill?.from === 'journey') && <input
+        {/* π is for a money goal only (owner, 2026-10-31: «هو لازم بتحط باي؟» — no, and a health or
+            faith goal should not be asked for one). Shown with no area, or the money area. */}
+        {!(suggested && prefill?.from === 'journey') && (area === '' || area === 'MONEY') && <input
           style={{ ...inputStyle, background: C.surface, borderRadius: 12, padding: '11px 13px', flex: '0 0 120px' }}
           value={target}
           onChange={(e) => setTarget(e.target.value)}
@@ -280,7 +284,7 @@ export function Goals({ isPro, prefill, onPrefillUsed }: { isPro: boolean; prefi
       {gate  && <p style={{ color: C.gold,  fontSize: 12, margin: '10px 2px 0' }}>🔒 {gate}</p>}
       {!isPro && !gate && activeCount >= FREE_ACTIVE_GOAL_CAP - 1 && activeCount < FREE_ACTIVE_GOAL_CAP && (
         <p style={{ color: C.faint, fontSize: 11, margin: '10px 2px 0' }}>
-          Free plan: {activeCount}/{FREE_ACTIVE_GOAL_CAP} active goals. Life Pro = unlimited.
+          {uiCopy(locale).freeNear(activeCount, FREE_ACTIVE_GOAL_CAP)}
         </p>
       )}
 
