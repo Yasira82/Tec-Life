@@ -61,3 +61,16 @@ describe('Life presents itself as a personal life coach (owner, 2026-10-20: «ا
     expect(sessionCopy('en').introIsNot).toMatch(/not a doctor, a lawyer or a financial adviser/);
   });
 });
+
+describe('the opener asks ONE question (owner\'s phone, 2026-11-01)', () => {
+  // «ما الذي يشغلك اليوم، أو ما الذي تتمنى أن يتغيّر في حياتك؟» — Life's own first line asked two
+  // questions joined by «أو», the very thing the coach is told never to do.
+  it('one question mark, and no second question joined by "or" in any language', () => {
+    for (const { code } of LOCALES) {
+      const o = sessionCopy(code).opener;
+      expect((o.match(/[?؟？]/g) ?? []).length, code).toBe(1);
+      expect(o, code).not.toMatch(/، أو ما|, or what|, o qué|, ou qu|, ou o que|, ya da|, atau apa|, hay bạn|아니면|или что|, या |或者/);
+    }
+    expect(sessionCopy('ar').opener).toBe('أنا هنا لأسمعك. ما الذي يشغلك اليوم؟ ابدأ من أي مكان، وبكلماتك أنت.');
+  });
+});

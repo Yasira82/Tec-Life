@@ -15,7 +15,7 @@ export const fr: PersonCopy = {
   "agree": "J’accepte — commencer",
   "cancel": "Pas maintenant",
   "rolesNote": "Quand vous parlez d’autres personnes, décrivez-les par leur rôle — « mon responsable », « une amie » — plutôt que par leur nom.",
-  "opener": "Je suis là pour vous écouter. Qu’est-ce qui vous occupe l’esprit aujourd’hui, ou qu’aimeriez-vous voir changer dans votre vie ? Commencez où vous voulez, avec vos propres mots.",
+  "opener": "Je suis là pour vous écouter. Qu’est-ce qui vous occupe l’esprit aujourd’hui ? Commencez où vous voulez, avec vos propres mots.",
   "placeholder": "Écrivez ici…",
   "notMeant": "Ce n'est pas ce que je voulais dire",
   "notMeantHint": "Dites-le autrement : que vouliez-vous dire ?",
