@@ -77,7 +77,7 @@ const en: SessionCopy = {
   cancel: 'Not now',
 
   rolesNote: 'When you mention other people, describe them by their role — “my manager”, “a friend” — rather than by name.',
-  opener:    'I’m here to listen. What’s on your mind today, or what do you wish would change in your life? Start anywhere, in your own words.',
+  opener:    'I’m here to listen. What’s on your mind today? Start anywhere, in your own words.',
 
   placeholder: 'Write here…',
   notMeant: 'That\'s not what I meant', notMeantHint: 'Say it in other words — what did you mean?',
@@ -248,7 +248,7 @@ const ar: SessionCopy = {
   cancel: 'ليس الآن',
 
   rolesNote: 'عندما تذكر شخصًا، صِفه بدوره — «مديري»، «صديقي» — دون ذكر اسمه.',
-  opener:    'أنا هنا لأسمعك. ما الذي يشغلك اليوم، أو ما الذي تتمنى أن يتغيّر في حياتك؟ ابدأ من أي مكان، وبكلماتك أنت.',
+  opener:    'أنا هنا لأسمعك. ما الذي يشغلك اليوم؟ ابدأ من أي مكان، وبكلماتك أنت.',
 
   placeholder: 'اكتب هنا…',
   notMeant: 'مش ده قصدي', notMeantHint: 'قلها بكلمات أخرى — ماذا قصدت؟',

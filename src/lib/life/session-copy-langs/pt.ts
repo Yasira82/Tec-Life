@@ -15,7 +15,7 @@ export const pt: PersonCopy = {
   "agree": "Concordo — começar",
   "cancel": "Agora não",
   "rolesNote": "Ao mencionar outras pessoas, descreva-as pelo papel — “meu chefe”, “uma amiga” — e não pelo nome.",
-  "opener": "Estou aqui para te ouvir. O que está na sua cabeça hoje, ou o que você gostaria que mudasse na sua vida? Comece por onde quiser, com suas próprias palavras.",
+  "opener": "Estou aqui para te ouvir. O que está na sua cabeça hoje? Comece por onde quiser, com suas próprias palavras.",
   "placeholder": "Escreva aqui…",
   "notMeant": "Não foi isso que eu quis dizer",
   "notMeantHint": "Diga com outras palavras: o que você quis dizer?",
