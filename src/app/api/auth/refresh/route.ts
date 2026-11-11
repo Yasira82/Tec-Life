@@ -26,7 +26,10 @@ export async function POST(req: NextRequest) {
     const response = NextResponse.json(data, { status: 200 });
 
     if (newToken) {
-      const cookieDomain = cookieDomainFor(req.nextUrl.hostname, process.env.COOKIE_DOMAIN ?? process.env.NEXT_PUBLIC_SSO_DOMAIN ?? undefined);
+      const cookieDomain = cookieDomainFor(
+        req.nextUrl.hostname,
+        process.env.COOKIE_DOMAIN ?? process.env.NEXT_PUBLIC_SSO_DOMAIN ?? undefined,
+      );
       // A session is BOTH cookies, so a refresh renews both.
       //
       // This used to renew the token alone. `tec_user` kept the lifetime the
@@ -37,8 +40,7 @@ export async function POST(req: NextRequest) {
       // lapsed stays lapsed, and the page guard sends that visitor back through
       // SSO (P6).
       const sessionCookieOpts = {
-        httpOnly: false, secure: true, sameSite: 'none',
-        partitioned: true,
+        httpOnly: false, secure: true, sameSite: 'none', partitioned: true,
         path: '/', domain: cookieDomain, maxAge: 60 * 60 * 24,
       } as const;
       response.cookies.set('tec_access_token', newToken, sessionCookieOpts);
