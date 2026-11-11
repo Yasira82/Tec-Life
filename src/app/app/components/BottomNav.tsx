@@ -26,7 +26,7 @@ export function BottomNav({ active, onSelect }: { active: LifeTab; onSelect: (t:
   return (
     <nav aria-label={t.life.brand} style={{
       position: 'fixed', zIndex: 200,
-      left: 12, right: 12, bottom: 'calc(12px + env(safe-area-inset-bottom))',
+      left: 12, right: 12, bottom: 'calc(12px + max(env(safe-area-inset-bottom), var(--tec-safe-bottom-fallback, 0px)))',
       maxWidth: 560, margin: '0 auto',
       background: bgA(0.88), backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
       border: `1px solid ${C.border}`, borderRadius: 24,
