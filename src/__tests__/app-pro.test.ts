@@ -9,7 +9,7 @@ import { APP_SOURCE } from '@/lib/app-source';
 
 const req = (url: string, init: RequestInit = {}, token = true) => {
   const r = new NextRequest(url, init as never);
-  if (token) { r.cookies.set('tec_access_token', 'tok'); r.cookies.set('tec_user', encodeURIComponent(JSON.stringify({ id: 'u1' }))); }
+  if (token) r.cookies.set('tec_access_token', 'tok');
   return r;
 };
 
@@ -21,11 +21,11 @@ beforeEach(() => {
 afterEach(() => { vi.unstubAllGlobals(); });
 
 describe('this app\'s Pro', () => {
-  it('the status read asks commerce for THIS app\'s Pro', async () => {
+  it('the Pro resolver asks commerce for THIS app\'s Pro', async () => {
     const fetchMock = vi.fn(async () => new Response(JSON.stringify({ success: true, data: { subscription: { plan: 'FREE' } } }), { status: 200 }));
     vi.stubGlobal('fetch', fetchMock);
-    const { GET } = await import('@/app/api/bff/subscription/route');
-    await GET(req(`https://${APP_SOURCE}.tecosystem.app/api/bff/subscription`));
+    const { resolveProState } = await import('@/lib/subscription/pro-status');
+    await resolveProState('tok');
     expect(String((fetchMock.mock.calls[0] as unknown[])[0])).toContain(`/api/commerce/subscriptions/status?app=${APP_SOURCE}`);
   });
 
