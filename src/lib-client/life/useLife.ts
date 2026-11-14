@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { LifeArea } from '@/lib/life/future-copy';
+import { readProState } from '@/lib/subscription/read-pro-state';
 
 // TEC Life (C-106) client hooks. Self-declared personal context — the caller's own
 // goals + preferences only (server scopes by session; the client never sends identity).
@@ -408,32 +409,18 @@ export function useSubscription() {
   useEffect(() => {
     let alive = true;
     fetch('/api/bff/subscription', { credentials: 'include', cache: 'no-store' })
-      .then((r) => r.json().catch(() => ({})))
-      .then((j: Record<string, unknown>) => {
-        const data = (j?.data ?? j) as Record<string, unknown>;
-        const sub  = (data?.subscription ?? data) as Record<string, unknown>;
-        const raw  = typeof sub?.plan === 'string' ? sub.plan : null;
-
-        // A paid plan is an entitlement ONLY while the period is live. There is no
-        // auto-renewal (Pi U2A is one-time), so surface daysRemaining/isExpired to
-        // prompt a re-subscribe before the month lapses. Gate on isActive + expiry
-        // (with a date fallback) so the badge/benefit end when the month lapses.
-        const end       = typeof sub?.current_period_end === 'string' ? new Date(sub.current_period_end) : null;
-        const expired   = sub?.isExpired === true || (end !== null && end.getTime() < Date.now());
-        const inactive  = sub?.isActive === false;
-        const effective = raw && (expired || inactive) ? 'FREE' : raw;
-
-        // daysRemaining from commerce when present; else derive from the period end.
-        const days = typeof sub?.daysRemaining === 'number'
-          ? sub.daysRemaining
-          : end
-            ? Math.max(0, Math.ceil((end.getTime() - Date.now()) / 86_400_000))
-            : null;
-
+      .then((r) => (r.ok ? r.json().catch(() => null) : null))
+      .then((j: unknown) => {
+        // One reading, fail-closed — the template's, and the server's (TEC-AUDIT-0044).
+        // A paid plan counts only while active and inside its period; there is no
+        // auto-renewal (Pi U2A is one-time), so daysRemaining/isExpired drive the
+        // re-subscribe nudge. An unreadable answer is no plan at all (null) — and the
+        // screen reads null as FREE; it never borrows a plan from anywhere else.
+        const st = readProState(j);
         if (alive) {
-          setPlan(effective);
-          setDaysRemaining(days);
-          setIsExpired(Boolean(expired));
+          setPlan(j === null ? null : st.pro ? st.plan : 'FREE');
+          setDaysRemaining(st.daysRemaining);
+          setIsExpired(st.isExpired);
         }
       })
       .catch(() => { if (alive) { setPlan(null); setDaysRemaining(null); setIsExpired(false); } })   // fail closed → FREE

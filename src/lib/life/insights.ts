@@ -3,6 +3,7 @@
 // P6 — the backend resolves identity from the token). NEW-A: the gateway URL is
 // server-only (API_GATEWAY_URL) — never shipped to the client.
 import { APP_SOURCE } from '@/lib/app-source';
+import { gatewayFetch } from '@/lib/gateway-fetch';
 
 const GW = process.env.API_GATEWAY_URL ?? '';
 
@@ -26,7 +27,7 @@ export interface GoalInsights {
 export async function resolveProStatus(token: string | null): Promise<boolean> {
   if (!GW || !token) return false;
   try {
-    const res = await fetch(`${GW}/api/commerce/subscriptions/status?app=${encodeURIComponent(APP_SOURCE)}`, { headers: gwHeaders(token), cache: 'no-store' });
+    const res = await gatewayFetch(`${GW}/api/commerce/subscriptions/status?app=${encodeURIComponent(APP_SOURCE)}`, { headers: gwHeaders(token), cache: 'no-store' });
     if (!res.ok) return false;
     const d = (await res.json().catch(() => ({}))) as Record<string, unknown>;
     const root = (d.data ?? d) as Record<string, unknown>;
@@ -46,7 +47,7 @@ export async function resolveProStatus(token: string | null): Promise<boolean> {
 export async function resolveGoalInsights(token: string | null): Promise<GoalInsights | null> {
   if (!GW || !token) return null;
   try {
-    const res = await fetch(`${GW}/api/identity/life/goals/insights`, { headers: gwHeaders(token), cache: 'no-store' });
+    const res = await gatewayFetch(`${GW}/api/identity/life/goals/insights`, { headers: gwHeaders(token), cache: 'no-store' });
     if (!res.ok) return null;
     const insights = (await res.json().catch(() => ({})))?.data?.insights;
     return insights ?? null;

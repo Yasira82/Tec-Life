@@ -1,35 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { resolveProState } from '@/lib/subscription/pro-status';
 import { isTestnetHost } from '@/lib/pi-network';
-import { forwardLife } from '@/lib/bff/lifeGateway';
-import { APP_SOURCE } from '@/lib/app-source';
 
-// GET /api/bff/subscription — the caller's subscription (plan + status), read from
-// commerce-service (the Subscription owner — C-47 Canonical Entities). Identity is the
-// session, resolved server-side (P6). Life reads this to reflect Pro entitlement; it
-// never owns or invents the plan. forwardLife just proxies to the gateway with the
-// user's auth (the "life" in its name is historical — it forwards any gateway path).
-// A Testnet host activates NOTHING: commerce refuses to grant PRO from a payment
-// marked `testnet` (Test-Pi never buys anything real). So this host must not
-// DISPLAY an entitlement either — otherwise the owner's real Mainnet subscription
-// shows through on the test network, and the screen says "You're on Pro" about a
-// plan nothing here can grant, renew or expire. Same envelope as a real answer, so
-// every reader parses one shape.
-const FREE_ON_TESTNET = {
-  success: true,
-  data: {
-    subscription: {
-      plan: 'FREE', status: 'ACTIVE', isActive: false, isExpired: false,
-      current_period_end: null, daysRemaining: null, testnet: true,
-    },
-  },
-};
-
+// GET /api/bff/subscription — the caller's OWN Pro entitlement + renewal signal.
+// Subscription is COMMERCE-OWNED (C-47); this only reflects it (P5). Identity is
+// the session token, resolved by the gateway — never a client field (P6). Fails
+// closed to FREE. Use `pro` to gate a feature; use `daysRemaining` / `isExpired`
+// to show a renewal reminder (Pi Pro is one-time, no auto-renewal).
 export async function GET(req: NextRequest) {
-  // From THIS ROUTE'S OWN Host header, server-side — never the client, and never
-  // a build constant: one build serves both hosts.
+  // A Testnet host activates NOTHING: commerce refuses to grant PRO from a
+  // payment marked `testnet`. So it must not DISPLAY an entitlement either —
+  // otherwise a real Mainnet subscription shows through on the test network.
+  // Read from THIS ROUTE'S OWN Host header, server-side; one build serves both
+  // hosts, so a build constant cannot answer this.
   if (isTestnetHost(req.headers.get('host'))) {
-    return NextResponse.json(FREE_ON_TESTNET, { status: 200 });
+    return NextResponse.json(
+      { pro: false, plan: 'FREE', isExpired: false, daysRemaining: null, testnet: true },
+      { headers: { 'Cache-Control': 'private, max-age=30' } },
+    );
   }
-  // THIS app's Pro (owner decision, 2026-10-02) — not the Hub's plan, not another app's.
-  return forwardLife(req, 'GET', `/api/commerce/subscriptions/status?app=${encodeURIComponent(APP_SOURCE)}`);
+
+  const token = req.cookies.get('tec_access_token')?.value ?? '';
+  const state = await resolveProState(token);
+  return NextResponse.json(state, { headers: { 'Cache-Control': 'private, max-age=30' } });
 }
