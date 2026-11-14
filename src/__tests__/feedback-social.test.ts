@@ -77,7 +77,9 @@ describe('the BFF sets the app label, not the client', () => {
   const route = src('app/api/bff/feedback/route.ts');
 
   it('spreads the parsed body FIRST so app cannot be overridden', () => {
-    expect(route).toMatch(/\{ \.\.\.parsed\.data, app: APP \}/);
+    // The route is the template's shared one (TEC-AUDIT-0005): the label is APP_SOURCE.
+    expect(route).toMatch(/\{ \.\.\.parsed\.data, app: APP_SOURCE \}/);
+    expect(src('lib/app-source.ts')).toMatch(/APP_SOURCE = 'life'/);
   });
 
   it('does not accept an app field from the request', () => {

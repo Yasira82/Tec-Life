@@ -3,6 +3,7 @@ import { RefCapture } from '@/components/referral/RefCapture';
 import { RefApply } from '@/components/referral/RefApply';
 import { HUB_HOSTS } from '@/lib/pi-network';
 import type { Metadata } from 'next';
+import { APP_META } from '@/lib/app-meta';
 import '@/styles/tec-design-tokens.css';
 // Arabic UI face, served from this app (the CSP allows fonts from 'self' only). Each file
 // carries an Arabic unicode-range, so a page with no Arabic text downloads none of them.
@@ -18,7 +19,10 @@ import { SAFE_BOTTOM_BOOT_SCRIPT } from '@/lib/safe-bottom';
 
 export const metadata: Metadata = {
   title:       'TEC Life',
-  description: 'TEC Life — your personal life coach: build yourself, one step at a time',
+  description: APP_META.description,
+  applicationName: APP_META.name,
+  openGraph:   { title: APP_META.name, description: APP_META.description, siteName: APP_META.name, type: 'website' },
+  twitter:     { card: 'summary', title: APP_META.name, description: APP_META.description },
 };
 
 export default function RootLayout({

@@ -313,7 +313,18 @@ describe('no component paints a raw colour', () => {
    */
   const EXEMPT_FILES = [
     'app/api/auth/sso-callback/route.ts',
+    // The manifest's theme/background colour: a manifest cannot read a CSS
+    // variable, so it is a literal by necessity — pinned to the token below.
+    'lib/app-meta.ts',
   ];
+
+  it("app-meta's colour IS the dark page ground, not a second copy of it", () => {
+    const meta   = src('lib/app-meta.ts').match(/themeColor:\s*'(#[0-9a-fA-F]{6})'/)?.[1];
+    const tokens = src('styles/tec-design-tokens.css');
+    const darkBg = tokens.match(/--tec-bg:\s*(#[0-9a-fA-F]{6})/)?.[1];
+    expect(meta).toBeDefined();
+    expect(meta?.toLowerCase()).toBe(darkBg?.toLowerCase());
+  });
 
   const files = paintedFiles()
     .filter((f) => !f.endsWith('lib-client/palette.ts'))
