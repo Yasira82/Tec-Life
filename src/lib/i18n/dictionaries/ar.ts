@@ -3,7 +3,7 @@ export const ar = {
     today:     'اليوم',
     yesterday: 'أمس',
     appName:  'TEC',
-    tagline:  'تحالف النخبة',
+    tagline:  'TEC Ecosystem',
     login:    'تسجيل الدخول بـ Pi',
     logout:   'خروج',
     loading:  'جاري التحميل...',

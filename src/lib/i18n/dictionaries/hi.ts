@@ -3,7 +3,7 @@ export const hi = {
     today:     'आज',
     yesterday: 'कल',
     appName:  'TEC',
-    tagline:  'द एलीट कंसोर्टियम',
+    tagline:  'TEC Ecosystem',
     login:    'Pi से साइन इन करें',
     logout:   'लॉग आउट',
     loading:  'लोड हो रहा है...',

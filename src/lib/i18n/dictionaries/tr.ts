@@ -3,7 +3,7 @@ export const tr = {
     today:     'Bugün',
     yesterday: 'Dün',
     appName:  'TEC',
-    tagline:  'Seçkin Konsorsiyum',
+    tagline:  'TEC Ecosystem',
     login:    'Pi ile giriş yap',
     logout:   'Çıkış',
     loading:  'Yükleniyor...',

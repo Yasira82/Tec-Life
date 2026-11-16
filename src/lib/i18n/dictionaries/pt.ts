@@ -3,7 +3,7 @@ export const pt = {
     today:     'Hoje',
     yesterday: 'Ontem',
     appName:  'TEC',
-    tagline:  'O Consórcio de Elite',
+    tagline:  'TEC Ecosystem',
     login:    'Entrar com Pi',
     logout:   'Sair',
     loading:  'Carregando...',

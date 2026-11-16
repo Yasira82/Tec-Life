@@ -3,7 +3,7 @@ export const ru = {
     today:     'Сегодня',
     yesterday: 'Вчера',
     appName:  'TEC',
-    tagline:  'Элитный консорциум',
+    tagline:  'TEC Ecosystem',
     login:    'Войти через Pi',
     logout:   'Выйти',
     loading:  'Загрузка...',

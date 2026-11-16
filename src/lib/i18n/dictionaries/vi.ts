@@ -3,7 +3,7 @@ export const vi = {
     today:     'Hôm nay',
     yesterday: 'Hôm qua',
     appName:  'TEC',
-    tagline:  'Liên minh Tinh hoa',
+    tagline:  'TEC Ecosystem',
     login:    'Đăng nhập bằng Pi',
     logout:   'Đăng xuất',
     loading:  'Đang tải...',

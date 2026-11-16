@@ -3,7 +3,7 @@ export const id = {
     today:     'Hari ini',
     yesterday: 'Kemarin',
     appName:  'TEC',
-    tagline:  'Konsorsium Elite',
+    tagline:  'TEC Ecosystem',
     login:    'Masuk dengan Pi',
     logout:   'Keluar',
     loading:  'Memuat...',

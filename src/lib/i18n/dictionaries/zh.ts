@@ -3,7 +3,7 @@ export const zh = {
     today:     '今天',
     yesterday: '昨天',
     appName:  'TEC',
-    tagline:  '精英联盟',
+    tagline:  'TEC Ecosystem',
     login:    '用 Pi 登录',
     logout:   '退出',
     loading:  '加载中...',
