@@ -3,7 +3,7 @@ export const es = {
     today:     'Hoy',
     yesterday: 'Ayer',
     appName:  'TEC',
-    tagline:  'El Consorcio de Élite',
+    tagline:  'TEC Ecosystem',
     login:    'Iniciar sesión con Pi',
     logout:   'Salir',
     loading:  'Cargando...',

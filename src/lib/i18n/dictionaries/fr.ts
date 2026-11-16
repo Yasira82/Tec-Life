@@ -3,7 +3,7 @@ export const fr = {
     today:     'Aujourd’hui',
     yesterday: 'Hier',
     appName:  'TEC',
-    tagline:  'Le Consortium d’Élite',
+    tagline:  'TEC Ecosystem',
     login:    'Se connecter avec Pi',
     logout:   'Déconnexion',
     loading:  'Chargement...',
