@@ -16,7 +16,9 @@ const HUB_URL     = process.env.NEXT_PUBLIC_HUB_URL   ?? 'https://hub.tecosystem
 // against its own ALLOWED_TARGETS, so nothing is weakened.
 const APP_URL     = process.env.NEXT_PUBLIC_APP_URL   ?? 'https://life.tecosystem.app';
 const APP_NAME    = process.env.NEXT_PUBLIC_APP_NAME  ?? 'TEC Life';
-const APP_TAGLINE = 'What matters to you';
+// What it is, in the Hub registry's words (tec-app domains/_registry.ts) — "What matters to
+// you" did not say there is a coach here.
+const APP_TAGLINE = 'Your personal life coach';
 
 export default function HomePage() {
   const { isAuthenticated, isLoading } = usePiAuth();
