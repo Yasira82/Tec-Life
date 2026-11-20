@@ -13,10 +13,10 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    // No "baseUrl": TypeScript 7 removed it. Every mapping below is already
-    // written relative to this file ("./src/*"), which is how `paths` resolves
-    // without a baseUrl since TS 4.1 — so this is the same behaviour on the
-    // TypeScript we ship today AND on 7.
+    // No "baseUrl": TypeScript 7 removed it (TS5102). Every mapping below is
+    // already written relative to THIS file ("./src/*"), which is how `paths`
+    // resolves without a baseUrl since TS 4.1 — identical behaviour on the
+    // TypeScript we ship today and on 7.
     "paths": {
       "@/*": ["./src/*"]
     },
@@ -24,5 +24,5 @@
     "allowJs": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "fleet"]
 }
