@@ -5,7 +5,7 @@ import { CONTACT_EMAIL } from '@/lib/contact';
 
 const APP     = 'TEC Life';
 const DOMAIN  = 'life.tecosystem.app';
-const UPDATED = '19 October 2026';
+const UPDATED = '21 November 2026';
 
 export const metadata: Metadata = {
   title:       `Privacy Policy — ${APP}`,
@@ -49,13 +49,17 @@ export default function PrivacyPage() {
       <p>Payments are processed on the Pi Network blockchain and are immutable and may be publicly visible. {APP} is an independent developer application built on Pi Network and is not affiliated with, endorsed by, or operated by Pi Network or Minepi, Inc.</p>
 
       <h2 style={h2}>6. Third-Party Services</h2>
-      <p>We rely on Pi Network (identity &amp; payments) and our infrastructure providers (hosting and backend) to deliver {APP}. They process data only as needed to operate the service.</p>
+      <p>We rely on Pi Network (identity &amp; payments), our infrastructure providers (hosting and backend) and the AI providers in section 7 to deliver {APP}. They process data only as needed to operate the service.</p>
 
-      <h2 style={h2}>7. Data Retention</h2>
+      <h2 style={h2}>7. Life&apos;s AI Coach</h2>
+      <p>When you talk with {APP}&apos;s coach, what you write — together with what you chose to let the coach see (the summaries you kept, your goals, your step this week) — is sent to the AI provider that writes the reply: Anthropic (Claude), or OpenAI (GPT) when we use it. Only one provider answers a reply. Before anything is sent, {APP} removes the email addresses, links, phone numbers, wallet addresses and long numbers it can recognise; names cannot be recognised this way, so describe people by their role (&quot;my manager&quot;) rather than by name.</p>
+      <p>The conversation itself is not saved by TEC unless you choose to keep it. Under their current API terms, these providers do not use what is sent through their APIs to train their models. They may keep it for a limited time to monitor for safety and abuse, under their own policies — OpenAI states up to 30 days — unless a zero-data-retention agreement with that provider applies.</p>
+
+      <h2 style={h2}>8. Data Retention</h2>
       <p>We retain transaction and account records as long as needed to provide the service and to meet legal, accounting, and security obligations.</p>
       <p>When you delete something in {APP} — a goal, a summary, a kept conversation, a category you switch off, or all of your Life data — it is removed from our live database at once. Our encrypted nightly backups keep a copy for up to 8 weeks, then expire. Every deletion is also recorded, by its id only and never its content, in a separate ledger; if a backup is ever restored, your deletions are applied again before {APP} serves anyone, so a restore cannot bring them back.</p>
 
-      <h2 style={h2}>8. Your Rights</h2>
+      <h2 style={h2}>9. Your Rights</h2>
       <ul>
         <li>Access — request a copy of your personal data</li>
         <li>Rectification — request correction of inaccurate data</li>
@@ -64,13 +68,13 @@ export default function PrivacyPage() {
       </ul>
       <p>To exercise these rights, contact <a href={`mailto:${CONTACT_EMAIL}`} style={link}>{CONTACT_EMAIL}</a>.</p>
 
-      <h2 style={h2}>9. Children</h2>
+      <h2 style={h2}>10. Children</h2>
       <p>{APP} is not directed to children under the age required to hold a Pi Network account, and we do not knowingly collect their data.</p>
 
-      <h2 style={h2}>10. Changes</h2>
+      <h2 style={h2}>11. Changes</h2>
       <p>We may update this Privacy Policy from time to time. Material changes are reflected by the &quot;Last updated&quot; date above.</p>
 
-      <h2 style={h2}>11. Contact</h2>
+      <h2 style={h2}>12. Contact</h2>
       <p>For privacy inquiries, contact TEC at <a href={`mailto:${CONTACT_EMAIL}`} style={link}>{CONTACT_EMAIL}</a>.</p>
 
       <p style={{ marginTop: 40 }}>
