@@ -10,7 +10,7 @@ export const pt: PersonCopy = {
   "introTitle": "Antes de começar",
   "introIs": "Você vai conversar com o Life, seu coach pessoal de vida, sobre algo que quer mudar ou construir — um hábito, uma decisão, seu trabalho, as pessoas ao seu redor, você mesmo. Ele pergunta, escuta e ajuda você a escolher o seu próximo passo.",
   "introIsNot": "Não é médico, advogado nem consultor financeiro; não é um diagnóstico nem um julgamento sobre você, e não dá conselhos que não possa fundamentar.",
-  "introAi": "Para responder, o que você escreve é enviado a um modelo de IA. Nós não guardamos isso. O fornecedor (Anthropic ou OpenAI) não treina seus modelos com isso, mas pode guardar por um tempo limitado para verificações de segurança. Números, e-mails e links são removidos antes do envio — mas isso não torna suas palavras totalmente anônimas. Se você pedir ao Life para pesquisar algo, só um tema geral — nunca as suas palavras — é enviado a um serviço de pesquisa.",
+  "introAi": "Para responder, o que você escreve é enviado a um modelo de IA. Nós não guardamos isso. O fornecedor não treina seus modelos com isso, mas pode guardar por um tempo limitado para verificações de segurança. Números, e-mails e links são removidos antes do envio — mas isso não torna suas palavras totalmente anônimas. Se você pedir ao Life para pesquisar algo, só um tema geral — nunca as suas palavras — é enviado a um serviço de pesquisa.",
   "introNothingSaved": "A conversa em si não é salva — quando você fecha esta página, ela some. No fim, você pode guardar um breve resumo que lê e confirma, só se quiser.",
   "agree": "Concordo — começar",
   "cancel": "Agora não",
