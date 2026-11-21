@@ -32,3 +32,21 @@ describe("the privacy page — Life's AI coach", () => {
     expect(t).not.toMatch(/never (kept|stored) by (the )?provider/i);
   });
 });
+
+// The screen before the first conversation (21 Nov 2026, the owner's phone): it said the provider «does not
+// keep it for us» — true under Groq's Zero Data Retention, not under Claude, and not under OpenAI.
+import { sessionCopy } from '@/lib/life/session-copy';
+import { LOCALES } from '@/lib/i18n';
+
+describe('the intro screen says the same thing, in every language', () => {
+  it('names both providers, says they do not train on it and may keep it — never that they keep nothing', () => {
+    for (const { code } of LOCALES) {
+      const t = sessionCopy(code).introAi;
+      expect(t, code).toMatch(/Anthropic/);
+      expect(t, code).toMatch(/OpenAI/);
+    }
+    expect(sessionCopy('en').introAi).toMatch(/does not train on it, but may keep it for a limited time/);
+    expect(sessionCopy('en').introAi).not.toMatch(/does not keep it for us/);
+    expect(sessionCopy('ar').introAi).not.toMatch(/ولا يحتفظ به مزوّد النموذج/);
+  });
+});
