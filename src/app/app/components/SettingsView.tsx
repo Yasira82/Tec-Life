@@ -4,6 +4,7 @@
 // with a Profile card, an EN/AR language toggle that drives i18n, preferences, an
 // About block, invite, and logout. Fully translated (RTL-aware via the provider).
 import { SessionReading } from './SessionReading';
+import { OutcomesReading } from './OutcomesReading';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { Icon, type IconName } from '@yasser172/tec-ui';
 import { useEffect, useState } from 'react';
@@ -352,6 +353,7 @@ export function SettingsView({ isPro }: { isPro: boolean }) {
 
       {/* Stage 1 reading — renders only for an admin (the service decides). */}
       <SessionReading />
+      <OutcomesReading />
 
       {/* Feedback — the only channel a user has. Above About on purpose: the
           version number is reference material, this is something to act on. */}
