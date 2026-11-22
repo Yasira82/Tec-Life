@@ -33,7 +33,8 @@ describe("the privacy page — Life's AI coach", () => {
   });
 
   // The orchestra (tec-core-backend #541, owner's review 22 Nov 2026): a reply that fails at one provider is asked of
-  // the other, so the words may reach both; a conversation about danger or health goes only to Anthropic; and there
+  // the other, so the words may reach both; a conversation in which Life recognises danger (orchestra.ts `dangerIn`, from words — it can miss) goes only to
+  // Anthropic; and there
   // is no zero-data-retention agreement today — "unless one applies" must not read as "one applies".
   it('says the words may reach the second provider when the first fails', () => {
     expect(text()).toMatch(/if that provider cannot answer, the same message is sent to the other/i);
