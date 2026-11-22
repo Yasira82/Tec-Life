@@ -31,6 +31,30 @@ describe("the privacy page — Life's AI coach", () => {
     expect(t).toMatch(/up to 30 days/);
     expect(t).not.toMatch(/never (kept|stored) by (the )?provider/i);
   });
+
+  // The orchestra (tec-core-backend #541, owner's review 22 Nov 2026): a reply that fails at one provider is asked of
+  // the other, so the words may reach both; a conversation in which Life recognises danger (orchestra.ts `dangerIn`, from words — it can miss) goes only to
+  // Anthropic; and there
+  // is no zero-data-retention agreement today — "unless one applies" must not read as "one applies".
+  it('says the words may reach the second provider when the first fails', () => {
+    expect(text()).toMatch(/if that provider cannot answer, the same message is sent to the other/i);
+  });
+  // Owner's review of #119: claim only what the code recognises (orchestra.ts dangerIn — words, not meaning), and say
+  // that the recognition can miss; never "any conversation about health".
+  it('names what goes only to Anthropic as what Life recognises, and says the recognition can miss', () => {
+    const t = text();
+    expect(t).toMatch(/When Life recognises .* it is sent only to Anthropic/i);
+    expect(t).toMatch(/chest pain/);
+    expect(t).toMatch(/from the words used, and it can miss/i);
+    expect(t).not.toMatch(/touches on danger, self-harm, abuse or health/i);
+  });
+  // ZDR depends on the provider's approval, its scope and its exceptions — never "would remove that".
+  it('says ZDR depends on approval, scope and exceptions, and that TEC has none today', () => {
+    const t = text();
+    expect(t).toMatch(/TEC has no zero-data-retention agreement with either provider today/);
+    expect(t).toMatch(/only if the provider approves it, and only within its scope and exceptions/i);
+    expect(t).not.toMatch(/would remove that/i);
+  });
 });
 
 // The screen before the first conversation (21 Nov 2026, the owner's phone): it said the provider «does not
