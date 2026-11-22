@@ -31,6 +31,19 @@ describe("the privacy page — Life's AI coach", () => {
     expect(t).toMatch(/up to 30 days/);
     expect(t).not.toMatch(/never (kept|stored) by (the )?provider/i);
   });
+
+  // The orchestra (tec-core-backend #541, owner's review 22 Nov 2026): a reply that fails at one provider is asked of
+  // the other, so the words may reach both; a conversation about danger or health goes only to Anthropic; and there
+  // is no zero-data-retention agreement today — "unless one applies" must not read as "one applies".
+  it('says the words may reach the second provider when the first fails', () => {
+    expect(text()).toMatch(/if that provider cannot answer, the same message is sent to the other/i);
+  });
+  it('says conversations about danger, self-harm or health go only to Anthropic', () => {
+    expect(text()).toMatch(/danger, self-harm, abuse or health .* only to Anthropic/i);
+  });
+  it('says plainly that TEC has no zero-data-retention agreement today', () => {
+    expect(text()).toMatch(/TEC has no zero-data-retention agreement with either provider today/);
+  });
 });
 
 // The screen before the first conversation (21 Nov 2026, the owner's phone): it said the provider «does not

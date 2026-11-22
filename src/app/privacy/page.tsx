@@ -5,7 +5,7 @@ import { CONTACT_EMAIL } from '@/lib/contact';
 
 const APP     = 'TEC Life';
 const DOMAIN  = 'life.tecosystem.app';
-const UPDATED = '21 November 2026';
+const UPDATED = '22 November 2026';
 
 export const metadata: Metadata = {
   title:       `Privacy Policy — ${APP}`,
@@ -52,8 +52,8 @@ export default function PrivacyPage() {
       <p>We rely on Pi Network (identity &amp; payments), our infrastructure providers (hosting and backend) and the AI providers in section 7 to deliver {APP}. They process data only as needed to operate the service.</p>
 
       <h2 style={h2}>7. Life&apos;s AI Coach</h2>
-      <p>When you talk with {APP}&apos;s coach, what you write — together with what you chose to let the coach see (the summaries you kept, your goals, your step this week) — is sent to the AI provider that writes the reply: Anthropic (Claude), or OpenAI (GPT) when we use it. Only one provider answers a reply. Before anything is sent, {APP} removes the email addresses, links, phone numbers, wallet addresses and long numbers it can recognise; names cannot be recognised this way, so describe people by their role (&quot;my manager&quot;) rather than by name.</p>
-      <p>The conversation itself is not saved by TEC unless you choose to keep it. Under their current API terms, these providers do not use what is sent through their APIs to train their models. They may keep it for a limited time to monitor for safety and abuse, under their own policies — OpenAI states up to 30 days — unless a zero-data-retention agreement with that provider applies.</p>
+      <p>When you talk with {APP}&apos;s coach, what you write — together with what you chose to let the coach see (the summaries you kept, your goals, your step this week) — is sent to the AI provider that writes the reply: Anthropic (Claude), or OpenAI (GPT) when we use it. One provider answers each reply; if that provider cannot answer, the same message is sent to the other. A conversation that touches on danger, self-harm, abuse or health is sent only to Anthropic. Before anything is sent, {APP} removes the email addresses, links, phone numbers, wallet addresses and long numbers it can recognise; names cannot be recognised this way, so describe people by their role (&quot;my manager&quot;) rather than by name.</p>
+      <p>The conversation itself is not saved by TEC unless you choose to keep it. Under their current API terms, these providers do not use what is sent through their APIs to train their models. They may keep it for a limited time to monitor for safety and abuse, under their own policies — OpenAI states up to 30 days. A zero-data-retention agreement would remove that; TEC has no zero-data-retention agreement with either provider today, and this page will say so when that changes.</p>
 
       <h2 style={h2}>8. Data Retention</h2>
       <p>We retain transaction and account records as long as needed to provide the service and to meet legal, accounting, and security obligations.</p>
