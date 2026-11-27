@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { gatewayFetch } from '@/lib/gateway-fetch';
 
 // Server-only proxy to tec-identity-service (Life store) through the API Gateway.
 //   gateway: ${GW}/api/identity/life/* → identity-service /identity/life/*
@@ -25,7 +26,7 @@ export async function readGateway(
   const token = req.cookies.get('tec_access_token')?.value ?? '';
   if (!token) return { ok: false, status: 401, data: null };
   try {
-    const res  = await fetch(`${GW}${gatewayPath}`, {
+    const res  = await gatewayFetch(`${GW}${gatewayPath}`, {
       headers: { Authorization: `Bearer ${token}`, 'x-request-id': crypto.randomUUID() },
       cache:   'no-store',
     });
@@ -70,7 +71,7 @@ export async function forwardLife(
   if (body !== undefined) { headers['Content-Type'] = 'application/json'; init.body = JSON.stringify(body); }
 
   try {
-    const res  = await fetch(`${GW}${gatewayPath}`, init);
+    const res  = await gatewayFetch(`${GW}${gatewayPath}`, init);
     const data = await res.json().catch(() => ({}));
     if (!res.ok) console.error('[bff/life] gateway error:', res.status, method, gatewayPath);
     return NextResponse.json(data, { status: res.status });

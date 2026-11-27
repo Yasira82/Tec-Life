@@ -30,7 +30,10 @@ export default function LifeHome() {
   const { plan, daysRemaining } = useSubscription(); // source of truth = commerce subscription (auth /me does not carry it)
   const piName = me.username ?? user?.piUsername ?? null;
   const name  = piName ? `@${piName}` : '';
-  const isPro = isProPlan(plan ?? (user as { subscriptionPlan?: string } | null)?.subscriptionPlan);
+  // This app's Pro only (owner, 2026-10-02): commerce's answer for Life, read fail-closed.
+  // It used to fall back to the Hub plan in the tec_user cookie while loading or when the
+  // read failed — another app's entitlement, and a client-side claim (P6, TEC-AUDIT-0044).
+  const isPro = isProPlan(plan);
   const [tab, setTab] = useState<LifeTab>('home');
   const [prefill, setPrefill] = useState<GoalPrefill | null>(null);
   const [prefillN, setPrefillN] = useState(0); // a new tap opens a fresh Add form, even for the same step
