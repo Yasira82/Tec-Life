@@ -129,7 +129,7 @@ export function ProblemSession({ onClose, resume, onMenu }: { onClose: () => voi
     if (!counted.current.s2) { counted.current.s2 = true; countSession('s2_started'); }
     const next: Turn[] = [...turns, { role: 'user', content: text }];
     setTurns(next); setDraft(''); setBusy(true); setError(null); setProposal(null); setCorrecting(false);
-    const out = await talk(next);
+    const out = await talk(next, convId.current);
     setBusy(false);
     if (out.ok) {
       const all: Turn[] = [...next, { role: 'assistant', content: out.reply }];

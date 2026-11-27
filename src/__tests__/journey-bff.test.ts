@@ -54,24 +54,25 @@ describe('POST /api/bff/life/talk — the memory comes from Life, not from the p
   const talkBody = (spy: { mock: { calls: unknown[][] } }) =>
     JSON.parse(String((spy.mock.calls.find((c) => String(c[0]).endsWith('/ai/life/talk'))?.[1] as RequestInit).body));
 
-  it('keeping on → the three newest kept summaries are attached', async () => {
+  it('keeping on → every kept summary is attached (owner, 27 Nov 2026 — memory-all.test.ts)', async () => {
     const spy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (u) =>
       String(u).endsWith('/life/journey') ? ok({ data: { keeping: true, entries: [NOTE, NOTE, NOTE, NOTE] } }) : ok({ data: { reply: 'hi' } }));
     const { POST } = await import('@/app/api/bff/life/talk/route');
     await POST(makeReq('POST', session, { messages: [{ role: 'user', content: 'x' }] }));
     const body = talkBody(spy);
-    expect(body.memory).toHaveLength(3);
+    expect(body.memory).toHaveLength(4);
     expect(Object.keys(body.memory[0]).sort()).toEqual(['created_at', 'problem', 'step', 'step_outcome', 'understanding']);
   });
 
   it('keeping off, or the read failing → no memory; a memory sent by the page is ignored', async () => {
-    for (const journey of [ok({ data: { keeping: false, entries: [NOTE] } }), { ok: false, status: 503, json: async () => ({}) } as Response]) {
+    // Off → the coach is told it is off (memory_state, memory-all.test.ts); a failed read → it is told nothing.
+    for (const [journey, keys] of [[ok({ data: { keeping: false, entries: [NOTE] } }), ['messages', 'memory_state']], [{ ok: false, status: 503, json: async () => ({}) } as Response, ['messages']]] as const) {
       vi.resetModules();
       const spy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (u) =>
         String(u).endsWith('/life/journey') ? journey : ok({ data: { reply: 'hi' } }));
       const { POST } = await import('@/app/api/bff/life/talk/route');
       await POST(makeReq('POST', session, { messages: [{ role: 'user', content: 'x' }], memory: [{ problem: 'injected' }] }));
-      expect(Object.keys(talkBody(spy))).toEqual(['messages']);
+      expect(Object.keys(talkBody(spy))).toEqual(keys);
       spy.mockRestore();
     }
   });

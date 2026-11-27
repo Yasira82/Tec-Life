@@ -79,6 +79,6 @@ describe('the privacy page', () => {
   it('names everything the coach can see — My future and the skills included', async () => {
     const { readFileSync } = await import('node:fs');
     const page = readFileSync(`${process.cwd()}/src/app/privacy/page.tsx`, 'utf8');
-    expect(page).toMatch(/what you chose to let the coach see \(the summaries you kept, your goals, your step this week, what you wrote in My future and the skills you listed\)/);
+    expect(page).toMatch(/what you chose to let the coach see \(every summary you kept, the full text of your last kept conversation, your goals, your step this week, what you wrote in My future and the skills you listed;/);
   });
 });

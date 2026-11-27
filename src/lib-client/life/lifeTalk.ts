@@ -20,13 +20,14 @@ export type TalkResult =
   | { ok: true; reply: string; proposal: Proposal | null }
   | { ok: false; reason: 'busy' | 'limit' | 'capacity' | 'unavailable' };
 
-export async function talk(messages: Turn[]): Promise<TalkResult> {
+export async function talk(messages: Turn[], conversationId?: string): Promise<TalkResult> {
   try {
     const res = await fetch('/api/bff/life/talk', {
       method: 'POST', credentials: 'include', cache: 'no-store',
       headers: { 'Content-Type': 'application/json' },
       // The device's own hour, weekday and day — so Life knows morning from night (awareness).
-      body: JSON.stringify({ messages, clock: clockNow() }),
+      // Which conversation this is: Life's BFF leaves it out of «your last kept conversation».
+      body: JSON.stringify({ messages, clock: clockNow(), ...(conversationId ? { conversation_id: conversationId } : {}) }),
     });
     if (res.status === 429) return { ok: false, reason: 'busy' };
     if (res.status === 400) return { ok: false, reason: 'limit' };
