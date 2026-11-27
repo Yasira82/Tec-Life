@@ -100,3 +100,27 @@ describe('the person is told', () => {
     expect(page).toMatch(/every summary you kept, the full text of your last kept conversation/);
   });
 });
+
+describe('the goals they completed (owner, 27 Nov 2026: «فاكر ايه الأهداف اللي اتنفذت وايه لا»)', () => {
+  it('up to five, newest first, with the day each was completed; archived ones are not achievements', async () => {
+    const { buildAwareness } = await import('@/lib/life/awareness');
+    const goal = (title: string, status: string, updated_at: string) => ({ title, status, updated_at });
+    const a = buildAwareness({
+      entries: [], clock: null, now: new Date('2026-11-27T12:00:00Z'),
+      goals: [
+        goal('Save 10π', 'DONE', '2026-11-20T09:00:00.000Z'), goal('Walk daily', 'DONE', '2026-11-25T09:00:00.000Z'),
+        goal('Quit sugar', 'ARCHIVED', '2026-11-26T09:00:00.000Z'), goal('Read', 'ACTIVE', '2026-11-26T09:00:00.000Z'),
+        ...['a', 'b', 'c', 'd'].map((t, i) => goal(t, 'DONE', `2026-10-0${i + 1}T09:00:00.000Z`)),
+      ],
+    })!;
+    expect(a.achieved).toEqual([
+      { title: 'Walk daily', done_at: '2026-11-25' }, { title: 'Save 10π', done_at: '2026-11-20' },
+      { title: 'd', done_at: '2026-10-04' }, { title: 'c', done_at: '2026-10-03' }, { title: 'b', done_at: '2026-10-02' },
+    ]);
+    expect(a.goals).toEqual([expect.objectContaining({ title: 'Read' })]);
+  });
+  it('none completed, no key', async () => {
+    const { buildAwareness } = await import('@/lib/life/awareness');
+    expect(buildAwareness({ entries: [], goals: [{ title: 'Read', status: 'ACTIVE' }], clock: null })).not.toHaveProperty('achieved');
+  });
+});
