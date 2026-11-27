@@ -6,7 +6,7 @@ import { prettyType } from '@/app/app/components/Activity';
 // 27 Nov 2026: Analytics now shows a person the reputation events recorded under their Pi username (an Epic
 // project completed, a Zone badge) — before, their timeline held little more than «Joined TEC». They arrive
 // as their stream names; each needs a name in the reader's language, never «epic · project · completed · v1».
-const NEW = ['epic.project.completed.v1', 'zone.badge.issued.v1', 'connection.milestone.v1'] as const;
+const NEW = ['epic.project.completed.v1', 'zone.badge.issued.v1', 'connection.milestone.v1', 'order.paid.v1'] as const;
 
 describe('the reputation events in the timeline', () => {
   it.each(LOCALES.map((l) => l.code))('%s names both, never the raw stream name', (code) => {
@@ -25,5 +25,7 @@ describe('the reputation events in the timeline', () => {
     // Connection's trust milestone (tec-core-backend #547): 5, 25, 100 different buyers who paid.
     expect(uiCopy('en').ev['connection.milestone.v1']).toBe('Reached a trust milestone: more people bought from you');
     expect(uiCopy('ar').ev['connection.milestone.v1']).toMatch(/ثقة/);
+    // A paid order credited to the seller (tec-core-backend #546) — the amount shows beside it (piAmount).
+    expect(uiCopy('en').ev['order.paid.v1']).toBe('You made a sale');
   });
 });
