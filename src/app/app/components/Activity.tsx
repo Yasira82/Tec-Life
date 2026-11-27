@@ -12,6 +12,8 @@ export const EVENT_LABEL: Record<string, string> = {
   'order.created':     'Order placed',
   'user.created':      'Joined TEC',
   'kyc.verified':      'Identity verified',
+  'epic.project.completed.v1': 'Completed an Epic project',
+  'zone.badge.issued.v1':      'Earned a Zone verification badge',
 };
 
 // `labels` is the reader's language (ui-copy.ts); EVENT_LABEL is the English fallback.

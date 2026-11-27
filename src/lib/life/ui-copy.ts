@@ -5,7 +5,7 @@
 import type { Locale } from '@/lib/i18n/locales';
 
 export interface UiCopy {
-  ev: Record<'payment.completed' | 'order.created' | 'user.created' | 'kyc.verified', string>;
+  ev: Record<'payment.completed' | 'order.created' | 'user.created' | 'kyc.verified' | 'epic.project.completed.v1' | 'zone.badge.issued.v1', string>;
   proTagline: string; perMonth: string; upgrade: (p: number) => string;
   preparing: string; confirmInPi: string; paymentFailed: string;
   paymentReceived: string; activating: string;
@@ -23,7 +23,7 @@ export interface UiCopy {
 }
 
 const en: UiCopy = {
-  ev: { 'payment.completed': 'Payment completed', 'order.created': 'Order placed', 'user.created': 'Joined TEC', 'kyc.verified': 'Identity verified' },
+  ev: { 'payment.completed': 'Payment completed', 'order.created': 'Order placed', 'user.created': 'Joined TEC', 'kyc.verified': 'Identity verified', 'epic.project.completed.v1': 'Completed an Epic project', 'zone.badge.issued.v1': 'Earned a Zone verification badge' },
   proTagline: 'Unlimited goals · Goal Insights', perMonth: '/ month', upgrade: (p) => `Upgrade — ${p}π`,
   preparing: 'Preparing…', confirmInPi: 'Confirm in Pi…', paymentFailed: 'Payment failed. Please try again.',
   paymentReceived: 'Payment received', activating: 'Activating Life Pro… this can take a few seconds. Reopen the app if the ★ PRO badge isn’t showing yet.',
@@ -39,7 +39,7 @@ const en: UiCopy = {
 };
 
 const ar: UiCopy = {
-  ev: { 'payment.completed': 'دفعة مكتملة', 'order.created': 'طلب جديد', 'user.created': 'انضممت إلى TEC', 'kyc.verified': 'تم توثيق الهوية' },
+  ev: { 'payment.completed': 'دفعة مكتملة', 'order.created': 'طلب جديد', 'user.created': 'انضممت إلى TEC', 'kyc.verified': 'تم توثيق الهوية', 'epic.project.completed.v1': 'أكملت مشروعًا في Epic', 'zone.badge.issued.v1': 'حصلت على شارة توثيق من Zone' },
   proTagline: 'أهداف بلا حد · تحليل الأهداف', perMonth: '/ شهريًا', upgrade: (p) => `ترقية — ${p}π`,
   preparing: 'جارٍ التحضير…', confirmInPi: 'أكّد في Pi…', paymentFailed: 'لم يتم الدفع. حاول مرة أخرى.',
   paymentReceived: 'تم استلام الدفعة', activating: 'جارٍ تفعيل Life Pro… قد يستغرق ذلك ثوانيَ. أعد فتح التطبيق إن لم تظهر علامة ★ PRO.',
@@ -55,7 +55,7 @@ const ar: UiCopy = {
 };
 
 const es: UiCopy = {
-  ev: { 'payment.completed': 'Pago completado', 'order.created': 'Pedido realizado', 'user.created': 'Te uniste a TEC', 'kyc.verified': 'Identidad verificada' },
+  ev: { 'payment.completed': 'Pago completado', 'order.created': 'Pedido realizado', 'user.created': 'Te uniste a TEC', 'kyc.verified': 'Identidad verificada', 'epic.project.completed.v1': 'Completaste un proyecto en Epic', 'zone.badge.issued.v1': 'Obtuviste una insignia de verificación de Zone' },
   proTagline: 'Metas ilimitadas · Análisis de metas', perMonth: '/ mes', upgrade: (p) => `Mejorar — ${p}π`,
   preparing: 'Preparando…', confirmInPi: 'Confirma en Pi…', paymentFailed: 'El pago falló. Inténtalo de nuevo.',
   paymentReceived: 'Pago recibido', activating: 'Activando Life Pro… puede tardar unos segundos. Vuelve a abrir la app si aún no ves ★ PRO.',
@@ -71,7 +71,7 @@ const es: UiCopy = {
 };
 
 const fr: UiCopy = {
-  ev: { 'payment.completed': 'Paiement effectué', 'order.created': 'Commande passée', 'user.created': 'Inscription à TEC', 'kyc.verified': 'Identité vérifiée' },
+  ev: { 'payment.completed': 'Paiement effectué', 'order.created': 'Commande passée', 'user.created': 'Inscription à TEC', 'kyc.verified': 'Identité vérifiée', 'epic.project.completed.v1': 'Projet Epic terminé', 'zone.badge.issued.v1': 'Badge de vérification Zone obtenu' },
   proTagline: 'Objectifs illimités · Analyse des objectifs', perMonth: '/ mois', upgrade: (p) => `Passer à Pro — ${p}π`,
   preparing: 'Préparation…', confirmInPi: 'Confirmez dans Pi…', paymentFailed: 'Le paiement a échoué. Réessayez.',
   paymentReceived: 'Paiement reçu', activating: 'Activation de Life Pro… quelques secondes. Rouvrez l’app si le badge ★ PRO n’apparaît pas encore.',
@@ -87,7 +87,7 @@ const fr: UiCopy = {
 };
 
 const pt: UiCopy = {
-  ev: { 'payment.completed': 'Pagamento concluído', 'order.created': 'Pedido feito', 'user.created': 'Entrou no TEC', 'kyc.verified': 'Identidade verificada' },
+  ev: { 'payment.completed': 'Pagamento concluído', 'order.created': 'Pedido feito', 'user.created': 'Entrou no TEC', 'kyc.verified': 'Identidade verificada', 'epic.project.completed.v1': 'Concluiu um projeto no Epic', 'zone.badge.issued.v1': 'Recebeu um selo de verificação da Zone' },
   proTagline: 'Metas ilimitadas · Análise de metas', perMonth: '/ mês', upgrade: (p) => `Fazer upgrade — ${p}π`,
   preparing: 'Preparando…', confirmInPi: 'Confirme no Pi…', paymentFailed: 'O pagamento falhou. Tente de novo.',
   paymentReceived: 'Pagamento recebido', activating: 'Ativando o Life Pro… pode levar alguns segundos. Reabra o app se o selo ★ PRO ainda não aparecer.',
@@ -103,7 +103,7 @@ const pt: UiCopy = {
 };
 
 const tr: UiCopy = {
-  ev: { 'payment.completed': 'Ödeme tamamlandı', 'order.created': 'Sipariş verildi', 'user.created': 'TEC’e katıldın', 'kyc.verified': 'Kimlik doğrulandı' },
+  ev: { 'payment.completed': 'Ödeme tamamlandı', 'order.created': 'Sipariş verildi', 'user.created': 'TEC’e katıldın', 'kyc.verified': 'Kimlik doğrulandı', 'epic.project.completed.v1': 'Bir Epic projesini tamamladın', 'zone.badge.issued.v1': 'Zone doğrulama rozeti kazandın' },
   proTagline: 'Sınırsız hedef · Hedef analizi', perMonth: '/ ay', upgrade: (p) => `Yükselt — ${p}π`,
   preparing: 'Hazırlanıyor…', confirmInPi: 'Pi’de onayla…', paymentFailed: 'Ödeme başarısız. Tekrar dene.',
   paymentReceived: 'Ödeme alındı', activating: 'Life Pro etkinleştiriliyor… birkaç saniye sürebilir. ★ PRO rozeti görünmüyorsa uygulamayı yeniden aç.',
@@ -119,7 +119,7 @@ const tr: UiCopy = {
 };
 
 const ru: UiCopy = {
-  ev: { 'payment.completed': 'Платёж выполнен', 'order.created': 'Заказ оформлен', 'user.created': 'Вы присоединились к TEC', 'kyc.verified': 'Личность подтверждена' },
+  ev: { 'payment.completed': 'Платёж выполнен', 'order.created': 'Заказ оформлен', 'user.created': 'Вы присоединились к TEC', 'kyc.verified': 'Личность подтверждена', 'epic.project.completed.v1': 'Вы завершили проект в Epic', 'zone.badge.issued.v1': 'Вы получили значок проверки Zone' },
   proTagline: 'Безлимит целей · Анализ целей', perMonth: '/ месяц', upgrade: (p) => `Перейти на Pro — ${p}π`,
   preparing: 'Подготовка…', confirmInPi: 'Подтвердите в Pi…', paymentFailed: 'Платёж не прошёл. Попробуйте снова.',
   paymentReceived: 'Платёж получен', activating: 'Активируем Life Pro… это займёт несколько секунд. Откройте приложение заново, если значок ★ PRO не появился.',
@@ -135,7 +135,7 @@ const ru: UiCopy = {
 };
 
 const id: UiCopy = {
-  ev: { 'payment.completed': 'Pembayaran selesai', 'order.created': 'Pesanan dibuat', 'user.created': 'Bergabung dengan TEC', 'kyc.verified': 'Identitas terverifikasi' },
+  ev: { 'payment.completed': 'Pembayaran selesai', 'order.created': 'Pesanan dibuat', 'user.created': 'Bergabung dengan TEC', 'kyc.verified': 'Identitas terverifikasi', 'epic.project.completed.v1': 'Menyelesaikan proyek Epic', 'zone.badge.issued.v1': 'Mendapat lencana verifikasi Zone' },
   proTagline: 'Tujuan tanpa batas · Analisis tujuan', perMonth: '/ bulan', upgrade: (p) => `Tingkatkan — ${p}π`,
   preparing: 'Menyiapkan…', confirmInPi: 'Konfirmasi di Pi…', paymentFailed: 'Pembayaran gagal. Coba lagi.',
   paymentReceived: 'Pembayaran diterima', activating: 'Mengaktifkan Life Pro… butuh beberapa detik. Buka ulang aplikasi jika lencana ★ PRO belum muncul.',
@@ -151,7 +151,7 @@ const id: UiCopy = {
 };
 
 const vi: UiCopy = {
-  ev: { 'payment.completed': 'Thanh toán hoàn tất', 'order.created': 'Đã đặt hàng', 'user.created': 'Đã tham gia TEC', 'kyc.verified': 'Đã xác minh danh tính' },
+  ev: { 'payment.completed': 'Thanh toán hoàn tất', 'order.created': 'Đã đặt hàng', 'user.created': 'Đã tham gia TEC', 'kyc.verified': 'Đã xác minh danh tính', 'epic.project.completed.v1': 'Đã hoàn thành một dự án Epic', 'zone.badge.issued.v1': 'Đã nhận huy hiệu xác minh Zone' },
   proTagline: 'Mục tiêu không giới hạn · Phân tích mục tiêu', perMonth: '/ tháng', upgrade: (p) => `Nâng cấp — ${p}π`,
   preparing: 'Đang chuẩn bị…', confirmInPi: 'Xác nhận trong Pi…', paymentFailed: 'Thanh toán thất bại. Hãy thử lại.',
   paymentReceived: 'Đã nhận thanh toán', activating: 'Đang kích hoạt Life Pro… có thể mất vài giây. Mở lại ứng dụng nếu chưa thấy huy hiệu ★ PRO.',
@@ -167,7 +167,7 @@ const vi: UiCopy = {
 };
 
 const ko: UiCopy = {
-  ev: { 'payment.completed': '결제 완료', 'order.created': '주문 완료', 'user.created': 'TEC 가입', 'kyc.verified': '본인 인증 완료' },
+  ev: { 'payment.completed': '결제 완료', 'order.created': '주문 완료', 'user.created': 'TEC 가입', 'kyc.verified': '본인 인증 완료', 'epic.project.completed.v1': 'Epic 프로젝트 완료', 'zone.badge.issued.v1': 'Zone 인증 배지 획득' },
   proTagline: '무제한 목표 · 목표 분석', perMonth: '/ 월', upgrade: (p) => `업그레이드 — ${p}π`,
   preparing: '준비 중…', confirmInPi: 'Pi에서 확인하세요…', paymentFailed: '결제에 실패했어요. 다시 시도해 주세요.',
   paymentReceived: '결제 완료', activating: 'Life Pro를 활성화하는 중… 몇 초 걸릴 수 있어요. ★ PRO 배지가 안 보이면 앱을 다시 여세요.',
@@ -183,7 +183,7 @@ const ko: UiCopy = {
 };
 
 const hi: UiCopy = {
-  ev: { 'payment.completed': 'भुगतान पूरा', 'order.created': 'ऑर्डर दिया गया', 'user.created': 'TEC से जुड़े', 'kyc.verified': 'पहचान सत्यापित' },
+  ev: { 'payment.completed': 'भुगतान पूरा', 'order.created': 'ऑर्डर दिया गया', 'user.created': 'TEC से जुड़े', 'kyc.verified': 'पहचान सत्यापित', 'epic.project.completed.v1': 'Epic प्रोजेक्ट पूरा किया', 'zone.badge.issued.v1': 'Zone सत्यापन बैज मिला' },
   proTagline: 'असीमित लक्ष्य · लक्ष्य विश्लेषण', perMonth: '/ महीना', upgrade: (p) => `अपग्रेड करें — ${p}π`,
   preparing: 'तैयारी हो रही है…', confirmInPi: 'Pi में पुष्टि करें…', paymentFailed: 'भुगतान नहीं हुआ। फिर से कोशिश करें।',
   paymentReceived: 'भुगतान मिल गया', activating: 'Life Pro चालू हो रहा है… कुछ सेकंड लग सकते हैं। ★ PRO बैज न दिखे तो ऐप फिर से खोलें।',
@@ -199,7 +199,7 @@ const hi: UiCopy = {
 };
 
 const zh: UiCopy = {
-  ev: { 'payment.completed': '付款完成', 'order.created': '已下单', 'user.created': '加入 TEC', 'kyc.verified': '身份已验证' },
+  ev: { 'payment.completed': '付款完成', 'order.created': '已下单', 'user.created': '加入 TEC', 'kyc.verified': '身份已验证', 'epic.project.completed.v1': '完成了一个 Epic 项目', 'zone.badge.issued.v1': '获得 Zone 认证徽章' },
   proTagline: '无限目标 · 目标分析', perMonth: '/ 月', upgrade: (p) => `升级 — ${p}π`,
   preparing: '准备中…', confirmInPi: '请在 Pi 中确认…', paymentFailed: '付款失败，请重试。',
   paymentReceived: '已收到付款', activating: '正在开通 Life Pro… 可能需要几秒。如果还没看到 ★ PRO 标记，请重新打开应用。',
