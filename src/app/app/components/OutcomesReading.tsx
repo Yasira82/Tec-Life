@@ -21,6 +21,11 @@ interface Report {
   came_back_after_a_week: N;
 }
 
+// The report's shape is checked before it is drawn (owner, 27 Nov 2026): a shape that is not a report is no report.
+const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
+const isReport = (v: unknown): v is Report =>
+  isObj(v) && isObj(v.steps) && isObj(v.daily) && isObj(v.measures) && isObj(v.feelings);
+
 export function OutcomesReading() {
   const { locale } = useTranslation();
   const o = outcomesCopy(locale);
@@ -30,7 +35,7 @@ export function OutcomesReading() {
     let live = true;
     fetch('/api/bff/life/admin/outcomes', { credentials: 'include', cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : null))
-      .then((j: { data?: Report } | null) => { if (live && j?.data) setReport(j.data); })
+      .then((j: { data?: unknown } | null) => { if (live && isReport(j?.data)) setReport(j.data); })
       .catch(() => { /* not an admin, or unreachable — nothing to show */ });
     return () => { live = false; };
   }, []);

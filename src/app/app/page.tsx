@@ -2,6 +2,7 @@
 
 // TEC Life — System of Record (Personal). C-106.
 // The screens live in ./components; this is the shell: tabs, the top band, the session state.
+import { SectionBoundary } from '@/components/SectionBoundary';
 import { useState } from 'react';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { C, goldA } from '@/lib-client/palette';
@@ -125,16 +126,17 @@ export default function LifeHome() {
           )}
           {tab === 'home' && !inSession && (
             <>
-              <ProblemSessionEntry onStart={() => openSession()} onContinue={openSession} onMenu={() => setMenuOpen(true)} />
-              <HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={goTo} today={<StepToday />} identity={<Becoming />} />
+              <SectionBoundary name="session-entry"><ProblemSessionEntry onStart={() => openSession()} onContinue={openSession} onMenu={() => setMenuOpen(true)} /></SectionBoundary>
+              <SectionBoundary name="home"><HomeView isPro={isPro} daysRemaining={daysRemaining} onGo={goTo} today={<SectionBoundary name="step-today"><StepToday /></SectionBoundary>} identity={<SectionBoundary name="becoming"><Becoming /></SectionBoundary>} /></SectionBoundary>
             </>
           )}
           <JourneyDrawer open={menuOpen} onClose={() => setMenuOpen(false)} onNew={() => openSession()} onContinue={openSession}
             onMakeGoal={(step) => { const p = stepAsGoal(step); if (!p) return; setPrefill(p); setPrefillN((n) => n + 1); setTab('goals'); }} />
-          {tab === 'goals'    && <Goals isPro={isPro} prefill={prefill} onPrefillUsed={() => setPrefill(null)} key={prefill ? `pf:${prefillN}:${prefill.title}` : 'goals'} />}
-          {tab === 'skills'   && <Skills />}
-          {tab === 'activity' && <Activity />}
-          {tab === 'settings' && <SettingsView isPro={isPro} />}
+          {/* Each screen in its own boundary (SectionBoundary): one failing never takes the bottom bar with it. */}
+          {tab === 'goals'    && <SectionBoundary name="goals"><Goals isPro={isPro} prefill={prefill} onPrefillUsed={() => setPrefill(null)} key={prefill ? `pf:${prefillN}:${prefill.title}` : 'goals'} /></SectionBoundary>}
+          {tab === 'skills'   && <SectionBoundary name="skills"><Skills /></SectionBoundary>}
+          {tab === 'activity' && <SectionBoundary name="activity"><Activity /></SectionBoundary>}
+          {tab === 'settings' && <SectionBoundary name="settings"><SettingsView isPro={isPro} /></SectionBoundary>}
           <BottomNav active={tab} onSelect={goTo} />
         </SignInGate>
       </div>

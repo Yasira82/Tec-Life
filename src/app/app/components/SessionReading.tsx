@@ -23,6 +23,13 @@ interface Report {
   real_use?: { reached: number | null; after: number | null; met: boolean; bar: { weeks: number; reached: number; after: number } };
 }
 
+// The report's shape is checked before it is drawn (owner, 27 Nov 2026): `{}` is truthy, and `report.stage1.result`
+// then took Settings down. A shape that is not a report is no report — the section is simply absent.
+const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
+const isReport = (v: unknown): v is Report =>
+  isObj(v) && Array.isArray(v.weeks) && v.weeks.every((w) => isObj(w) && isObj(w.counts)) && isObj(v.total)
+  && isObj(v.stage1) && typeof v.stage1.result === 'string';
+
 const pct = (v: number | null) => (v == null ? '—' : `${Math.round(v * 100)}%`);
 
 export function SessionReading() {
@@ -34,7 +41,7 @@ export function SessionReading() {
     let live = true;
     fetch('/api/bff/life/admin/session-counts', { credentials: 'include', cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : null))
-      .then((j: { data?: Report } | null) => { if (live && j?.data) setReport(j.data); })
+      .then((j: { data?: unknown } | null) => { if (live && isReport(j?.data)) setReport(j.data); })
       .catch(() => { /* not an admin, or unreachable — nothing to show */ });
     return () => { live = false; };
   }, []);

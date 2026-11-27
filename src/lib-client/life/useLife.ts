@@ -1,5 +1,6 @@
 'use client';
 
+import { asBudget, asCashflow, asList } from './shapes';
 import { useCallback, useEffect, useState } from 'react';
 import type { LifeArea } from '@/lib/life/future-copy';
 
@@ -52,7 +53,7 @@ export function useGoals() {
     setError(null);
     fetch('/api/bff/life/goals', { credentials: 'include', cache: 'no-store' })
       .then(readJson)
-      .then((d) => setGoals((d.goals as Goal[]) ?? []))
+      .then((d) => setGoals(asList<Goal>(d.goals)))
       .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Failed to load goals'))
       .finally(() => setLoading(false));
   }, []);
@@ -150,7 +151,7 @@ export function useSkills() {
     setError(null);
     fetch('/api/bff/life/skills', { credentials: 'include', cache: 'no-store' })
       .then(readJson)
-      .then((d) => setSkills((d.skills as Skill[]) ?? []))
+      .then((d) => setSkills(asList<Skill>(d.skills)))
       .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Failed to load skills'))
       .finally(() => setLoading(false));
   }, []);
@@ -226,7 +227,7 @@ export function useTrajectory(windowDays = 30) {
     let alive = true;
     fetch(`/api/bff/life/trajectory?window_days=${windowDays}`, { credentials: 'include', cache: 'no-store' })
       .then(readJson)
-      .then((d) => { if (alive) setTrajectory((d.trajectory as Trajectory) ?? null); })
+      .then((d) => { if (alive) setTrajectory(d.trajectory && typeof d.trajectory === 'object' && Array.isArray((d.trajectory as { goals?: unknown }).goals) ? d.trajectory as Trajectory : null); })
       // Fail closed to null: no trajectory panel at all is honest, a zeroed one
       // would read as "you have logged nothing" when the truth is "we could not
       // ask".
@@ -250,7 +251,7 @@ export function usePreferences() {
     setError(null);
     fetch('/api/bff/life/preferences', { credentials: 'include', cache: 'no-store' })
       .then(readJson)
-      .then((d) => setPrefs((d.preferences as Record<string, string>) ?? {}))
+      .then((d) => setPrefs(d.preferences && typeof d.preferences === 'object' && !Array.isArray(d.preferences) ? d.preferences as Record<string, string> : {}))
       .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Failed to load preferences'))
       .finally(() => setLoading(false));
   }, []);
@@ -318,7 +319,7 @@ export function useConsent() {
     setLoading(true);
     fetch('/api/bff/life/consent', { credentials: 'include', cache: 'no-store' })
       .then(readJson)
-      .then((d) => setConsent((d.consent as ConsentEntry[]) ?? []))
+      .then((d) => setConsent(asList<ConsentEntry>(d.consent)))
       // Fail closed to an empty list: the screen then shows nothing to toggle
       // rather than a row of switches whose state it could not read. A switch
       // drawn OFF because a fetch failed is a lie about a permission.
@@ -376,7 +377,7 @@ export function useIntent() {
     let alive = true;
     fetch('/api/bff/life/intent', { credentials: 'include', cache: 'no-store' })
       .then(readJson)
-      .then((d) => { if (alive) setIntent((d.intent as Intent) ?? null); })
+      .then((d) => { if (alive) setIntent(d.intent && typeof d.intent === 'object' && !Array.isArray(d.intent) ? d.intent as Intent : null); })
       // Null, never an empty-looking window: "we could not ask" and "there is
       // nothing there" are different, and only one of them should be shown as
       // an answer.
@@ -470,7 +471,7 @@ export function useBudget(period?: string) {
     setError(null);
     fetch(`/api/bff/life/budget${q}`, { credentials: 'include', cache: 'no-store' })
       .then(readJson)
-      .then((d) => setBudget(d as unknown as Budget))
+      .then((d) => { const b = asBudget(d); setBudget(b); if (!b) setError('Unexpected budget'); })
       .catch((e: unknown) => { setBudget(null); setError(e instanceof Error ? e.message : 'Failed to load budget'); })
       .finally(() => setLoading(false));
   }, [q]);
@@ -524,7 +525,7 @@ export function useCashflow(period?: string) {
     setLoading(true);
     fetch(`/api/bff/life/cashflow${q}`, { credentials: 'include', cache: 'no-store' })
       .then(readJson)
-      .then((d) => setCashflow(d as unknown as Cashflow))
+      .then((d) => { const c = asCashflow(d); setCashflow(c); if (!c) setError('Unexpected cash flow'); })
       .catch((e: unknown) => { setCashflow(null); setError(e instanceof Error ? e.message : 'Failed to load cash flow'); })
       .finally(() => setLoading(false));
   }, [q]);
@@ -542,7 +543,7 @@ export function useActivity(limit = 25) {
     setError(null);
     fetch(`/api/bff/life/activity?limit=${limit}`, { credentials: 'include', cache: 'no-store' })
       .then(readJson)
-      .then((d) => setEvents((Array.isArray(d) ? d : (d as { data?: ActivityEvent[] }).data) as ActivityEvent[] ?? []))
+      .then((d) => setEvents(asList<ActivityEvent>(Array.isArray(d) ? d : (d as { data?: unknown }).data)))
       .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Failed to load activity'))
       .finally(() => setLoading(false));
   }, [limit]);

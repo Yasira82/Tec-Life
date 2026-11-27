@@ -1,5 +1,6 @@
 'use client';
 
+import { SectionBoundary } from '@/components/SectionBoundary';
 import { useState } from 'react';
 import { InviteCard } from '@/components/referral/InviteCard';
 import { C, goldA, inkA, successA } from '@/lib-client/palette';
@@ -320,17 +321,17 @@ export function HomeView({ isPro, daysRemaining, onGo, identity, today }: {
       {identity}
 
       {/* «مستقبلي» — where they are heading, and which areas have a goal on the way. */}
-      <FutureOnHome goals={goals} onOpen={() => onGo('goals')} />
+      <SectionBoundary name="future-on-home"><FutureOnHome goals={goals} onOpen={() => onGo('goals')} /></SectionBoundary>
 
-      <Focus goals={goals} busy={busy} eta={eta} onLog={addProgress} onGo={onGo} />
+      <SectionBoundary name="focus"><Focus goals={goals} busy={busy} eta={eta} onLog={addProgress} onGo={onGo} /></SectionBoundary>
       {/* L1 — the person's caps and the month's in/out, each amount from the
           service that owns it. Below the focus goal: a budget is a tool, the
           goal is what the screen is for. */}
-      <Budget />
-      <Cashflow />
-      <RecentActivity onGo={onGo} />
-      <LifePro isPro={isPro} daysRemaining={daysRemaining} />
-      <InviteCard />
+      <SectionBoundary name="budget"><Budget /></SectionBoundary>
+      <SectionBoundary name="cashflow"><Cashflow /></SectionBoundary>
+      <SectionBoundary name="recent-activity"><RecentActivity onGo={onGo} /></SectionBoundary>
+      <SectionBoundary name="life-pro"><LifePro isPro={isPro} daysRemaining={daysRemaining} /></SectionBoundary>
+      <SectionBoundary name="invite"><InviteCard /></SectionBoundary>
     </>
   );
 }
