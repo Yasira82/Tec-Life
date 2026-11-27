@@ -107,7 +107,7 @@ const en: SessionCopy = {
 
   memoryNote: "Life reads what you chose to keep — your summaries and your sentence about who you are becoming — so it can coach you from where you are. They are sent to the AI model with your messages.",
 
-  awareNote: "Life also sees how your step went this week, your active goals and the time of day where you are, so it can start from your life today. They are sent with your messages too.",
+  awareNote: "Life also sees how your step went this week, your active goals, what you wrote in My future, the skills you listed and the time of day where you are, so it can start from your life today. They are sent with your messages too.",
   lastStepQ:  'Last time you chose a small step: “{step}”. Did you try it?',
   outDone: 'Yes', outPartly: 'Partly', outNotYet: 'Not yet',
   outThanks: 'Noted. Life will continue from there.',
@@ -278,7 +278,7 @@ const ar: SessionCopy = {
 
   memoryNote: "يقرأ Life ما اخترت أن تحتفظ به — خلاصاتك وجملتك عمّن تصبح — ليدرّبك من حيث أنت. تُرسَل إلى نموذج الذكاء الاصطناعي مع رسائلك.",
 
-  awareNote: "ويرى Life أيضًا كيف سارت خطوتك هذا الأسبوع، وأهدافك النشطة، والوقت عندك، ليبدأ من حياتك اليوم. تُرسَل هي أيضًا مع رسائلك.",
+  awareNote: "ويرى Life أيضًا كيف سارت خطوتك هذا الأسبوع، وأهدافك النشطة، وما كتبته في «مستقبلي»، ومهاراتك التي أضفتها، والوقت عندك، ليبدأ من حياتك اليوم. تُرسَل هي أيضًا مع رسائلك.",
   lastStepQ:  'في المرة السابقة اخترت خطوة صغيرة: «{step}». هل جرّبتها؟',
   outDone: 'نعم', outPartly: 'جزئيًا', outNotYet: 'ليس بعد',
   outThanks: 'سُجِّل ذلك. سيكمل Life من هنا.',

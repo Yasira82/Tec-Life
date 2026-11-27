@@ -2,7 +2,8 @@
 // BFF, with the person's own session, ONLY while they keep their journey — the same switch as the
 // memory, and the intro says so. It tells the coach where their life is now so it can begin from it:
 // their part of the day, days since the last kept conversation, the step's last seven days, and up to
-// three active goals. The page sends only its clock; everything else is read here.
+// three active goals, «مستقبلي», and up to five skills they listed with their rung (27 Nov 2026). The page
+// sends only its clock; everything else is read here.
 //
 // Pure: the route hands it what it read and `now`. tec-ai-service re-checks every field
 // (modules/life-talk/awareness.ts) and drops what is malformed.
@@ -33,6 +34,9 @@ export function clockNow(d: Date = new Date()): Clock {
   return { hour: d.getHours(), weekday: d.getDay(), today: `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}` };
 }
 
+interface SkillRow { name?: unknown; level?: unknown; updated_at?: unknown }
+const SKILL_LEVELS = ['LEARNING', 'PRACTISING', 'PROFICIENT', 'EXPERT'];
+
 interface GoalRow { title?: unknown; description?: unknown; status?: unknown; progress?: unknown; target_amount?: unknown; updated_at?: unknown }
 
 const nextStep = (description: unknown): string | null => {
@@ -48,6 +52,8 @@ export function buildAwareness(input: {
   goals: GoalRow[];
   /** «مستقبلي»: their vision and the areas they chose (owner, 2026-10-31). */
   future?: { vision: string | null; areas: { area: string; note: string | null }[] } | null;
+  /** What they said they can do, with their rung (the Skills tab). */
+  skills?: SkillRow[];
   clock: Clock | null;
   now?: Date;
 }) {
@@ -81,6 +87,12 @@ export function buildAwareness(input: {
       next: nextStep(g.description),
     }));
 
+  const skills = (input.skills ?? [])
+    .filter((s) => typeof s.name === 'string' && s.name.trim() && SKILL_LEVELS.includes(String(s.level)))
+    .sort((a, b) => String(b.updated_at ?? '').localeCompare(String(a.updated_at ?? '')))
+    .slice(0, 5)
+    .map((s) => ({ name: String(s.name).trim(), level: String(s.level) }));
+
   const out = {
     ...(input.clock ? { hour: input.clock.hour, weekday: input.clock.weekday } : {}),
     ...(since !== null ? { since } : {}),
@@ -88,6 +100,7 @@ export function buildAwareness(input: {
     ...(goals.length ? { goals } : {}),
     ...(input.future?.vision ? { vision: input.future.vision } : {}),
     ...(input.future?.areas.length ? { areas: input.future.areas } : {}),
+    ...(skills.length ? { skills } : {}),
   };
   return Object.keys(out).length ? out : null;
 }

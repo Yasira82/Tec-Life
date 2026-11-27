@@ -38,13 +38,15 @@ export async function POST(req: NextRequest) {
   // leaves the goals out.
   let awareness = null;
   if (keeping) {
-    const [goals, future] = await Promise.all([readGateway(req, '/api/identity/life/goals'), readGateway(req, '/api/identity/life/future')]);
+    const [goals, future, skills] = await Promise.all([readGateway(req, '/api/identity/life/goals'), readGateway(req, '/api/identity/life/future'), readGateway(req, '/api/identity/life/skills')]);
+    const skillRows = skills.ok ? ((skills.data as { skills?: unknown } | null)?.skills ?? []) : [];
     const rows = goals.ok ? ((goals.data as { goals?: unknown } | null)?.goals ?? []) : [];
     awareness = buildAwareness({
       entries: entries as never,
       goals: Array.isArray(rows) ? rows as never : [],
       // «مستقبلي» (owner, 2026-10-31): their vision and chosen areas; a failed read leaves them out.
       future: future.ok ? parseFuture(future.data) : null,
+      skills: Array.isArray(skillRows) ? skillRows as never : [],
       clock: parseClock((body as { clock?: unknown })?.clock),
     });
   }
