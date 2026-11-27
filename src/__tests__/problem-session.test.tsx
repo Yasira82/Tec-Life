@@ -100,8 +100,10 @@ describe('the words go to one place only', () => {
       }
     }
     const sent = JSON.parse(talks()[0]!.body);
-    // The words and the device's clock — nothing else (awareness, owner 2026-10-30).
-    expect(Object.keys(sent)).toEqual(['messages', 'clock']);
+    // The words, the device's clock, and which conversation this is — nothing else (awareness, owner 2026-10-30;
+    // the id only keeps this conversation out of «your last kept conversation», 27 Nov 2026).
+    expect(Object.keys(sent)).toEqual(['messages', 'clock', 'conversation_id']);
+    expect(sent.conversation_id).toMatch(/^[0-9a-f-]{36}$/);
     expect(Object.keys(sent.clock).sort()).toEqual(['hour', 'today', 'weekday']);
     expect(JSON.stringify(sent.clock)).not.toContain(MARKER);
     expect(sent.messages[0]).toEqual({ role: 'assistant', content: s.opener });

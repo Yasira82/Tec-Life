@@ -87,6 +87,14 @@ export function buildAwareness(input: {
       next: nextStep(g.description),
     }));
 
+  // The goals they completed (owner, 27 Nov 2026: «فاكر ايه الأهداف اللي اتنفذت وايه لا») — five newest, with
+  // the day. Archived ones were put away, not achieved.
+  const achieved = input.goals
+    .filter((g) => g.status === 'DONE' && typeof g.title === 'string' && g.title.trim() && typeof g.updated_at === 'string' && !Number.isNaN(Date.parse(g.updated_at)))
+    .sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at)))
+    .slice(0, 5)
+    .map((g) => ({ title: String(g.title).trim(), done_at: new Date(String(g.updated_at)).toISOString().slice(0, 10) }));
+
   const skills = (input.skills ?? [])
     .filter((s) => typeof s.name === 'string' && s.name.trim() && SKILL_LEVELS.includes(String(s.level)))
     .sort((a, b) => String(b.updated_at ?? '').localeCompare(String(a.updated_at ?? '')))
@@ -101,6 +109,7 @@ export function buildAwareness(input: {
     ...(input.future?.vision ? { vision: input.future.vision } : {}),
     ...(input.future?.areas.length ? { areas: input.future.areas } : {}),
     ...(skills.length ? { skills } : {}),
+    ...(achieved.length ? { achieved } : {}),
   };
   return Object.keys(out).length ? out : null;
 }
