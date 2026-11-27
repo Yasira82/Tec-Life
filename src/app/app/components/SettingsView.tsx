@@ -3,6 +3,7 @@
 // A proper app Settings page for Life (modeled on tec-assets' settings): sectioned,
 // with a Profile card, an EN/AR language toggle that drives i18n, preferences, an
 // About block, invite, and logout. Fully translated (RTL-aware via the provider).
+import { SectionBoundary } from '@/components/SectionBoundary';
 import { SessionReading } from './SessionReading';
 import { OutcomesReading } from './OutcomesReading';
 import { usePiAuth } from '@yasser172/tec-auth';
@@ -349,11 +350,11 @@ export function SettingsView({ isPro }: { isPro: boolean }) {
       </Section>
 
       {/* Privacy — the promise on the home screen, made operable. */}
-      <Privacy />
+      <SectionBoundary name="privacy"><Privacy /></SectionBoundary>
 
       {/* Stage 1 reading — renders only for an admin (the service decides). */}
-      <SessionReading />
-      <OutcomesReading />
+      <SectionBoundary name="session-reading"><SessionReading /></SectionBoundary>
+      <SectionBoundary name="outcomes-reading"><OutcomesReading /></SectionBoundary>
 
       {/* Feedback — the only channel a user has. Above About on purpose: the
           version number is reference material, this is something to act on. */}
