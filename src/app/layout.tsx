@@ -16,9 +16,16 @@ import { ArrivalReport } from '@/components/pioneer/ArrivalReport';
 import { QuestReturn } from '@/components/pioneer/QuestReturn';
 import { SAFE_BOTTOM_BOOT_SCRIPT } from '@/lib/safe-bottom';
 
+const DESCRIPTION = 'TEC Life — your personal life coach: build yourself, one step at a time';
+
 export const metadata: Metadata = {
+  // Absolute links for the preview image (src/app/opengraph-image.png · twitter-image.png): a shared Life
+  // link, or a visit through PiNet, shows the picture from the production domain — never a preview build.
+  metadataBase: new URL('https://life.tecosystem.app'),
   title:       'TEC Life',
-  description: 'TEC Life — your personal life coach: build yourself, one step at a time',
+  description: DESCRIPTION,
+  openGraph: { title: 'TEC Life', description: DESCRIPTION, siteName: 'TEC Life', type: 'website', url: '/' },
+  twitter:   { card: 'summary_large_image', title: 'TEC Life', description: DESCRIPTION },
 };
 
 export default function RootLayout({
