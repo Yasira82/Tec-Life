@@ -48,7 +48,8 @@ export function SocialLinks({ compact = false }: { compact?: boolean }) {
   // says "Follow us" above no icons is worse than silence.
   if (links.length === 0) return null;
 
-  const size = compact ? 34 : 38;
+  // 44: the size a finger needs (e2e/touch-targets.spec.ts), compact or not.
+  const size = 44;
 
   return (
     <nav

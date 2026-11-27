@@ -42,7 +42,8 @@ export default function RootLayout({
       <head>
         {/* Room under the bottom bar for Android's buttons when Pi Browser reports none (lib/safe-bottom). */}
         <script dangerouslySetInnerHTML={{ __html: SAFE_BOTTOM_BOOT_SCRIPT }} />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+        {/* No maximum-scale: a person who needs larger text can zoom (WCAG 1.4.4; owner, 27 Nov 2026). */}
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         {/* One theme-color per scheme, so the browser chrome above the page
             matches the page. A single dark value leaves a black bar sitting on
             top of a light app.
@@ -64,6 +65,13 @@ export default function RootLayout({
              every component did. */
           html, body { height: 100%; width: 100%; background: var(--tec-bg); }
           body { overscroll-behavior: none; -webkit-tap-highlight-color: transparent; }
+          /* Touch targets (owner, 27 Nov 2026 — e2e/touch-targets.spec.ts): every control a finger must hit is
+             at least 44×44. min-* wins over a width/height written inline, so no screen can shrink one again.
+             A control drawn smaller (a checkbox, a switch) draws inside a 44×44 button of its own. */
+          button, select, [role="button"], [role="tab"], [role="switch"] { min-height: 44px; min-width: 44px; }
+          /* Fields at 16px: an iPhone zooms in by itself on a field under 16px, now that zoom is allowed.
+             !important because the screens set their sizes inline. */
+          input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select { font-size: 16px !important; min-height: 44px; }
         `}</style>
         {/* The Pi SDK is NOT loaded here. It is injected below, and ONLY when
             this is not a Hub-owned session — see the note in that script. */}

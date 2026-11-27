@@ -229,3 +229,23 @@ describe('the side menu (owner, 2026-10-18: "an entry, then a menu on the side w
     expect(onMenu).toHaveBeenCalled();
   });
 });
+
+describe('the two tabs of My journey, by keyboard (owner, 27 Nov 2026 — a tablist moves with the arrow keys)', () => {
+  it('an arrow key moves to the other tab, either way round; only the selected tab is in the Tab order', async () => {
+    convs = { keeping: true, configured: true, conversations: [KEPT] };
+    render(<JourneyView onContinue={vi.fn()} />);
+    const summaries = await screen.findByRole('tab', { name: new RegExp(s.jSummaries) });
+    const conversations = screen.getByRole('tab', { name: new RegExp(s.cTitle) });
+    expect(summaries.getAttribute('aria-selected')).toBe('true');
+    expect(summaries.tabIndex).toBe(0);
+    expect(conversations.tabIndex).toBe(-1);
+    fireEvent.keyDown(summaries, { key: 'ArrowLeft' });
+    expect(conversations.getAttribute('aria-selected')).toBe('true');
+    expect(document.activeElement).toBe(conversations);
+    fireEvent.keyDown(conversations, { key: 'ArrowRight' });
+    expect(summaries.getAttribute('aria-selected')).toBe('true');
+    fireEvent.keyDown(summaries, { key: 'End' });
+    expect(conversations.getAttribute('aria-selected')).toBe('true');
+    expect(screen.getByRole('tabpanel').getAttribute('aria-labelledby')).toBe(conversations.id);
+  });
+});

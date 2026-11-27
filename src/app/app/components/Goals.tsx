@@ -65,10 +65,12 @@ export function GoalItem({
           title={goal.status === 'DONE' ? uiCopy(locale).markActive : uiCopy(locale).markDone}
           aria-label={goal.status === 'DONE' ? uiCopy(locale).markActive : uiCopy(locale).markDone}
           onClick={onToggle}
-          style={{ width: 20, height: 20, borderRadius: 6, cursor: 'pointer', flexShrink: 0,
-                   border: `2px solid ${STATUS_COLOR[goal.status]}`,
-                   background: goal.status === 'DONE' ? C.success : 'transparent', color: C.onGold, fontSize: 12, lineHeight: '16px' }}>
-          {goal.status === 'DONE' ? '✓' : ''}
+          style={{ width: 44, height: 44, margin: -11, flexShrink: 0, cursor: 'pointer', background: 'none', border: 'none', padding: 0,
+                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span aria-hidden style={{ width: 22, height: 22, borderRadius: 6, border: `2px solid ${STATUS_COLOR[goal.status]}`,
+                   background: goal.status === 'DONE' ? C.success : 'transparent', color: C.onGold, fontSize: 12, lineHeight: '18px', textAlign: 'center' }}>
+            {goal.status === 'DONE' ? '✓' : ''}
+          </span>
         </button>
         <span style={{ flex: 1, minWidth: 0, fontSize: 14, color: C.text,
                        textDecoration: goal.status === 'DONE' ? 'line-through' : 'none',
@@ -83,7 +85,8 @@ export function GoalItem({
         )}
         {goal.status === 'ACTIVE' && (
           <a href={askAi} target="_blank" rel="noopener noreferrer" data-testid={`ask-ai-${goal.id}`}
-            style={{ fontSize: 12, fontWeight: 700, color: C.gold, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+            style={{ fontSize: 12, fontWeight: 700, color: C.gold, textDecoration: 'none', whiteSpace: 'nowrap',
+                     display: 'inline-flex', alignItems: 'center', minHeight: 44, padding: '0 4px' }}>
             {t.life.goals.askAi} →
           </a>
         )}
@@ -92,7 +95,7 @@ export function GoalItem({
       </div>
 
       {(areaOptions.length > 0 && onArea) ? (
-        <div style={{ marginTop: 6, marginLeft: 30 }}>
+        <div style={{ marginTop: 6, marginInlineStart: 32 }}>
           <select aria-label={fc.goalArea} data-testid={`goal-area-${goal.id}`} value={goal.area ?? ''} disabled={busy}
             onChange={(e) => onArea((e.target.value || null) as LifeArea | null)}
             style={{ background: C.bg, color: goal.area ? C.identityInk : C.subtext, border: `1px solid ${C.border}`, borderRadius: 999,
@@ -111,10 +114,10 @@ export function GoalItem({
             {t.life.goals.stepsDone.replace('{done}', String(stepsDone)).replace('{total}', String(steps.length))}
           </div>
           {steps.map((s, i) => (
-            <label key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '3px 0', cursor: onSteps ? 'pointer' : 'default' }}>
+            <label key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 44, cursor: onSteps ? 'pointer' : 'default' }}>
               <input type="checkbox" checked={s.done} disabled={busy || !onSteps || goal.status === 'DONE'}
                 onChange={() => onSteps?.(toggleStep(goal.description, i))}
-                style={{ marginTop: 2, accentColor: C.gold }} />
+                style={{ width: 20, height: 20, margin: 0, flexShrink: 0, accentColor: C.gold }} />
               <span dir="auto" style={{ fontSize: 13, color: s.done ? C.subtext : C.text, textDecoration: s.done ? 'line-through' : 'none', lineHeight: 1.4 }}>
                 {s.text}
               </span>
