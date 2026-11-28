@@ -233,12 +233,12 @@ test.describe('the redesign switch', () => {
     await page.goto('/app');
     await page.getByRole('navigation').last().getByRole('button', { name: 'مرآتي', exact: true }).click();
     await expect(page.getByTestId('mirror-progress').getByRole('alert')).toBeVisible();
-    await expect(page.getByTestId('stat-summaries')).toContainText('1');
-    await expect(page.getByTestId('stat-step-days')).toContainText('1');
+    await expect(page.getByTestId('stat-summaries')).toContainText('١');
+    await expect(page.getByTestId('stat-step-days')).toContainText('١');
     // A week holds 3 records on 2 days: not enough — the screen says so, with where they stand.
     await expect(page.getByTestId('mirror-not-enough')).toBeVisible();
     await page.getByRole('button', { name: '٣ أشهر' }).click();
-    await expect(page.getByTestId('stat-summaries')).toContainText('4');
+    await expect(page.getByTestId('stat-summaries')).toContainText('٤');
     await expect(page.getByTestId('stat-step-days')).toContainText('—');
     // 6 records on 6 days over 20 days: the person's own words, with the records behind them.
     await expect(page.getByTestId('mirror-own')).toContainText('خطوة صغيرة يوم وصول الراتب');
@@ -270,7 +270,7 @@ test.describe('the redesign switch', () => {
     await field.fill('1,000');
     const log = card.getByRole('button', { name: 'تسجيل', exact: true });
     await log.click();
-    await expect(card.getByRole('alert')).toHaveText('اكتبه بدون فاصلة: نقطة للكسور، مثل 1000 أو 2.5.');
+    await expect(card.getByRole('alert')).toHaveText('اكتبه بدون فاصلة الآلاف، والكسر بالعلامة العشرية: مثل ١٠٠٠ أو ٢٫٥.');
     expect(sent).toEqual([]);
     await field.fill('٢٫٥');
     await log.click();
@@ -308,10 +308,10 @@ test.describe('the redesign switch', () => {
     // A count that cannot be read says so, with a retry — never «0».
     const failed = page.getByTestId('journey-counts-failed');
     await expect(failed).toBeVisible();
-    await expect(page.getByTestId('me-journey')).not.toContainText('0 ملخصات');
+    await expect(page.getByTestId('me-journey')).not.toContainText('٠ ملخصات');
     convsDown = false;
     await failed.getByRole('button').click();
-    await expect(page.getByTestId('journey-counts')).toHaveText('3 ملخصات · 0 محادثات');
+    await expect(page.getByTestId('journey-counts')).toHaveText('٣ ملخصات · ٠ محادثات');
     await expect(page.getByText('شخص يخطط قبل أن ينفق')).toBeVisible();
     // Off, confirmed: the screen reads again and no longer shows what was deleted.
     await page.getByRole('switch', { name: 'احتفظ بملخصات رحلتي' }).click();
@@ -319,7 +319,7 @@ test.describe('the redesign switch', () => {
     await expect(box).toHaveAttribute('data-phase', 'ready');
     await box.getByRole('button', { name: 'احذف وأوقف' }).click();
     await expect(box).toBeHidden();
-    await expect(page.getByTestId('journey-counts')).toHaveText('0 ملخصات · 0 محادثات');
+    await expect(page.getByTestId('journey-counts')).toHaveText('٠ ملخصات · ٠ محادثات');
     await expect(page.getByText('شخص يخطط قبل أن ينفق')).toBeHidden();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });

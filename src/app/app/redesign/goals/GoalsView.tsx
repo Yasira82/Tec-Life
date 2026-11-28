@@ -31,6 +31,7 @@ import { Pace } from '../../components/Pace';
 import { LifeInsights } from '../../components/LifeInsights';
 import { GoalSheet } from './GoalSheet';
 import { VisionSummary } from './VisionSummary';
+import { localDigits } from '@/lib/life/digits';
 
 const card: CSSProperties = {
   background: C.surface, border: `1px solid ${C.border}`, borderRadius: 18, padding: 16,
@@ -67,7 +68,7 @@ export function GoalsView({ isPro, prefill, onPrefillUsed }: { isPro: boolean; p
     : null);
 
   const openNew = () => {
-    if (atFreeCap) { setGate(t.life.goals.freeCap.replace('{n}', String(FREE_ACTIVE_GOAL_CAP))); return; }
+    if (atFreeCap) { setGate(t.life.goals.freeCap.replace('{n}', localDigits(locale, FREE_ACTIVE_GOAL_CAP))); return; }
     setGate(null);
     setSheet({ mode: 'new', draft: emptyDraft(), note: null });
   };
@@ -130,7 +131,7 @@ export function GoalsView({ isPro, prefill, onPrefillUsed }: { isPro: boolean; p
           {priority.target_amount && priority.target_amount > 0 ? (
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
               <span style={{ fontSize: 13.5, color: C.subtext, flex: 1, minWidth: 120 }}>
-                {fill(td.ofTarget, { p: fmtPi(priority.progress), t: fmtPi(priority.target_amount) })}
+                {fill(td.ofTarget, { p: localDigits(locale, fmtPi(priority.progress)), t: localDigits(locale, fmtPi(priority.target_amount)) })}
               </span>
               <input aria-label={t.life.goals.logPlaceholder} placeholder={t.life.goals.logPlaceholder} inputMode="decimal" value={log}
                 aria-invalid={logProblem ? true : undefined} aria-describedby={logProblem ? 'goal-log-problem' : undefined}
@@ -168,7 +169,7 @@ export function GoalsView({ isPro, prefill, onPrefillUsed }: { isPro: boolean; p
         </div>
         {gate && <p role="status" style={{ margin: 0, fontSize: 13, color: C.gold }}>🔒 {gate}</p>}
         {!isPro && !gate && activeCount === FREE_ACTIVE_GOAL_CAP - 1 && (
-          <p style={{ margin: 0, fontSize: 12, color: C.faint }}>{uiCopy(locale).freeNear(activeCount, FREE_ACTIVE_GOAL_CAP)}</p>
+          <p style={{ margin: 0, fontSize: 12, color: C.faint }}>{localDigits(locale, uiCopy(locale).freeNear(activeCount, FREE_ACTIVE_GOAL_CAP))}</p>
         )}
         {areas.length > 0 && (
           <div role="group" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -191,7 +192,7 @@ export function GoalsView({ isPro, prefill, onPrefillUsed }: { isPro: boolean; p
         <div>
           <button type="button" onClick={() => setShowDone((v) => !v)} aria-expanded={showDone}
             style={{ ...quiet, border: 'none', padding: 0, color: C.subtext, display: 'flex', gap: 8, alignItems: 'center' }}>
-            <span style={{ fontWeight: 700 }}>{t.life.goals.completed}</span><span>{done.length}</span><span aria-hidden="true">{showDone ? '⌃' : '⌄'}</span>
+            <span style={{ fontWeight: 700 }}>{t.life.goals.completed}</span><span>{localDigits(locale, done.length)}</span><span aria-hidden="true">{showDone ? '⌃' : '⌄'}</span>
           </button>
           {showDone && (
             <div style={{ ...card, padding: '2px 14px', gap: 0 }}>
@@ -213,7 +214,7 @@ export function GoalsView({ isPro, prefill, onPrefillUsed }: { isPro: boolean; p
           initial={sheet.mode === 'edit' ? draftOf(sheet.goal) : sheet.draft}
           note={sheet.mode === 'new' ? sheet.note : null}
           areas={chosenAreas} busy={busy}
-          capText={t.life.goals.freeCap.replace('{n}', String(FREE_ACTIVE_GOAL_CAP))}
+          capText={t.life.goals.freeCap.replace('{n}', localDigits(locale, FREE_ACTIVE_GOAL_CAP))}
           onSave={save} onClose={close}
           onDone={sheet.mode === 'edit' ? () => after(setStatus(sheet.goal.id, 'DONE')) : undefined}
           onReopen={sheet.mode === 'edit' ? () => after(setStatus(sheet.goal.id, 'ACTIVE')) : undefined}

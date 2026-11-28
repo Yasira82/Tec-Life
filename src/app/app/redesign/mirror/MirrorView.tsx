@@ -19,6 +19,7 @@ import { readJourney, type Journey } from '@/lib-client/life/journey';
 import { followedStep, localDayKey } from '@/lib/life/step-week';
 import { fill } from '@/lib/life/today-copy';
 import { mirrorCopy, type MirrorCopy } from '@/lib/life/mirror-copy';
+import { localDigits } from '@/lib/life/digits';
 import {
   PERIODS, PERIOD_DAYS, GATE, checkGate, evidenceIn, ownLessons, stepDaysDone, stepWeek, summariesIn,
   type Period,
@@ -103,8 +104,8 @@ export function MirrorView({ onTalk }: { onTalk: () => void }) {
             {progress.state === 'ok' && (
               <div style={card}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
-                  <Stat n={String(progress.value.active_days)} label={m.sDays} id="stat-progress-days" />
-                  <Stat n={String(progress.value.completed_in_window)} label={m.sGoals} id="stat-goals-done" />
+                  <Stat n={localDigits(locale, progress.value.active_days)} label={m.sDays} id="stat-progress-days" />
+                  <Stat n={localDigits(locale, progress.value.completed_in_window)} label={m.sGoals} id="stat-goals-done" />
                 </div>
               </div>
             )}
@@ -112,7 +113,7 @@ export function MirrorView({ onTalk }: { onTalk: () => void }) {
           <div data-testid="mirror-journey">
             {(journey.state === 'loading' || (journey.state === 'ok' && !today)) && <Skeleton h={120} />}
             {journey.state === 'failed' && <Failed m={m} onRetry={loadJourney} />}
-            {j && today && <JourneyStats m={m} journey={j} today={today} days={days} />}
+            {j && today && <JourneyStats m={m} locale={locale} journey={j} today={today} days={days} />}
           </div>
           <p style={{ ...muted, fontSize: 12.5 }}>{m.source}</p>
         </div>
@@ -135,7 +136,7 @@ export function MirrorView({ onTalk }: { onTalk: () => void }) {
   );
 }
 
-function JourneyStats({ m, journey, today, days }: { m: MirrorCopy; journey: Journey; today: string; days: number }) {
+function JourneyStats({ m, locale, journey, today, days }: { m: MirrorCopy; locale: Locale; journey: Journey; today: string; days: number }) {
   if (!journey.keeping) return <div style={card}><p style={muted}>{m.journeyOff}</p></div>;
   const s = summariesIn(journey, today, days);
   const done = stepDaysDone(journey, today, days);
@@ -143,10 +144,10 @@ function JourneyStats({ m, journey, today, days }: { m: MirrorCopy; journey: Jou
   return (
     <div style={card}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
-        <Stat n={s.atLeast ? fill(m.atLeast, { n: s.n }) : String(s.n)} label={m.sSummaries} id="stat-summaries" />
+        <Stat n={s.atLeast ? fill(m.atLeast, { n: s.n }, locale) : localDigits(locale, s.n)} label={m.sSummaries} id="stat-summaries" />
         {done === null
           ? <Stat n="—" label={m.sSteps} id="stat-step-days" note={m.only14} />
-          : <Stat n={String(done)} label={m.sSteps} id="stat-step-days" />}
+          : <Stat n={localDigits(locale, done)} label={m.sSteps} id="stat-step-days" />}
       </div>
       {week && (
         <div>
@@ -175,7 +176,7 @@ function Learned({ m, locale, journey, today, days }: { m: MirrorCopy; locale: L
     const row = (ok: boolean, label: string, have: number) => (
       <li style={{ display: 'flex', gap: 8, alignItems: 'baseline', color: ok ? C.text : C.subtext, fontSize: 13.5 }}>
         <span aria-hidden="true" style={{ color: ok ? C.gold : C.subtext }}>{ok ? '✓' : '○'}</span>
-        <span>{label} <span style={{ color: C.subtext }}>({fill(m.have, { n: have })})</span></span>
+        <span>{label} <span style={{ color: C.subtext }}>({fill(m.have, { n: have }, locale)})</span></span>
       </li>
     );
     return (
@@ -183,9 +184,9 @@ function Learned({ m, locale, journey, today, days }: { m: MirrorCopy; locale: L
         <p style={{ margin: 0, color: C.text, fontSize: 14.5, lineHeight: 1.6 }}>{m.notEnough}</p>
         <div style={{ ...muted, fontSize: 12.5 }}>{m.gateTitle}</div>
         <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {row(gate.ok.records, fill(m.gRecords, { n: GATE.records }), gate.records)}
-          {row(gate.ok.days, fill(m.gDays, { n: GATE.days }), gate.days)}
-          {row(gate.ok.span, fill(m.gSpan, { n: GATE.span }), gate.span)}
+          {row(gate.ok.records, fill(m.gRecords, { n: GATE.records }, locale), gate.records)}
+          {row(gate.ok.days, fill(m.gDays, { n: GATE.days }, locale), gate.days)}
+          {row(gate.ok.span, fill(m.gSpan, { n: GATE.span }, locale), gate.span)}
         </ul>
       </div>
     );
@@ -211,7 +212,7 @@ function Learned({ m, locale, journey, today, days }: { m: MirrorCopy; locale: L
       <p style={{ ...muted, fontSize: 12.5 }}>{m.ownNote}</p>
       <details data-testid="mirror-records">
         <summary style={{ minHeight: 44, display: 'flex', alignItems: 'center', cursor: 'pointer', color: C.text, fontSize: 13.5 }}>
-          {fill(m.records, { n: items.length })}
+          {fill(m.records, { n: items.length }, locale)}
         </summary>
         <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
           {items.map((i) => (
