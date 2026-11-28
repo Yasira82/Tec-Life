@@ -17,8 +17,8 @@
 // group; the days are counted per group from those records.
 //
 // What the two statuses mean:
-//   Pattern            'preliminary' = every group has at least 5 independent days; otherwise 'insufficient'
-//                      and the Pattern is never shown.
+//   Pattern            'preliminary' = every group the method defines has at least 5 independent days (the
+//                      minimum is fixed, not a parameter); otherwise 'insufficient' and it is never shown.
 //   Friction, Memory   always 'preliminary': they describe the person's own records as they are and compare
 //                      nothing, so no minimum applies — the word says "a reading of records", not "proven".
 //
@@ -34,7 +34,7 @@ export type EvidenceStatus = 'insufficient' | 'preliminary';
  */
 export const METHODS = {
   // Patterns — a small list fixed in advance (plan §4 C2: never search many comparisons for one that differs).
-  after_conversation: { kind: 'pattern', definition: 'Days the step was fully done, on the day after a kept summary versus all other answered days; each day counted once; "partly" is not "done"; days with no answer are not counted.' },
+  after_conversation: { kind: 'pattern', groups: ['after', 'other'], definition: 'Days the step was fully done, on the day after a kept summary versus all other answered days; each day counted once; "partly" is not "done"; days with no answer are not counted.' },
   // Friction — the four rules the current data supports (plan §4 C1).
   no_steps:                 { kind: 'friction', definition: 'An active goal whose description has no step lines.' },
   steps_none_ticked:        { kind: 'friction', definition: 'An active goal with step lines, none of them ticked.' },
@@ -50,7 +50,7 @@ export const METHODS = {
   words:        { kind: 'memory', definition: 'One sentence the person said, from a kept summary.' },
   measure:      { kind: 'memory', definition: 'A value the person recorded before a step and after it.' },
   becoming:     { kind: 'memory', definition: 'The person\'s own "I\'m becoming…" statement.' },
-} as const satisfies Record<string, { kind: ObservationKind; definition: string }>;
+} as const satisfies Record<string, { kind: ObservationKind; definition: string; groups?: readonly string[] }>;
 
 export type MethodKey = keyof typeof METHODS;
 
@@ -112,14 +112,15 @@ export function daysPerGroup(records: readonly SourceRecord[]): Record<string, n
 }
 
 /**
- * 'preliminary' only when there are at least two groups and EVERY group has at least `min` independent days.
- * Refuses (throws) a count that is not a whole number ≥ 0 — a count is never a fraction, negative or NaN.
+ * 'preliminary' only when there are at least two groups and EVERY group has at least
+ * PATTERN_MIN_DAYS_PER_GROUP independent days. The minimum is fixed here and cannot be passed in
+ * (owner review of #135). Refuses (throws) a count that is not a whole number ≥ 0.
  */
-export function evidenceStatus(groupDays: readonly number[], min = PATTERN_MIN_DAYS_PER_GROUP): EvidenceStatus {
-  for (const n of [...groupDays, min]) {
+export function evidenceStatus(groupDays: readonly number[]): EvidenceStatus {
+  for (const n of groupDays) {
     if (!Number.isSafeInteger(n) || n < 0) throw new Error(`observation: ${String(n)} is not a day count`);
   }
-  return groupDays.length >= 2 && groupDays.every((n) => n >= min) ? 'preliminary' : 'insufficient';
+  return groupDays.length >= 2 && groupDays.every((n) => n >= PATTERN_MIN_DAYS_PER_GROUP) ? 'preliminary' : 'insufficient';
 }
 
 /** When an observation of this kind stops being current; null for Memory. */
@@ -161,7 +162,7 @@ export interface ObservationInput<T> {
 export function makeObservation<T>(input: ObservationInput<T>): Observation<T> {
   const { kind, period, method, value, now } = input;
   if (!isValidDate(now)) throw new Error('observation: now is not a real time');
-  const m = (METHODS as Record<string, { kind: ObservationKind } | undefined>)[method];
+  const m = (METHODS as Record<string, { kind: ObservationKind; groups?: readonly string[] } | undefined>)[method];
   if (!m) throw new Error(`observation: unknown method ${String(method)}`);
   if (m.kind !== kind) throw new Error(`observation: method ${method} is not a ${kind} method`);
   if (!isDayKey(period?.from) || !isDayKey(period?.to) || period.from > period.to) {
@@ -180,8 +181,15 @@ export function makeObservation<T>(input: ObservationInput<T>): Observation<T> {
   let group_days: Record<string, number> | null = null;
   let evidence_status: EvidenceStatus = 'preliminary';
   if (kind === 'pattern') {
-    group_days = daysPerGroup(input.source_records);
-    if (Object.keys(group_days).length < 2) throw new Error('observation: a pattern compares at least two groups');
+    // The groups are the method's own, fixed in advance (owner review of #135): a record in any other group
+    // is refused, and EVERY defined group is counted — a group with no records is 0 days, so insufficient.
+    const allowed = m.groups ?? [];
+    for (const r of input.source_records) {
+      if (!allowed.includes(r.group as string)) throw new Error(`observation: group ${String(r.group)} is not defined for ${method}`);
+    }
+    if (allowed.length < 2) throw new Error(`observation: ${method} does not define two groups`);
+    const counted = daysPerGroup(input.source_records);
+    group_days = Object.fromEntries(allowed.map((g) => [g, counted[g] ?? 0]));
     evidence_status = evidenceStatus(Object.values(group_days));
   }
 

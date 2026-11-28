@@ -73,9 +73,21 @@ describe('a Pattern is preliminary only when its RECORDS show 5 days in EVERY gr
     expect(canShow(o, NOW)).toBe(false);
   });
 
-  it('a Pattern record without a group, or a single group, is refused', () => {
+  it('a Pattern record without a group is refused', () => {
     expect(() => pattern([rec('a', day(1))])).toThrow(/no group/);
-    expect(() => pattern(groupOf('after', 9, 1))).toThrow(/two groups/);
+  });
+
+  it('only the method\u2019s own groups: invented names are refused even with 5 days each (owner review of #135)', () => {
+    expect(METHODS.after_conversation.groups).toEqual(['after', 'other']);
+    expect(() => pattern([...groupOf('group_a', 5, 1), ...groupOf('group_b', 5, 10)])).toThrow(/not defined for after_conversation/);
+    expect(() => pattern([...groupOf('after', 5, 1), ...groupOf('other', 5, 10), rec('x', day(20), 'step_day', 'third')])).toThrow(/not defined/);
+  });
+
+  it('a defined group with no records counts as 0 days — insufficient, never shown', () => {
+    const o = pattern(groupOf('after', 9, 1));
+    expect(o.group_days).toEqual({ after: 9, other: 0 });
+    expect(o.evidence_status).toBe('insufficient');
+    expect(canShow(o, NOW)).toBe(false);
   });
 
   it('a group on a non-Pattern record is refused', () => {
@@ -94,6 +106,11 @@ describe('evidenceStatus refuses what is not a day count', () => {
     '%j → %s', (groups, status) => { expect(evidenceStatus(groups as number[])).toBe(status); });
   it.each([[[5, NaN]], [[5, -1]], [[5, 5.5]], [[5, Infinity]]])('%j → refused', (groups) => {
     expect(() => evidenceStatus(groups as number[])).toThrow(/not a day count/);
+  });
+  it('the minimum cannot be lowered by the caller (owner review of #135)', () => {
+    expect(evidenceStatus.length).toBe(1);
+    const lowered = (evidenceStatus as unknown as (g: number[], min: number) => string)([2, 2], 0);
+    expect(lowered).toBe('insufficient');
   });
 });
 
