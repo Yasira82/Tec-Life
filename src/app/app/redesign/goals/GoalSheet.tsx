@@ -5,12 +5,13 @@
 // It closes only when the server kept the change; a refusal keeps it open, with what was typed,
 // and says so. Delete asks twice. Everything goes through the existing routes (useGoals).
 import { useEffect, useRef, useState } from 'react';
-import { C, bgA, goldA } from '@/lib-client/palette';
+import { C, goldA } from '@/lib-client/palette';
 import { useTranslation } from '@/lib/i18n';
 import type { Goal } from '@/lib-client/life/useLife';
 import { futureCopy, type LifeArea } from '@/lib/life/future-copy';
 import { goalsCopy } from '@/lib/life/goals-copy';
 import { takesTarget, type GoalDraft, type DraftProblem } from '@/lib/life/goals-edit';
+import { Sheet } from '../Sheet';
 
 const HUB_URL = process.env.NEXT_PUBLIC_HUB_URL ?? 'https://hub.tecosystem.app';
 
@@ -48,12 +49,7 @@ export function GoalSheet({ goal, initial, areas, note, busy, capText, onSave, o
   const [armed, setArmed] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    titleRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  useEffect(() => { titleRef.current?.focus(); }, []);
 
   // The goal's own area stays selectable even if it is no longer among the chosen ones.
   const options = d.area && !areas.includes(d.area) ? [...areas, d.area] : areas;
@@ -63,16 +59,7 @@ export function GoalSheet({ goal, initial, areas, note, busy, capText, onSave, o
   const act = async (fn?: () => Promise<boolean>) => { if (!fn) return; setProblem(null); if (!(await fn())) say('failed'); };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 400 }}>
-      <div data-testid="sheet-scrim" onClick={onClose} style={{ position: 'absolute', inset: 0, background: bgA(0.7) }} />
-      <div role="dialog" aria-modal="true" aria-labelledby="goal-sheet-h" data-testid="goal-sheet" style={{
-        position: 'absolute', insetInline: 0, bottom: 0, maxHeight: '88vh', overflowY: 'auto',
-        background: C.surface, borderRadius: '22px 22px 0 0', borderTop: `1px solid ${C.border}`,
-        padding: '10px 18px calc(18px + max(env(safe-area-inset-bottom), var(--tec-safe-bottom-fallback, 0px)))', display: 'flex', flexDirection: 'column', gap: 14,
-        maxWidth: 560, margin: '0 auto',
-      }}>
-        <div aria-hidden="true" style={{ width: 40, height: 4, borderRadius: 4, background: C.border, margin: '4px auto 2px' }} />
-        <h2 id="goal-sheet-h" style={{ margin: 0, fontSize: 18, fontWeight: 800, color: C.text }}>{goal ? g.sheetEdit : g.sheetNew}</h2>
+    <Sheet title={goal ? g.sheetEdit : g.sheetNew} testId="goal-sheet" onClose={onClose}>
         {note && <p style={{ margin: 0, fontSize: 13, color: C.gold, lineHeight: 1.5 }}>{note}</p>}
 
         <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -121,7 +108,6 @@ export function GoalSheet({ goal, initial, areas, note, busy, capText, onSave, o
             )}
           </div>
         )}
-      </div>
-    </div>
+    </Sheet>
   );
 }

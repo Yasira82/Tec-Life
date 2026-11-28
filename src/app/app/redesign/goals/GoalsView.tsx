@@ -26,10 +26,10 @@ import { sessionCopy } from '@/lib/life/session-copy';
 import { uiCopy } from '@/lib/life/ui-copy';
 import { countSession } from '@/lib-client/life/sessionCounter';
 import { FREE_ACTIVE_GOAL_CAP, fmtPi } from '../../components/shared';
-import { Future } from '../../components/Future';
 import { Pace } from '../../components/Pace';
 import { LifeInsights } from '../../components/LifeInsights';
 import { GoalSheet } from './GoalSheet';
+import { VisionSummary } from './VisionSummary';
 
 const card: CSSProperties = {
   background: C.surface, border: `1px solid ${C.border}`, borderRadius: 18, padding: 16,
@@ -99,7 +99,7 @@ export function GoalsView({ isPro, prefill, onPrefillUsed }: { isPro: boolean; p
 
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-      {future && <div data-reused="future"><Future future={future} onChange={setFuture} /></div>}
+      {future && <VisionSummary future={future} onChange={setFuture} />}
 
       {loading && goals.length === 0 ? (
         <div aria-busy="true" style={{ ...card, height: 180, opacity: 0.6 }} />
