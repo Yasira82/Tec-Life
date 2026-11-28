@@ -35,7 +35,11 @@ interface Off { cat: LifeDataCategory; phase: OffPhase; count?: DeletionCount }
 
 const group: CSSProperties = { fontSize: 12.5, fontWeight: 700, color: C.subtext, padding: '12px 0 4px' };
 
-export function MePrivacy() {
+/**
+ * `onDeleted` is told, after the server confirmed it, that a keep switch was turned off and what it
+ * kept is gone — so the rest of the screen re-reads from the source instead of showing it still.
+ */
+export function MePrivacy({ onDeleted }: { onDeleted?: (cat: 'JOURNEY' | 'CONVERSATIONS') => void } = {}) {
   const { t, locale } = useTranslation();
   const p = t.life.privacy;
   const m = meCopy(locale);
@@ -88,6 +92,7 @@ export function MePrivacy() {
     const ok = await grant(cat, false);
     // Closed only on success. On a refusal it stays, says so, and the switch shows the server's truth.
     setOff(ok ? null : { cat, phase: 'failed', count: c });
+    if (ok && (cat === 'JOURNEY' || cat === 'CONVERSATIONS')) onDeleted?.(cat);
   };
 
   const removeAll = async () => {

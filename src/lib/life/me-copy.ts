@@ -10,6 +10,10 @@ import type { Locale } from '@/lib/i18n/locales';
 export interface MeCopy {
   manage: string; noSkills: string;
   journey: string; counts: string; openJourney: string;
+  /** «My journey» when what is kept could not be counted — never shown as 0. */
+  countsFailed: string;
+  /** «My skills» when the list could not be read — never shown as «no skills». */
+  skillsFailed: string;
   gKeep: string; gHub: string; gHubNote: string; gReminder: string;
   keepJourney: string; keepJourneyDesc: string;
   keepConvs: string; keepConvsDesc: string;
@@ -40,6 +44,7 @@ const en: MeCopy = {
   offDo: 'Delete and turn off', offKeep: 'Keep it on',
   settings: 'Settings', more: 'Help, links and about',
   counting: 'Checking how much would be deleted…', countFailed: 'Couldn’t check how much would be deleted, so nothing was changed.', deleting: 'Deleting…', offFailed: 'Couldn’t turn it off. The switch shows what is saved now.', atLeast: 'at least {n}', andSelf: ' and your «I’m becoming» sentence', saveFailed: 'Couldn’t save that change. The switch shows what is saved now.', loadFailed: 'Couldn’t load your privacy settings. Nothing has changed — try again.', retry: 'Try again',
+  countsFailed: 'Couldn’t count what is kept.', skillsFailed: 'Couldn’t load your skills.',
 };
 
 const ar: MeCopy = {
@@ -57,6 +62,7 @@ const ar: MeCopy = {
   offDo: 'احذف وأوقف', offKeep: 'أبقِه مفعّلًا',
   settings: 'الإعدادات', more: 'المساعدة والروابط وعن التطبيق',
   counting: 'جارٍ التحقق مما سيُحذف…', countFailed: 'تعذّر معرفة ما سيُحذف، لذلك لم يتغير شيء.', deleting: 'جارٍ الحذف…', offFailed: 'تعذّر الإيقاف. المفتاح يعرض الآن ما هو محفوظ فعلًا.', atLeast: '{n} على الأقل', andSelf: ' وجملة «أنا ببقى…»', saveFailed: 'تعذّر حفظ هذا التغيير. المفتاح يعرض الآن ما هو محفوظ فعلًا.', loadFailed: 'تعذّر تحميل إعدادات الخصوصية. لم يتغير شيء — حاول مرة أخرى.', retry: 'حاول مرة أخرى',
+  countsFailed: 'تعذّر عدّ ما هو محفوظ.', skillsFailed: 'تعذّر تحميل مهاراتك.',
 };
 
 const es: MeCopy = {
@@ -74,6 +80,7 @@ const es: MeCopy = {
   offDo: 'Borrar y apagar', offKeep: 'Dejarlo activo',
   settings: 'Ajustes', more: 'Ayuda, enlaces e información',
   counting: 'Comprobando cuánto se borraría…', countFailed: 'No se pudo comprobar cuánto se borraría, así que no se cambió nada.', deleting: 'Borrando…', offFailed: 'No se pudo apagar. El interruptor muestra lo que está guardado ahora.', atLeast: 'al menos {n}', andSelf: ' y tu frase «Me estoy convirtiendo en…»', saveFailed: 'No se pudo guardar ese cambio. El interruptor muestra lo que está guardado ahora.', loadFailed: 'No se pudieron cargar tus ajustes de privacidad. No cambió nada; inténtalo de nuevo.', retry: 'Reintentar',
+  countsFailed: 'No se pudo contar lo que se guarda.', skillsFailed: 'No se pudieron cargar tus habilidades.',
 };
 
 const fr: MeCopy = {
@@ -91,6 +98,7 @@ const fr: MeCopy = {
   offDo: 'Supprimer et désactiver', offKeep: 'Laisser activé',
   settings: 'Réglages', more: 'Aide, liens et à propos',
   counting: 'Vérification de ce qui serait supprimé…', countFailed: 'Impossible de vérifier ce qui serait supprimé ; rien n’a été modifié.', deleting: 'Suppression…', offFailed: 'Impossible de désactiver. L’interrupteur montre ce qui est enregistré.', atLeast: 'au moins {n}', andSelf: ' et votre phrase « Je deviens… »', saveFailed: 'Impossible d’enregistrer ce changement. L’interrupteur montre ce qui est enregistré.', loadFailed: 'Impossible de charger vos réglages de confidentialité. Rien n’a changé — réessayez.', retry: 'Réessayer',
+  countsFailed: 'Impossible de compter ce qui est conservé.', skillsFailed: 'Impossible de charger vos compétences.',
 };
 
 const pt: MeCopy = {
@@ -108,6 +116,7 @@ const pt: MeCopy = {
   offDo: 'Apagar e desligar', offKeep: 'Manter ligado',
   settings: 'Ajustes', more: 'Ajuda, links e sobre',
   counting: 'Verificando quanto seria apagado…', countFailed: 'Não foi possível verificar quanto seria apagado, então nada mudou.', deleting: 'Apagando…', offFailed: 'Não foi possível desligar. O interruptor mostra o que está salvo agora.', atLeast: 'pelo menos {n}', andSelf: ' e sua frase «Estou me tornando…»', saveFailed: 'Não foi possível salvar essa mudança. O interruptor mostra o que está salvo agora.', loadFailed: 'Não foi possível carregar suas configurações de privacidade. Nada mudou — tente de novo.', retry: 'Tentar de novo',
+  countsFailed: 'Não foi possível contar o que está guardado.', skillsFailed: 'Não foi possível carregar suas habilidades.',
 };
 
 const tr: MeCopy = {
@@ -125,6 +134,7 @@ const tr: MeCopy = {
   offDo: 'Sil ve kapat', offKeep: 'Açık kalsın',
   settings: 'Ayarlar', more: 'Yardım, bağlantılar ve hakkında',
   counting: 'Nelerin silineceği kontrol ediliyor…', countFailed: 'Nelerin silineceği kontrol edilemedi, bu yüzden hiçbir şey değişmedi.', deleting: 'Siliniyor…', offFailed: 'Kapatılamadı. Anahtar şu an kayıtlı olanı gösteriyor.', atLeast: 'en az {n}', andSelf: ' ve «Dönüştüğüm kişi…» cümlen', saveFailed: 'Bu değişiklik kaydedilemedi. Anahtar şu an kayıtlı olanı gösteriyor.', loadFailed: 'Gizlilik ayarların yüklenemedi. Hiçbir şey değişmedi — tekrar dene.', retry: 'Tekrar dene',
+  countsFailed: 'Saklananlar sayılamadı.', skillsFailed: 'Becerilerin yüklenemedi.',
 };
 
 const ru: MeCopy = {
@@ -142,6 +152,7 @@ const ru: MeCopy = {
   offDo: 'Удалить и выключить', offKeep: 'Оставить включённым',
   settings: 'Настройки', more: 'Помощь, ссылки и о приложении',
   counting: 'Проверяем, что будет удалено…', countFailed: 'Не удалось проверить, что будет удалено, поэтому ничего не изменилось.', deleting: 'Удаляем…', offFailed: 'Не удалось выключить. Переключатель показывает сохранённое состояние.', atLeast: 'не менее {n}', andSelf: ' и ваша фраза «Я становлюсь…»', saveFailed: 'Не удалось сохранить изменение. Переключатель показывает сохранённое состояние.', loadFailed: 'Не удалось загрузить настройки конфиденциальности. Ничего не изменилось — попробуйте снова.', retry: 'Повторить',
+  countsFailed: 'Не удалось посчитать сохранённое.', skillsFailed: 'Не удалось загрузить ваши навыки.',
 };
 
 const hi: MeCopy = {
@@ -159,6 +170,7 @@ const hi: MeCopy = {
   offDo: 'मिटाएँ और बंद करें', offKeep: 'चालू रहने दें',
   settings: 'सेटिंग्स', more: 'मदद, लिंक और जानकारी',
   counting: 'जाँच रहे हैं कि क्या मिटेगा…', countFailed: 'यह जाँचा नहीं जा सका कि क्या मिटेगा, इसलिए कुछ नहीं बदला।', deleting: 'मिटाया जा रहा है…', offFailed: 'बंद नहीं हो सका। स्विच अभी वही दिखा रहा है जो सहेजा गया है।', atLeast: 'कम से कम {n}', andSelf: ' और आपका «मैं बन रहा हूँ…» वाक्य', saveFailed: 'यह बदलाव सहेजा नहीं जा सका। स्विच अभी वही दिखा रहा है जो सहेजा गया है।', loadFailed: 'आपकी गोपनीयता सेटिंग्स लोड नहीं हो सकीं। कुछ नहीं बदला — फिर कोशिश करें।', retry: 'फिर से कोशिश करें',
+  countsFailed: 'जो सहेजा गया है उसे गिना नहीं जा सका।', skillsFailed: 'आपके कौशल लोड नहीं हो सके।',
 };
 
 const id: MeCopy = {
@@ -176,6 +188,7 @@ const id: MeCopy = {
   offDo: 'Hapus dan matikan', offKeep: 'Biarkan menyala',
   settings: 'Pengaturan', more: 'Bantuan, tautan, dan tentang',
   counting: 'Memeriksa apa yang akan dihapus…', countFailed: 'Tidak bisa memeriksa apa yang akan dihapus, jadi tidak ada yang diubah.', deleting: 'Menghapus…', offFailed: 'Tidak bisa dimatikan. Sakelar menunjukkan yang tersimpan sekarang.', atLeast: 'setidaknya {n}', andSelf: ' dan kalimat «Aku sedang menjadi…»', saveFailed: 'Perubahan itu tidak bisa disimpan. Sakelar menunjukkan yang tersimpan sekarang.', loadFailed: 'Pengaturan privasimu tidak bisa dimuat. Tidak ada yang berubah — coba lagi.', retry: 'Coba lagi',
+  countsFailed: 'Tidak bisa menghitung yang disimpan.', skillsFailed: 'Keahlianmu tidak bisa dimuat.',
 };
 
 const vi: MeCopy = {
@@ -193,6 +206,7 @@ const vi: MeCopy = {
   offDo: 'Xóa và tắt', offKeep: 'Giữ bật',
   settings: 'Cài đặt', more: 'Trợ giúp, liên kết và giới thiệu',
   counting: 'Đang kiểm tra những gì sẽ bị xóa…', countFailed: 'Không kiểm tra được những gì sẽ bị xóa, nên chưa có gì thay đổi.', deleting: 'Đang xóa…', offFailed: 'Không tắt được. Công tắc đang hiển thị trạng thái đã lưu.', atLeast: 'ít nhất {n}', andSelf: ' và câu «Tôi đang trở thành…» của bạn', saveFailed: 'Không lưu được thay đổi. Công tắc đang hiển thị trạng thái đã lưu.', loadFailed: 'Không tải được cài đặt quyền riêng tư. Chưa có gì thay đổi — hãy thử lại.', retry: 'Thử lại',
+  countsFailed: 'Không đếm được những gì đang lưu.', skillsFailed: 'Không tải được kỹ năng của bạn.',
 };
 
 const ko: MeCopy = {
@@ -210,6 +224,7 @@ const ko: MeCopy = {
   offDo: '삭제하고 끄기', offKeep: '켜 두기',
   settings: '설정', more: '도움말, 링크, 앱 정보',
   counting: '삭제될 항목을 확인하는 중…', countFailed: '삭제될 항목을 확인하지 못해 아무것도 바꾸지 않았어요.', deleting: '삭제하는 중…', offFailed: '끄지 못했어요. 스위치는 지금 저장된 상태를 보여 줘요.', atLeast: '최소 {n}', andSelf: ' 그리고 «나는 ~이 되어 가요» 문장', saveFailed: '변경을 저장하지 못했어요. 스위치는 지금 저장된 상태를 보여 줘요.', loadFailed: '개인정보 설정을 불러오지 못했어요. 바뀐 건 없어요 — 다시 시도해 주세요.', retry: '다시 시도',
+  countsFailed: '저장된 항목을 세지 못했어요.', skillsFailed: '기술 목록을 불러오지 못했어요.',
 };
 
 const zh: MeCopy = {
@@ -227,6 +242,7 @@ const zh: MeCopy = {
   offDo: '删除并关闭', offKeep: '保持开启',
   settings: '设置', more: '帮助、链接与关于',
   counting: '正在核对将删除的内容…', countFailed: '无法核对将删除的内容，所以没有做任何更改。', deleting: '正在删除…', offFailed: '无法关闭。开关显示的是当前已保存的状态。', atLeast: '至少 {n}', andSelf: ' 以及你的「我正在成为……」这句话', saveFailed: '无法保存这项更改。开关显示的是当前已保存的状态。', loadFailed: '无法加载你的隐私设置。没有任何更改——请重试。', retry: '重试',
+  countsFailed: '无法统计已保存的内容。', skillsFailed: '无法加载你的技能。',
 };
 
 const COPY: Partial<Record<Locale, MeCopy>> = { en, ar, es, fr, pt, tr, ru, hi, id, vi, ko, zh };
