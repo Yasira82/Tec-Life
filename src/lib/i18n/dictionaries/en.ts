@@ -38,6 +38,8 @@ export const en = {
     welcomeName: 'Welcome, {name}',
     subtitle:    'build yourself, one step at a time',
     nav: { home: 'Home', goals: 'My future', skills: 'Skills', activity: 'Activity', settings: 'Settings' },
+    // The redesign (Phase 1, behind the server switch): its four tabs, and the label that tells a tester which design they are on.
+    v2: { preview: 'New design preview', tabs: { today: 'Today', goals: 'My goals', mirror: 'My mirror', me: 'Me' } },
     home: {
       focus: 'Your focus',
       focusHint: 'closest to done',

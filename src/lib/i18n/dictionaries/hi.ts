@@ -31,6 +31,8 @@ export const hi = {
     welcomeName: 'स्वागत है, {name}',
     subtitle:    'खुद को कदम-दर-कदम बनाइए',
     nav: { home: 'होम', goals: 'मेरा भविष्य', skills: 'कौशल', activity: 'गतिविधि', settings: 'सेटिंग्स' },
+    // The redesign (Phase 1, behind the server switch): its four tabs, and the label that tells a tester which design they are on.
+    v2: { preview: 'नए डिज़ाइन का पूर्वावलोकन', tabs: { today: 'आज', goals: 'मेरे लक्ष्य', mirror: 'मेरा आईना', me: 'मैं' } },
     home: {
       focus: 'आपका फ़ोकस',
       focusHint: 'पूरा होने के सबसे क़रीब',

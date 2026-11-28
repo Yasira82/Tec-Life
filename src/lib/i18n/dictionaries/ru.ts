@@ -31,6 +31,8 @@ export const ru = {
     welcomeName: 'Добро пожаловать, {name}',
     subtitle:    'стройте себя шаг за шагом',
     nav: { home: 'Главная', goals: 'Моё будущее', skills: 'Навыки', activity: 'Активность', settings: 'Настройки' },
+    // The redesign (Phase 1, behind the server switch): its four tabs, and the label that tells a tester which design they are on.
+    v2: { preview: 'Предпросмотр нового дизайна', tabs: { today: 'Сегодня', goals: 'Мои цели', mirror: 'Моё зеркало', me: 'Я' } },
     home: {
       focus: 'Ваш фокус',
       focusHint: 'ближе всего к цели',

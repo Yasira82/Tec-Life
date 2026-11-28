@@ -31,6 +31,8 @@ export const id = {
     welcomeName: 'Selamat datang, {name}',
     subtitle:    'bangun dirimu, selangkah demi selangkah',
     nav: { home: 'Beranda', goals: 'Masa depanku', skills: 'Keterampilan', activity: 'Aktivitas', settings: 'Pengaturan' },
+    // The redesign (Phase 1, behind the server switch): its four tabs, and the label that tells a tester which design they are on.
+    v2: { preview: 'Pratinjau desain baru', tabs: { today: 'Hari ini', goals: 'Tujuanku', mirror: 'Cerminku', me: 'Aku' } },
     home: {
       focus: 'Fokus kamu',
       focusHint: 'paling dekat selesai',
