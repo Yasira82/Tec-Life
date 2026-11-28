@@ -85,23 +85,29 @@ function Pills<T extends string>({ value, options, onChange }: { value: T; optio
 function Toggle({ on, disabled, label, onChange }: {
   on: boolean; disabled?: boolean; label: string; onChange: (v: boolean) => void;
 }) {
+  // The pill is 44×26; the button around it is the 44px target a finger needs (e2e/touch-targets.spec.ts).
   return (
     <button
       role="switch" aria-checked={on} aria-label={label} disabled={disabled}
       onClick={() => onChange(!on)}
       style={{
-        width: 44, height: 26, borderRadius: 999, position: 'relative', flexShrink: 0,
+        width: 52, height: 44, flexShrink: 0, padding: 0, background: 'none', border: 'none',
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
         cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1,
+      }}>
+      <span aria-hidden style={{
+        width: 44, height: 26, borderRadius: 999, position: 'relative', display: 'block', boxSizing: 'border-box',
         background: on ? C.gold : inkA(0.1),
         border: `1px solid ${on ? 'transparent' : C.border}`,
         transition: 'background .18s',
       }}>
-      <span style={{
-        position: 'absolute', top: 3, insetInlineStart: on ? 21 : 3,
-        width: 18, height: 18, borderRadius: '50%',
-        background: on ? C.onGold : C.faint,
-        transition: 'inset-inline-start .18s, background .18s',
-      }} />
+        <span style={{
+          position: 'absolute', top: 3, insetInlineStart: on ? 21 : 3,
+          width: 18, height: 18, borderRadius: '50%',
+          background: on ? C.onGold : C.faint,
+          transition: 'inset-inline-start .18s, background .18s',
+        }} />
+      </span>
     </button>
   );
 }

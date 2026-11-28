@@ -7,7 +7,7 @@
 // chose to keep — behind two tabs. Each item is one line (date · title); tapping it
 // opens its details and its actions. Nothing is a conversation unless the person kept
 // it; deleting takes two taps; download saves on the person's own device.
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type KeyboardEvent } from 'react';
 import { C } from '@/lib-client/palette';
 import { useTranslation } from '@/lib/i18n';
 import { sessionCopy } from '@/lib/life/session-copy';
@@ -106,8 +106,19 @@ export function JourneyView({ onContinue, onMakeGoal, embedded = false }: {
     </button>
   );
 
+  // Two tabs: the arrow keys move between them, either way round (left-to-right or right-to-left alike),
+  // and only the selected one is in the Tab order — the keyboard pattern of a tablist (WAI-ARIA).
+  const pick = (t: Tab) => { setTab(t); setOpen(null); };
+  const onTabKey = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+    e.preventDefault();
+    const next: Tab = e.key === 'Home' ? 'summaries' : e.key === 'End' ? 'conversations' : tab === 'summaries' ? 'conversations' : 'summaries';
+    pick(next);
+    (e.currentTarget.querySelector(`[data-tab="${next}"]`) as HTMLElement | null)?.focus();
+  };
   const tabBtn = (t: Tab, label: string, n: number) => (
-    <button type="button" role="tab" aria-selected={tab === t} onClick={() => { setTab(t); setOpen(null); }}
+    <button type="button" role="tab" data-tab={t} id={`journey-tab-${t}`} aria-controls="journey-tabpanel"
+      aria-selected={tab === t} tabIndex={tab === t ? 0 : -1} onClick={() => pick(t)}
       style={{ flex: 1, padding: '8px 10px', fontSize: 13, fontWeight: 700, cursor: 'pointer', borderRadius: 8,
         background: tab === t ? C.surface2 : 'transparent', color: tab === t ? C.text : C.subtext,
         border: `1px solid ${tab === t ? C.border : 'transparent'}` }}>
@@ -119,7 +130,7 @@ export function JourneyView({ onContinue, onMakeGoal, embedded = false }: {
     <section style={embedded ? undefined : { ...card, marginTop: 16 }} aria-label={s.jTitle}>
       {!embedded && <div style={{ fontSize: 15, fontWeight: 800, color: C.text, marginBottom: 10 }}>{s.jTitle}</div>}
       {showConvTab && (
-        <div role="tablist" style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
+        <div role="tablist" onKeyDown={onTabKey} style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
           {tabBtn('summaries', s.jSummaries, entries.length)}
           {tabBtn('conversations', s.cTitle, kept.length)}
         </div>
@@ -168,7 +179,7 @@ export function JourneyView({ onContinue, onMakeGoal, embedded = false }: {
       )}
 
       {tab === 'conversations' && showConvTab && (
-        <div role="tabpanel">
+        <div role="tabpanel" id="journey-tabpanel" aria-labelledby={`journey-tab-${tab}`}>
           {kept.length === 0 ? (
             <div style={{ fontSize: 13, color: C.subtext, marginTop: 8 }}>{s.cEmpty}</div>
           ) : (
