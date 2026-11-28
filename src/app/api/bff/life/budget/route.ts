@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { forwardLife, readGateway } from '@/lib/bff/lifeGateway';
-import { PERIOD, currentPeriod, periodBounds, spentBySource, composeBudget, type CapRow, type PaymentRow } from '@/lib/life/money';
+import { PERIOD, currentPeriod, periodBounds, spentBySource, composeBudget, readPaymentHistory, UNREADABLE, type CapRow } from '@/lib/life/money';
 
 // L1 — the caller's own budget for one month (C-106 §10 Phase 1).
 //
@@ -35,10 +35,17 @@ export async function GET(req: NextRequest) {
   // the sum would understate, and an understated "spent" reads as "under budget".
   let spent: ReturnType<typeof spentBySource> | null = null;
   let spent_status: number | 'partial' | null = null;
+  // Complete only when the answer is the expected shape, hasNext is explicitly false and every row was
+  // counted (owner review of #136): a broken answer or a skipped row is an unknown, never a smaller sum.
   if (payments.ok) {
-    const d = payments.data as { payments?: PaymentRow[]; pagination?: { hasNext?: boolean } };
-    if (d?.pagination?.hasNext) spent_status = 'partial';
-    else spent = spentBySource(d?.payments ?? []);
+    const read = readPaymentHistory(payments.data);
+    if (read.kind === 'partial') spent_status = 'partial';
+    else if (read.kind === 'unreadable') spent_status = UNREADABLE;
+    else {
+      const s = spentBySource(read.rows);
+      if (s.skipped > 0) spent_status = UNREADABLE;
+      else spent = s;
+    }
   } else {
     spent_status = payments.status;
   }

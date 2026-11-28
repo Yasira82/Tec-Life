@@ -140,6 +140,119 @@ describe('GET /api/bff/life/cashflow', () => {
   });
 });
 
+// Owner review of Tec-Life #136: a figure is complete only when the answer is the expected shape and every
+// row in it was counted. Missing is never 0; a broken answer is never "spent nothing".
+describe('complete readings only (owner review of #136)', () => {
+  const pays = (data: unknown) => ({ success: true, data });
+  const ROW = { amount: '12.5', status: 'completed', source: 'ecommerce', created_at: '2026-10-05T00:00:00Z' };
+  const budgetWith = async (payData: unknown) => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (u) => String(u).includes('/payment/history') ? res(200, pays(payData)) : res(200, CAPS));
+    const { GET } = await import('@/app/api/bff/life/budget/route');
+    return (await (await GET(makeReq('/api/bff/life/budget?period=2026-10', 'GET', session))).json()).data;
+  };
+
+  it.each([
+    ['no pagination', { payments: [ROW] }, 502],
+    ['pagination without hasNext', { payments: [ROW], pagination: {} }, 502],
+    ['hasNext not a boolean', { payments: [ROW], pagination: { hasNext: 'false' } }, 502],
+    ['no payments list', { pagination: { hasNext: false } }, 502],
+    ['payments not a list', { payments: {}, pagination: { hasNext: false } }, 502],
+    ['a payment that is not an object', { payments: [ROW, 3], pagination: { hasNext: false } }, 502],
+    ['a skipped row: an amount that is not exact', { payments: [ROW, { ...ROW, amount: 'abc' }], pagination: { hasNext: false } }, 502],
+    ['a skipped row: a status that should not be there', { payments: [ROW, { ...ROW, status: 'pending' }], pagination: { hasNext: false } }, 502],
+    ['hasNext true', { payments: [ROW], pagination: { hasNext: true } }, 'partial'],
+  ])('budget: %s → spending unknown (%s), no amount on any line', async (_n, data, status) => {
+    const d = await budgetWith(data);
+    expect(d.spent_status).toBe(status);
+    expect(d.spent_total).toBeNull();
+    expect(d.lines[0]).toMatchObject({ spent_pi: null, pct: null, over: null });
+    expect(d.unallocated).toEqual([]);
+  });
+
+  it('budget: hasNext explicitly false and every row counted → complete; a capped app with no payment spent 0', async () => {
+    const d = await budgetWith({ payments: [{ ...ROW, source: 'assets' }], pagination: { hasNext: false } });
+    expect(d.spent_status).toBeNull();
+    expect(d.lines[0]).toMatchObject({ category: 'ecommerce', spent_pi: '0' });
+    expect(d.unallocated).toEqual([{ source: 'assets', spent_pi: '12.5' }]);
+  });
+
+  const flowWith = async (payData: unknown, payoutData: unknown, payoutStatus = 200) => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (u) => String(u).includes('/commerce/payouts/mine')
+      ? res(payoutStatus, { success: true, data: payoutData }) : res(200, pays(payData)));
+    const { GET } = await import('@/app/api/bff/life/cashflow/route');
+    return (await (await GET(makeReq('/api/bff/life/cashflow?period=2026-10', 'GET', session))).json()).data;
+  };
+  const OK_PAYS = { payments: [ROW], pagination: { hasNext: false } };
+  const SENT = { status: 'SENT', amount: '3', sent_at: '2026-10-02T10:00:00Z', created_at: '2026-10-01T10:00:00Z', source: 'order' };
+
+  it.each([
+    ['no pagination', { payments: [ROW] }, 502],
+    ['no payments list', { pagination: { hasNext: false } }, 502],
+    ['a skipped row', { payments: [ROW, { ...ROW, amount: 'x' }], pagination: { hasNext: false } }, 502],
+    ['hasNext true', { payments: [ROW], pagination: { hasNext: true } }, 'partial'],
+  ])('cash flow out: %s → out null (%s), no net', async (_n, data, status) => {
+    const d = await flowWith(data, { payouts: [SENT] });
+    expect(d.out).toBeNull();
+    expect(d.out_status).toBe(status);
+    expect(d.in.total).toBe('3');
+    expect(d.net).toBeNull();
+  });
+
+  it.each([
+    ['no payouts list', {}, 502],
+    ['payouts not a list', { payouts: 'x' }, 502],
+    ['a SENT payout with an amount that is not exact', { payouts: [SENT, { ...SENT, amount: 'x' }] }, 502],
+    ['a SENT payout with no date', { payouts: [{ status: 'SENT', amount: '3' }] }, 502],
+    ['200 payouts, the oldest inside the month — the list may be cut', {
+      payouts: Array.from({ length: 200 }, () => ({ ...SENT, created_at: '2026-10-03T00:00:00Z' })) }, 'partial'],
+  ])('cash flow in: %s → in null (%s), no net', async (_n, data, status) => {
+    const d = await flowWith(OK_PAYS, data);
+    expect(d.in).toBeNull();
+    expect(d.in_status).toBe(status);
+    expect(d.out.total).toBe('12.5');
+    expect(d.net).toBeNull();
+  });
+
+  it('cash flow in: 200 payouts whose oldest was CREATED before the month → still partial (owner review of #137)', async () => {
+    // The list is the newest 200 by created_at; the month counts by sent_at. An omitted, older payout may
+    // have been sent inside the month, so the cap proves nothing about completeness.
+    const rows = [...Array.from({ length: 199 }, () => ({ ...SENT, status: 'OWED' })), { ...SENT, created_at: '2026-08-01T00:00:00Z', sent_at: '2026-10-02T00:00:00Z' }];
+    const d = await flowWith(OK_PAYS, { payouts: rows });
+    expect(d.in).toBeNull();
+    expect(d.in_status).toBe('partial');
+    expect(d.net).toBeNull();
+  });
+
+  it('cash flow in: an old created_at with an in-month sent_at is counted in the month', async () => {
+    const d = await flowWith(OK_PAYS, { payouts: [{ ...SENT, created_at: '2026-08-01T00:00:00Z', sent_at: '2026-10-15T00:00:00Z', amount: '4' }] });
+    expect(d.in.total).toBe('4');
+    expect(d.net).toBe('-8.5');
+  });
+
+  it.each([
+    ['an invalid sent_at', { ...SENT, sent_at: 'not a date' }],
+    ['no sent_at and an invalid created_at', { status: 'SENT', amount: '3', created_at: 'yesterday-ish' }],
+    ['an empty sent_at', { ...SENT, sent_at: '' }],
+  ])('cash flow in: %s → unreadable, never dropped from the total', async (_n, row) => {
+    const d = await flowWith(OK_PAYS, { payouts: [SENT, row] });
+    expect(d.in).toBeNull();
+    expect(d.in_status).toBe(502);
+    expect(d.net).toBeNull();
+  });
+
+  it('cash flow in: below the cap, every SENT row readable → complete', async () => {
+    const d = await flowWith(OK_PAYS, { payouts: [SENT, { ...SENT, amount: '2', sent_at: '2026-10-20T00:00:00Z' }, { ...SENT, sent_at: '2026-09-30T23:59:59Z' }] });
+    expect(d.in_status).toBeNull();
+    expect(d.in.total).toBe('5');
+  });
+
+  it('cash flow: both sides complete → a net; no payouts at all is a complete 0 in', async () => {
+    const d = await flowWith(OK_PAYS, { payouts: [] });
+    expect(d.in).toEqual({ total: '0', lines: [] });
+    expect(d.net).toBe('-12.5');
+  });
+});
+
 describe('the routes forward the person, never a service credential', () => {
   const read = (p: string) => readFileSync(join(process.cwd(), 'src', p), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
   for (const p of ['app/api/bff/life/budget/route.ts', 'app/api/bff/life/budget/[category]/route.ts', 'app/api/bff/life/cashflow/route.ts', 'lib/bff/lifeGateway.ts']) {

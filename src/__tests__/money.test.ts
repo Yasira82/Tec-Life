@@ -104,3 +104,55 @@ describe('cash flow', () => {
     expect(netOf(inn, null)).toBeNull();
   });
 });
+
+// Owner review of Tec-Life #136 — the readers behind both routes.
+import { readPaymentHistory, readPayoutsIn, paymentsOutCounted, UNREADABLE, PAYOUTS_READ_CAP } from '@/lib/life/money';
+
+describe('readPaymentHistory — complete only when hasNext is explicitly false and the list is a list', () => {
+  const row = { amount: '1', status: 'completed' };
+  it.each([
+    [undefined, 'unreadable'], [null, 'unreadable'], [{}, 'unreadable'],
+    [{ payments: [row] }, 'unreadable'],
+    [{ payments: [row], pagination: {} }, 'unreadable'],
+    [{ payments: [row], pagination: { hasNext: null } }, 'unreadable'],
+    [{ payments: null, pagination: { hasNext: false } }, 'unreadable'],
+    [{ payments: [row, 'x'], pagination: { hasNext: false } }, 'unreadable'],
+    [{ payments: [row], pagination: { hasNext: true } }, 'partial'],
+    [{ payments: [], pagination: { hasNext: false } }, 'complete'],
+  ])('%j → %s', (data, kind) => { expect(readPaymentHistory(data).kind).toBe(kind); });
+
+  it('the status for an unreadable answer is 502', () => { expect(UNREADABLE).toBe(502); });
+});
+
+describe('paymentsOutCounted — rows it could not count are counted', () => {
+  it('skipped = not completed or not an exact amount', () => {
+    const r = paymentsOutCounted([{ amount: '2', status: 'completed' }, { amount: 'x', status: 'completed' }, { amount: '3', status: 'failed' }]);
+    expect(r.skipped).toBe(2);
+    expect(r.side.total).toBe('2');
+  });
+});
+
+describe('readPayoutsIn — the newest 200, never a cut list read as complete', () => {
+  const SENT = { status: 'SENT', amount: '3', sent_at: '2026-10-02T10:00:00Z', created_at: '2026-10-01T10:00:00Z' };
+  it('cap is the service’s 200', () => { expect(PAYOUTS_READ_CAP).toBe(200); });
+  it('an OWED payout with no amount does not matter; a SENT one does', () => {
+    expect(readPayoutsIn({ payouts: [SENT, { status: 'OWED' }] }, '2026-10').kind).toBe('complete');
+    expect(readPayoutsIn({ payouts: [SENT, { status: 'SENT' }] }, '2026-10').kind).toBe('unreadable');
+  });
+  it('at the 200 cap → partial, whatever the dates (the list is cut by created_at, the month counts sent_at)', () => {
+    const inMonth = Array.from({ length: 200 }, () => ({ ...SENT }));
+    expect(readPayoutsIn({ payouts: inMonth }, '2026-10').kind).toBe('partial');
+    const reachesBack = [...inMonth.slice(1), { ...SENT, created_at: '2025-01-01T00:00:00Z' }];
+    expect(readPayoutsIn({ payouts: reachesBack }, '2026-10').kind).toBe('partial');
+  });
+  it('a date must be a real instant: sent_at when present, else created_at', () => {
+    expect(readPayoutsIn({ payouts: [{ ...SENT, sent_at: 'nope' }] }, '2026-10').kind).toBe('unreadable');
+    expect(readPayoutsIn({ payouts: [{ status: 'SENT', amount: '3', created_at: 'nope' }] }, '2026-10').kind).toBe('unreadable');
+    const r = readPayoutsIn({ payouts: [{ status: 'SENT', amount: '3', created_at: '2026-10-09T00:00:00Z' }] }, '2026-10');
+    expect(r.kind === 'complete' && r.side.total).toBe('3');
+  });
+  it('no payouts at all is a complete 0', () => {
+    const r = readPayoutsIn({ payouts: [] }, '2026-10');
+    expect(r).toEqual({ kind: 'complete', side: { total: '0', lines: [] } });
+  });
+});

@@ -150,3 +150,80 @@ export function paymentsOut(rows: PaymentRow[]): CashflowSide {
   }
   return { total: fromMicro(total), lines };
 }
+
+// ── Reading an owning service's answer COMPLETELY (owner review of Tec-Life #136) ────────────────────────
+//
+// A figure is complete only when the answer it came from is the expected shape AND every row in it was
+// counted. Anything else is not a smaller number — it is an unknown, and the routes say so:
+//   'partial'      the service said there is more (hasNext === true) or its own page limit was reached;
+//   UNREADABLE     the answer is not the expected shape (no list, no explicit hasNext), or a row in it could
+//                  not be counted (a status that should not be there, an amount that is not exact, no date).
+// Missing is never 0: `payments ?? []` turned a broken answer into "spent nothing", complete.
+
+/** The status a side carries when the owning service's answer cannot be counted fully. */
+export const UNREADABLE = 502;
+
+const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
+
+export type HistoryRead = { kind: 'complete'; rows: PaymentRow[] } | { kind: 'partial' } | { kind: 'unreadable' };
+
+/**
+ * payment-service `GET /payment/history` → `{ payments: [...], pagination: { hasNext } }`. Complete only when
+ * `payments` is a list of objects and `pagination.hasNext` is EXPLICITLY false.
+ */
+export function readPaymentHistory(data: unknown): HistoryRead {
+  if (!isObj(data) || !Array.isArray(data.payments) || !data.payments.every(isObj)) return { kind: 'unreadable' };
+  const p = data.pagination;
+  if (!isObj(p) || typeof p.hasNext !== 'boolean') return { kind: 'unreadable' };
+  if (p.hasNext) return { kind: 'partial' };
+  return { kind: 'complete', rows: data.payments as PaymentRow[] };
+}
+
+/** Completed payments as the out side, with the rows that could not be counted. */
+export function paymentsOutCounted(rows: PaymentRow[]): { side: CashflowSide; skipped: number } {
+  let skipped = 0;
+  for (const r of rows) if (r.status !== 'completed' || toMicro(r.amount) === null) skipped += 1;
+  return { side: paymentsOut(rows), skipped };
+}
+
+export interface PayoutRow { status?: unknown; amount?: unknown; sent_at?: unknown; created_at?: unknown; source?: unknown }
+
+/** commerce-service `payouts/mine` returns at most this many (payout.service.ts `listMine`). */
+export const PAYOUTS_READ_CAP = 200;
+
+/** A real point in time, as an ISO string — or null when the value is not one. */
+function isoInstant(v: unknown): string | null {
+  if (typeof v !== 'string' || v.trim() === '') return null;
+  const t = Date.parse(v);
+  return Number.isFinite(t) ? new Date(t).toISOString() : null;
+}
+
+/**
+ * commerce-service `GET /commerce/payouts/mine` → `{ payouts: [...] }`. Verified in commerce `listMine`
+ * (owner review of #137): the rows are the newest 200 by `created_at` (`orderBy: { created_at: 'desc' },
+ * take: 200`), while the month's in side counts a payout by `sent_at` (falling back to `created_at`).
+ * The two dates differ — a payout created before the month can be sent inside it — so a list cut by creation
+ * date proves NOTHING about what was sent in the month. At the cap the side is therefore 'partial', always:
+ * completeness cannot be proven within this contract.
+ *
+ * Below the cap it is complete only when every SENT payout has an exact amount and a REAL date (`sent_at`,
+ * or `created_at` when there is no `sent_at`): an unreadable date is refused, never dropped from the total.
+ * Dates are passed on normalized to ISO, so the month comparison is on real instants, not on text.
+ */
+export function readPayoutsIn(data: unknown, period: string):
+  { kind: 'complete'; side: CashflowSide } | { kind: 'partial' } | { kind: 'unreadable' } {
+  if (!isObj(data) || !Array.isArray(data.payouts) || !data.payouts.every(isObj)) return { kind: 'unreadable' };
+  const rows = data.payouts as PayoutRow[];
+  if (rows.length >= PAYOUTS_READ_CAP) return { kind: 'partial' };
+  const sent: PayoutRow[] = [];
+  for (const r of rows) {
+    if (r.status !== 'SENT') continue;
+    if (toMicro(r.amount) === null) return { kind: 'unreadable' };
+    // The date payoutsIn will use: sent_at when present (it must then be real), else created_at.
+    const hasSent = r.sent_at !== undefined && r.sent_at !== null;
+    const at = hasSent ? isoInstant(r.sent_at) : isoInstant(r.created_at);
+    if (at === null) return { kind: 'unreadable' };
+    sent.push({ ...r, sent_at: at, created_at: at });
+  }
+  return { kind: 'complete', side: payoutsIn(sent, period) };
+}

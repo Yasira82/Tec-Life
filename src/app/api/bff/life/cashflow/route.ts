@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readGateway } from '@/lib/bff/lifeGateway';
-import { PERIOD, currentPeriod, periodBounds, paymentsOut, payoutsIn, netOf, type PaymentRow } from '@/lib/life/money';
+import { PERIOD, currentPeriod, periodBounds, paymentsOutCounted, readPaymentHistory, readPayoutsIn, netOf, UNREADABLE, type CashflowSide } from '@/lib/life/money';
 
 // L1 — cash flow for one month, PRESENTED from the owning services (C-106 §4):
 //   in   ← seller payouts SENT to this person   (tec-commerce-service `payouts/mine`)
@@ -28,21 +28,31 @@ export async function GET(req: NextRequest) {
     readGateway(req, '/api/commerce/payouts/mine'),
   ]);
 
-  let out: ReturnType<typeof paymentsOut> | null = null;
+  // Each side is complete only when its answer is the expected shape and every row in it was counted
+  // (owner review of #136). A broken answer, a skipped row or a cut list is null with its status — never a 0 —
+  // and there is no net unless BOTH sides are complete (netOf).
+  let out: CashflowSide | null = null;
   let out_status: number | 'partial' | null = null;
   if (payments.ok) {
-    const d = payments.data as { payments?: PaymentRow[]; pagination?: { hasNext?: boolean } };
-    if (d?.pagination?.hasNext) out_status = 'partial';
-    else out = paymentsOut(d?.payments ?? []);
+    const read = readPaymentHistory(payments.data);
+    if (read.kind === 'partial') out_status = 'partial';
+    else if (read.kind === 'unreadable') out_status = UNREADABLE;
+    else {
+      const { side, skipped } = paymentsOutCounted(read.rows);
+      if (skipped > 0) out_status = UNREADABLE;
+      else out = side;
+    }
   } else {
     out_status = payments.status;
   }
 
-  let inn: ReturnType<typeof payoutsIn> | null = null;
-  let in_status: number | null = null;
+  let inn: CashflowSide | null = null;
+  let in_status: number | 'partial' | null = null;
   if (payouts.ok) {
-    const d = payouts.data as { payouts?: Parameters<typeof payoutsIn>[0] };
-    inn = payoutsIn(d?.payouts ?? [], period);
+    const read = readPayoutsIn(payouts.data, period);
+    if (read.kind === 'partial') in_status = 'partial';
+    else if (read.kind === 'unreadable') in_status = UNREADABLE;
+    else inn = read.side;
   } else {
     in_status = payouts.status;
   }
