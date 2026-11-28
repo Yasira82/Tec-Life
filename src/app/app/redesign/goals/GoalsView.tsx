@@ -99,7 +99,8 @@ export function GoalsView({ isPro, prefill, onPrefillUsed }: { isPro: boolean; p
     if (!priority) return;
     const r = parseAmount(log);
     if (!r.ok) {
-      setLogProblem(r.problem === 'ambiguous' ? g.amountAmbiguous : r.problem === 'too_large' ? g.amountTooLarge : g.amountInvalid);
+      setLogProblem(r.problem === 'ambiguous' ? g.amountAmbiguous : r.problem === 'too_precise' ? g.amountTooPrecise
+        : r.problem === 'too_large' ? g.amountTooLarge : g.amountInvalid);
       return;
     }
     setLogProblem(null);

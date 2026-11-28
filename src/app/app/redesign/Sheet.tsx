@@ -14,6 +14,23 @@ import { SAFE_BOTTOM } from '@/lib/safe-bottom';
 
 const FOCUSABLE = 'a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])';
 
+/**
+ * Whether an element can really take focus: not disabled, not hidden from assistive tech, not inside
+ * a closed <details> (its content is not rendered for focus), and actually rendered — `hidden`,
+ * `display: none` or `visibility: hidden` on it or any ancestor up to the sheet all take it out.
+ */
+function canTakeFocus(el: HTMLElement): boolean {
+  if (el.matches(':disabled') || el.closest('[aria-hidden="true"], [inert], [hidden]')) return false;
+  const closed = el.closest('details:not([open])');
+  if (closed && !(el.tagName === 'SUMMARY' && el.parentElement === closed)) return false;
+  for (let n: HTMLElement | null = el; n; n = n.parentElement) {
+    const cs = getComputedStyle(n);
+    if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+    if (n.getAttribute('role') === 'dialog') break;
+  }
+  return true;
+}
+
 export function Sheet({ title, testId, onClose, children }: {
   title: string; testId: string; onClose: () => void; children: ReactNode;
 }) {
@@ -33,12 +50,14 @@ export function Sheet({ title, testId, onClose, children }: {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') { closeRef.current(); return; }
       if (e.key !== 'Tab' || !box.current) return;
-      const items = [...box.current.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((el) => !el.hasAttribute('disabled') && el.getAttribute('aria-hidden') !== 'true');
+      const items = [...box.current.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(canTakeFocus);
       if (items.length === 0) { e.preventDefault(); box.current.focus(); return; }
       const first = items[0]!, last = items[items.length - 1]!;
       const at = document.activeElement;
-      if (e.shiftKey && (at === first || at === box.current)) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && (at === last || !box.current.contains(at))) { e.preventDefault(); first.focus(); }
+      const outside = !box.current.contains(at);
+      // From outside the sheet, Tab comes back to its first control and Shift+Tab to its last.
+      if (e.shiftKey && (outside || at === first || at === box.current)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (outside || at === last)) { e.preventDefault(); first.focus(); }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);

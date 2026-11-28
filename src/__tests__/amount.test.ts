@@ -22,7 +22,7 @@ describe('parseAmount — refused', () => {
     ['', 'empty'], ['   ', 'empty'],
     ['0', 'invalid'], ['0.0', 'invalid'], ['-1', 'invalid'], ['+1', 'invalid'], ['abc', 'invalid'],
     ['1.2.3', 'invalid'], ['1 000', 'invalid'], ['1e3', 'invalid'], ['0x10', 'invalid'], ['Infinity', 'invalid'],
-    ['.5', 'invalid'], ['5.', 'invalid'], ['1.123456789', 'invalid'],
+    ['.5', 'invalid'], ['5.', 'invalid'], ['1.123456789', 'too_precise'],
     ['2000000000', 'too_large'],
   ])('%s → %s', (input, problem) => { expect(value(input)).toBe(problem); });
 
@@ -31,3 +31,43 @@ describe('parseAmount — refused', () => {
     expect(parseAmount('11', 10)).toEqual({ ok: false, problem: 'too_large' });
   });
 });
+
+describe('parseAmount — precision near the limit (owner review of ec0fdc0)', () => {
+  // The value travels as a JSON number and is stored as a double: what is accepted must arrive
+  // exactly as typed. A double keeps every decimal of up to 15 significant digits.
+  const exact = (typed: string) => {
+    const r = parseAmount(typed);
+    if (!r.ok) throw new Error(`${typed} refused: ${r.problem}`);
+    const sent = JSON.parse(JSON.stringify({ delta: r.value })).delta as number;
+    const frac = typed.split('.')[1]?.length ?? 0;
+    return { same: sent === r.value, back: sent.toFixed(frac) };
+  };
+
+  it.each([
+    '1000000000', '999999999.999999', '999999999.123456', '123456789.012345', '0.00000001', '1.50000000', '10.12345678',
+  ])('%s is accepted and arrives exactly as typed', (typed) => {
+    expect(exact(typed)).toEqual({ same: true, back: typed });
+  });
+
+  it.each([
+    ['999999999.12345678', 'too_precise'],  // 17 significant digits: a double would make it …123457
+    ['999999999.1234567', 'too_precise'],   // 16
+    ['1000000000.00000001', 'too_precise'],
+    ['1000000000.1', 'too_large'],
+  ])('%s → %s', (typed, problem) => { expect(value(typed)).toBe(problem); });
+
+  it('every accepted amount round-trips — 5,000 generated near and below the limit', () => {
+    let seed = 42;
+    const rnd = (n: number) => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed % n; };
+    for (let i = 0; i < 5000; i++) {
+      const int = String(rnd(2) ? 999_999_000 + rnd(1000) : rnd(1_000_000_000));
+      const room = Math.max(0, Math.min(8, 15 - int.replace(/^0+/, '').length));
+      const frac = Array.from({ length: rnd(room + 1) }, () => rnd(10)).join('');
+      const typed = frac ? `${int}.${frac}` : int;
+      const r = parseAmount(typed);
+      if (!r.ok) { expect(r.problem === 'invalid' && Number(typed) === 0).toBe(true); continue; }
+      expect(exact(typed)).toEqual({ same: true, back: typed });
+    }
+  });
+});
+

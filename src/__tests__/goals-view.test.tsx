@@ -184,6 +184,15 @@ describe('My goals — amounts (owner review of the chain, 28 Nov)', () => {
     expect(progress()).toEqual([]);
   });
 
+  it('more digits than a number can carry exactly: refused, not rounded', async () => {
+    view();
+    await screen.findByTestId('goal-priority');
+    fireEvent.change(logField(), { target: { value: '999999999.12345678' } });
+    fireEvent.click(logBtn());
+    expect(await screen.findByText(g.amountTooPrecise)).toBeTruthy();
+    expect(progress()).toEqual([]);
+  });
+
   it('the sheet’s target: refused next to the target field; nothing is saved; the sheet stays', async () => {
     view();
     await screen.findByTestId('goal-priority');

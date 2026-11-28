@@ -34,9 +34,9 @@ export const draftOf = (g: Goal): GoalDraft => ({
 });
 
 /** Why a draft cannot be saved. The target ones belong next to the target field. */
-export type DraftProblem = 'no_title' | 'bad_target' | 'ambiguous_target' | 'large_target';
-export const isTargetProblem = (p: string): p is 'bad_target' | 'ambiguous_target' | 'large_target' =>
-  p === 'bad_target' || p === 'ambiguous_target' || p === 'large_target';
+export type DraftProblem = 'no_title' | 'bad_target' | 'ambiguous_target' | 'precise_target' | 'large_target';
+export const isTargetProblem = (p: string): p is 'bad_target' | 'ambiguous_target' | 'precise_target' | 'large_target' =>
+  p === 'bad_target' || p === 'ambiguous_target' || p === 'precise_target' || p === 'large_target';
 
 const stepLines = (text: string) =>
   text.split('\n').map(cleanStep).filter(Boolean).slice(0, STEP_MAX);
@@ -47,7 +47,8 @@ function targetOf(d: GoalDraft): number | null | DraftProblem {
   if (!d.target.trim()) return null;
   const r = parseAmount(d.target);
   if (r.ok) return r.value;
-  return r.problem === 'ambiguous' ? 'ambiguous_target' : r.problem === 'too_large' ? 'large_target' : 'bad_target';
+  return r.problem === 'ambiguous' ? 'ambiguous_target' : r.problem === 'too_precise' ? 'precise_target'
+    : r.problem === 'too_large' ? 'large_target' : 'bad_target';
 }
 
 /** The body for a new goal, or why it cannot be saved. */

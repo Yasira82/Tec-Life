@@ -57,7 +57,8 @@ export function GoalSheet({ goal, initial, areas, note, busy, capText, onSave, o
   const options = d.area && !areas.includes(d.area) ? [...areas, d.area] : areas;
   const say = (p: DraftProblem | 'failed' | 'cap') => {
     if (isTargetProblem(p)) {
-      setTargetProblem(p === 'ambiguous_target' ? g.amountAmbiguous : p === 'large_target' ? g.amountTooLarge : g.badTarget);
+      setTargetProblem(p === 'ambiguous_target' ? g.amountAmbiguous : p === 'precise_target' ? g.amountTooPrecise
+        : p === 'large_target' ? g.amountTooLarge : g.badTarget);
       return;
     }
     setProblem(p === 'no_title' ? g.noTitle : p === 'cap' ? `🔒 ${capText ?? ''}` : g.saveFailed);

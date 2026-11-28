@@ -11,6 +11,8 @@ export interface GoalsCopy {
   noTitle: string; badTarget: string; saveFailed: string;
   /** Next to an amount field (π logged or a target): not above 0 / written with a comma / too big. */
   amountInvalid: string; amountAmbiguous: string; amountTooLarge: string;
+  /** More than 8 decimals, or more than 15 digits in all — refused rather than rounded. */
+  amountTooPrecise: string;
 }
 
 const en: GoalsCopy = {
@@ -21,6 +23,7 @@ const en: GoalsCopy = {
   noTitle: 'Give the goal a name to save it.', badTarget: 'The π target must be a number above 0.',
   saveFailed: 'Couldn’t save. Nothing was changed — try again.',
   amountInvalid: 'Enter an amount above 0, like 5 or 2.5.', amountAmbiguous: 'Write it without a comma: a dot for decimals, like 1000 or 2.5.', amountTooLarge: 'That amount is too large.',
+  amountTooPrecise: 'Too many digits: at most 8 after the point, and 15 in all.',
 };
 
 const ar: GoalsCopy = {
@@ -31,6 +34,7 @@ const ar: GoalsCopy = {
   noTitle: 'اكتب اسمًا للهدف لحفظه.', badTarget: 'يجب أن يكون المبلغ رقمًا أكبر من 0.',
   saveFailed: 'تعذّر الحفظ. لم يتغير شيء — حاول مرة أخرى.',
   amountInvalid: 'اكتب مبلغًا أكبر من 0، مثل 5 أو 2.5.', amountAmbiguous: 'اكتبه بدون فاصلة: نقطة للكسور، مثل 1000 أو 2.5.', amountTooLarge: 'هذا المبلغ كبير جدًا.',
+  amountTooPrecise: 'أرقام كثيرة: 8 بعد النقطة على الأكثر، و15 رقمًا في المجموع.',
 };
 
 const es: GoalsCopy = {
@@ -41,6 +45,7 @@ const es: GoalsCopy = {
   noTitle: 'Ponle un nombre a la meta para guardarla.', badTarget: 'El objetivo en π debe ser un número mayor que 0.',
   saveFailed: 'No se pudo guardar. No cambió nada; inténtalo de nuevo.',
   amountInvalid: 'Escribe una cantidad mayor que 0, como 5 o 2.5.', amountAmbiguous: 'Escríbelo sin coma: un punto para los decimales, como 1000 o 2.5.', amountTooLarge: 'Esa cantidad es demasiado grande.',
+  amountTooPrecise: 'Demasiados dígitos: como máximo 8 tras el punto y 15 en total.',
 };
 
 const fr: GoalsCopy = {
@@ -51,6 +56,7 @@ const fr: GoalsCopy = {
   noTitle: 'Donnez un nom à l’objectif pour l’enregistrer.', badTarget: 'La cible en π doit être un nombre supérieur à 0.',
   saveFailed: 'Enregistrement impossible. Rien n’a changé — réessayez.',
   amountInvalid: 'Saisissez un montant supérieur à 0, comme 5 ou 2.5.', amountAmbiguous: 'Écrivez-le sans virgule : un point pour les décimales, comme 1000 ou 2.5.', amountTooLarge: 'Ce montant est trop élevé.',
+  amountTooPrecise: 'Trop de chiffres : 8 au plus après le point, et 15 au total.',
 };
 
 const pt: GoalsCopy = {
@@ -61,6 +67,7 @@ const pt: GoalsCopy = {
   noTitle: 'Dê um nome à meta para salvá-la.', badTarget: 'O alvo em π deve ser um número maior que 0.',
   saveFailed: 'Não foi possível salvar. Nada mudou — tente de novo.',
   amountInvalid: 'Digite um valor acima de 0, como 5 ou 2.5.', amountAmbiguous: 'Escreva sem vírgula: um ponto para decimais, como 1000 ou 2.5.', amountTooLarge: 'Esse valor é grande demais.',
+  amountTooPrecise: 'Dígitos demais: no máximo 8 depois do ponto e 15 no total.',
 };
 
 const tr: GoalsCopy = {
@@ -71,6 +78,7 @@ const tr: GoalsCopy = {
   noTitle: 'Kaydetmek için hedefe bir ad ver.', badTarget: 'π hedefi 0’dan büyük bir sayı olmalı.',
   saveFailed: 'Kaydedilemedi. Hiçbir şey değişmedi — tekrar dene.',
   amountInvalid: "0'dan büyük bir tutar yaz, örneğin 5 veya 2.5.", amountAmbiguous: 'Virgülsüz yaz: ondalık için nokta, örneğin 1000 veya 2.5.', amountTooLarge: 'Bu tutar çok büyük.',
+  amountTooPrecise: 'Çok fazla basamak: noktadan sonra en çok 8, toplamda 15.',
 };
 
 const ru: GoalsCopy = {
@@ -81,6 +89,7 @@ const ru: GoalsCopy = {
   noTitle: 'Дайте цели название, чтобы сохранить.', badTarget: 'Сумма в π должна быть числом больше 0.',
   saveFailed: 'Не удалось сохранить. Ничего не изменилось — попробуйте снова.',
   amountInvalid: 'Введите сумму больше 0, например 5 или 2.5.', amountAmbiguous: 'Пишите без запятой: дробная часть через точку, например 1000 или 2.5.', amountTooLarge: 'Слишком большая сумма.',
+  amountTooPrecise: 'Слишком много цифр: не больше 8 после точки и 15 всего.',
 };
 
 const hi: GoalsCopy = {
@@ -91,6 +100,7 @@ const hi: GoalsCopy = {
   noTitle: 'सहेजने के लिए लक्ष्य का नाम लिखें।', badTarget: 'π लक्ष्य 0 से बड़ी संख्या होनी चाहिए।',
   saveFailed: 'सहेजा नहीं जा सका। कुछ नहीं बदला — फिर कोशिश करें।',
   amountInvalid: '0 से बड़ी राशि लिखें, जैसे 5 या 2.5।', amountAmbiguous: 'बिना कॉमा के लिखें: दशमलव के लिए बिंदु, जैसे 1000 या 2.5।', amountTooLarge: 'यह राशि बहुत बड़ी है।',
+  amountTooPrecise: 'बहुत अधिक अंक: दशमलव के बाद अधिकतम 8, और कुल 15।',
 };
 
 const id: GoalsCopy = {
@@ -101,6 +111,7 @@ const id: GoalsCopy = {
   noTitle: 'Beri nama tujuan untuk menyimpannya.', badTarget: 'Target π harus angka di atas 0.',
   saveFailed: 'Gagal menyimpan. Tidak ada yang berubah — coba lagi.',
   amountInvalid: 'Masukkan jumlah di atas 0, misalnya 5 atau 2.5.', amountAmbiguous: 'Tulis tanpa koma: titik untuk desimal, misalnya 1000 atau 2.5.', amountTooLarge: 'Jumlah itu terlalu besar.',
+  amountTooPrecise: 'Terlalu banyak digit: paling banyak 8 setelah titik, dan 15 seluruhnya.',
 };
 
 const vi: GoalsCopy = {
@@ -111,6 +122,7 @@ const vi: GoalsCopy = {
   noTitle: 'Đặt tên cho mục tiêu để lưu.', badTarget: 'Mức π phải là số lớn hơn 0.',
   saveFailed: 'Không lưu được. Chưa có gì thay đổi — hãy thử lại.',
   amountInvalid: 'Nhập số tiền lớn hơn 0, ví dụ 5 hoặc 2.5.', amountAmbiguous: 'Viết không dùng dấu phẩy: dùng dấu chấm cho phần thập phân, ví dụ 1000 hoặc 2.5.', amountTooLarge: 'Số tiền đó quá lớn.',
+  amountTooPrecise: 'Quá nhiều chữ số: tối đa 8 chữ số sau dấu chấm và 15 chữ số tổng cộng.',
 };
 
 const ko: GoalsCopy = {
@@ -121,6 +133,7 @@ const ko: GoalsCopy = {
   noTitle: '저장하려면 목표 이름을 적어 주세요.', badTarget: 'π 목표 금액은 0보다 큰 숫자여야 해요.',
   saveFailed: '저장하지 못했어요. 바뀐 건 없어요 — 다시 시도해 주세요.',
   amountInvalid: '0보다 큰 금액을 입력하세요. 예: 5 또는 2.5', amountAmbiguous: '쉼표 없이 입력하세요. 소수점은 마침표로, 예: 1000 또는 2.5', amountTooLarge: '금액이 너무 커요.',
+  amountTooPrecise: '숫자가 너무 많아요. 소수점 아래 최대 8자리, 전체 최대 15자리예요.',
 };
 
 const zh: GoalsCopy = {
@@ -131,6 +144,7 @@ const zh: GoalsCopy = {
   noTitle: '给目标起个名字才能保存。', badTarget: 'π 目标金额必须是大于 0 的数字。',
   saveFailed: '保存失败。没有任何更改——请重试。',
   amountInvalid: '请输入大于 0 的金额，例如 5 或 2.5。', amountAmbiguous: '请不要用逗号：小数用点号，例如 1000 或 2.5。', amountTooLarge: '金额太大。',
+  amountTooPrecise: '位数太多：小数点后最多 8 位，总共最多 15 位。',
 };
 
 const COPY: Partial<Record<Locale, GoalsCopy>> = { en, ar, es, fr, pt, tr, ru, hi, id, vi, ko, zh };

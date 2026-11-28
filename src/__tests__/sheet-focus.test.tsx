@@ -20,6 +20,11 @@ function Harness({ autofocus = false }: { autofocus?: boolean }) {
           {autofocus ? <AutoInput /> : <input aria-label="first" />}
           <button type="button" disabled>Off</button>
           <button type="button" onClick={() => setOpen(false)}>Last</button>
+          <button type="button" hidden>Hidden attr</button>
+          <button type="button" style={{ display: 'none' }}>Display none</button>
+          <div style={{ visibility: 'hidden' }}><button type="button">Invisible</button></div>
+          <div aria-hidden="true"><button type="button">Aria hidden</button></div>
+          <details><summary>More</summary><button type="button">Folded</button></details>
         </Sheet>
       )}
     </div>
@@ -50,7 +55,7 @@ describe('Sheet focus', () => {
   it('Tab and Shift+Tab stay inside, skipping what is disabled', () => {
     render(<Harness />);
     fireEvent.click(screen.getByRole('button', { name: 'Open' }));
-    const last = screen.getByRole('button', { name: 'Last' });
+    const last = screen.getByText('More');
     last.focus(); tab();
     expect(document.activeElement).toBe(screen.getByLabelText('first'));
     tab(true);
@@ -58,6 +63,28 @@ describe('Sheet focus', () => {
     // Focus somehow outside (e.g. on the page behind) is brought back in.
     screen.getByRole('button', { name: 'Elsewhere' }).focus(); tab();
     expect(document.activeElement).toBe(screen.getByLabelText('first'));
+  });
+
+  it('Shift+Tab from outside the sheet comes back to its last control', () => {
+    render(<Harness />);
+    fireEvent.click(screen.getByRole('button', { name: 'Open' }));
+    screen.getByRole('button', { name: 'Elsewhere' }).focus(); tab(true);
+    expect(document.activeElement).toBe(screen.getByText('More'));
+  });
+
+  it('what is hidden is never a stop: hidden, display:none, visibility:hidden, aria-hidden, inside a closed <details>', () => {
+    render(<Harness />);
+    fireEvent.click(screen.getByRole('button', { name: 'Open' }));
+    // The last real stop is the closed <details>' summary; Tab from it wraps to the first.
+    const summary = screen.getByText('More');
+    summary.focus(); tab();
+    expect(document.activeElement).toBe(screen.getByLabelText('first'));
+    tab(true);
+    expect(document.activeElement).toBe(summary);
+    // Opened, its button becomes the last stop.
+    (summary.parentElement as HTMLDetailsElement).open = true;
+    screen.getByLabelText('first').focus(); tab(true);
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Folded' }));
   });
 
   it('closing (a button, Escape) returns focus to the opener', () => {
