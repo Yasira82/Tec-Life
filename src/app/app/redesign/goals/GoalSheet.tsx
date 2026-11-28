@@ -10,7 +10,7 @@ import { useTranslation } from '@/lib/i18n';
 import type { Goal } from '@/lib-client/life/useLife';
 import { futureCopy, type LifeArea } from '@/lib/life/future-copy';
 import { goalsCopy } from '@/lib/life/goals-copy';
-import { takesTarget, type GoalDraft, type DraftProblem } from '@/lib/life/goals-edit';
+import { isTargetProblem, takesTarget, type GoalDraft, type DraftProblem } from '@/lib/life/goals-edit';
 import { Sheet } from '../Sheet';
 
 const HUB_URL = process.env.NEXT_PUBLIC_HUB_URL ?? 'https://hub.tecosystem.app';
@@ -46,6 +46,8 @@ export function GoalSheet({ goal, initial, areas, note, busy, capText, onSave, o
   const fc = futureCopy(locale);
   const [d, setD] = useState<GoalDraft>(initial);
   const [problem, setProblem] = useState<string | null>(null);
+  // A target that cannot be read is said next to the target field, not in the general alert.
+  const [targetProblem, setTargetProblem] = useState<string | null>(null);
   const [armed, setArmed] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
 
@@ -53,9 +55,14 @@ export function GoalSheet({ goal, initial, areas, note, busy, capText, onSave, o
 
   // The goal's own area stays selectable even if it is no longer among the chosen ones.
   const options = d.area && !areas.includes(d.area) ? [...areas, d.area] : areas;
-  const say = (p: DraftProblem | 'failed' | 'cap') => setProblem(
-    p === 'no_title' ? g.noTitle : p === 'bad_target' ? g.badTarget : p === 'cap' ? `🔒 ${capText ?? ''}` : g.saveFailed);
-  const save = async () => { setProblem(null); const p = await onSave(d); if (p) say(p); };
+  const say = (p: DraftProblem | 'failed' | 'cap') => {
+    if (isTargetProblem(p)) {
+      setTargetProblem(p === 'ambiguous_target' ? g.amountAmbiguous : p === 'large_target' ? g.amountTooLarge : g.badTarget);
+      return;
+    }
+    setProblem(p === 'no_title' ? g.noTitle : p === 'cap' ? `🔒 ${capText ?? ''}` : g.saveFailed);
+  };
+  const save = async () => { setProblem(null); setTargetProblem(null); const p = await onSave(d); if (p) say(p); };
   const act = async (fn?: () => Promise<boolean>) => { if (!fn) return; setProblem(null); if (!(await fn())) say('failed'); };
 
   return (
@@ -78,7 +85,11 @@ export function GoalSheet({ goal, initial, areas, note, busy, capText, onSave, o
         {takesTarget(d.area) && (
           <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <span style={{ fontSize: 13, color: C.subtext }}>{g.fTarget}</span>
-            <input id="goal-target" inputMode="decimal" value={d.target} onChange={(e) => setD({ ...d, target: e.target.value })} style={field} />
+            <input id="goal-target" inputMode="decimal" value={d.target}
+              aria-invalid={targetProblem ? true : undefined} aria-describedby={targetProblem ? 'goal-target-problem' : undefined}
+              onChange={(e) => { setD({ ...d, target: e.target.value }); setTargetProblem(null); }}
+              style={{ ...field, borderColor: targetProblem ? C.error : C.border }} />
+            {targetProblem && <span id="goal-target-problem" role="alert" style={{ fontSize: 13, color: C.text }}>{targetProblem}</span>}
           </label>
         )}
         <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
