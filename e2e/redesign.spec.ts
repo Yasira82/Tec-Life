@@ -219,6 +219,39 @@ test.describe('the redesign switch', () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });
 
+  test('My goals in Arabic, Pi Browser width: π in Arabic digits, «1,000» refused beside the field, the sheet keeps focus', async ({ context, page }) => {
+    await signIn(context, page, LISTED, await sign(LISTED), 'ar');
+    await page.route('**/api/bff/life/goals', (r) => r.fulfill(ok({ goals: [
+      { id: 'a', title: 'ادّخار ١٠π لهاتف', description: null, status: 'ACTIVE', target_date: null, target_amount: 10, progress: 2, area: 'MONEY', created_at: '', updated_at: '' },
+    ] })));
+    const sent: string[] = [];
+    await page.route('**/api/bff/life/goals/a/progress', (r) => { sent.push(r.request().postData() ?? ''); return r.fulfill(ok({ goal: {} })); });
+    await page.goto('/app');
+    await page.getByRole('navigation').last().getByRole('button', { name: 'أهدافي', exact: true }).click();
+    const card = page.getByTestId('goal-priority');
+    const field = card.getByRole('textbox');
+    await field.fill('1,000');
+    const log = card.getByRole('button', { name: 'تسجيل', exact: true });
+    await log.click();
+    await expect(card.getByRole('alert')).toHaveText('اكتبه بدون فاصلة: نقطة للكسور، مثل 1000 أو 2.5.');
+    expect(sent).toEqual([]);
+    await field.fill('٢٫٥');
+    await log.click();
+    await expect.poll(() => sent).toEqual(['{"delta":2.5}']);
+    // The sheet: focus goes in, Tab stays in, closing returns it to the opener.
+    const edit = card.getByRole('button', { name: 'تعديل' });
+    await edit.click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    expect(await dialog.evaluate((d) => d.contains(document.activeElement))).toBe(true);
+    for (let i = 0; i < 12; i++) await page.keyboard.press('Tab');
+    expect(await dialog.evaluate((d) => d.contains(document.activeElement))).toBe(true);
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+    expect(await edit.evaluate((b) => b === document.activeElement)).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+
   test('Arabic: right to left, Arabic tabs', async ({ context, page }) => {
     await signIn(context, page, LISTED, await sign(LISTED), 'ar');
     await page.goto('/app');

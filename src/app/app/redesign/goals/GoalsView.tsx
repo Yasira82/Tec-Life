@@ -20,6 +20,7 @@ import { futureCopy, type LifeArea } from '@/lib/life/future-copy';
 import { goalsCopy } from '@/lib/life/goals-copy';
 import { todayCopy, fill } from '@/lib/life/today-copy';
 import { createBody, draftOf, emptyDraft, patchBody, shareOf, splitGoals, type GoalDraft } from '@/lib/life/goals-edit';
+import { PROGRESS_MAX, parseAmount } from '@/lib/life/amount';
 import { parseSteps, toggleStep } from '@/lib/life/steps';
 import { type GoalPrefill } from '@/lib/life/prefill';
 import { sessionCopy } from '@/lib/life/session-copy';
@@ -55,6 +56,7 @@ export function GoalsView({ isPro, prefill, onPrefillUsed }: { isPro: boolean; p
   const [showDone, setShowDone] = useState(false);
   const [gate, setGate] = useState<string | null>(null);
   const [log, setLog] = useState('');
+  const [logProblem, setLogProblem] = useState<string | null>(null);
 
   const activeCount = goals.filter((x) => x.status === 'ACTIVE').length;
   const atFreeCap = !isPro && activeCount >= FREE_ACTIVE_GOAL_CAP;
@@ -91,10 +93,19 @@ export function GoalsView({ isPro, prefill, onPrefillUsed }: { isPro: boolean; p
   const after = (p: Promise<boolean>) => p.then((ok) => { if (ok) setSheet(null); return ok; });
 
   const { priority, others, done, areas } = splitGoals(goals, area);
+  // The same reading as a goal's target (amount.ts). Nothing is sent unless it reads as one amount;
+  // otherwise the reason is said next to the field — never a silent no-op, never a guess.
   const logPi = async () => {
-    const n = Number(log.replace(',', '.'));
-    if (!priority || !Number.isFinite(n) || n <= 0) return;
-    if (await addProgress(priority.id, n)) setLog('');
+    if (!priority) return;
+    // A log larger than the target is valid — the service caps progress at the target.
+    const r = parseAmount(log, PROGRESS_MAX);
+    if (!r.ok) {
+      setLogProblem(r.problem === 'ambiguous' ? g.amountAmbiguous : r.problem === 'too_precise' ? g.amountTooPrecise
+        : r.problem === 'too_large' ? g.amountTooLarge : g.amountInvalid);
+      return;
+    }
+    setLogProblem(null);
+    if (await addProgress(priority.id, r.value)) setLog('');
   };
 
   return (
@@ -122,8 +133,11 @@ export function GoalsView({ isPro, prefill, onPrefillUsed }: { isPro: boolean; p
                 {fill(td.ofTarget, { p: fmtPi(priority.progress), t: fmtPi(priority.target_amount) })}
               </span>
               <input aria-label={t.life.goals.logPlaceholder} placeholder={t.life.goals.logPlaceholder} inputMode="decimal" value={log}
-                onChange={(e) => setLog(e.target.value)} style={{ width: 110, minHeight: 44, fontSize: 16, background: C.bg, color: C.text, border: `1px solid ${C.border}`, borderRadius: 12, padding: '0 10px' }} />
+                aria-invalid={logProblem ? true : undefined} aria-describedby={logProblem ? 'goal-log-problem' : undefined}
+                onChange={(e) => { setLog(e.target.value); setLogProblem(null); }}
+                style={{ width: 110, minHeight: 44, fontSize: 16, background: C.bg, color: C.text, border: `1px solid ${logProblem ? C.error : C.border}`, borderRadius: 12, padding: '0 10px' }} />
               <button type="button" disabled={busy || !log.trim()} onClick={() => void logPi()} style={{ ...quiet, borderColor: C.gold, color: C.gold }}>{t.life.goals.log}</button>
+              {logProblem && <span id="goal-log-problem" role="alert" style={{ flexBasis: '100%', fontSize: 13, color: C.text }}>{logProblem}</span>}
             </div>
           ) : null}
           {parseSteps(priority.description).length > 0 && (

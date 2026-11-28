@@ -147,3 +147,100 @@ describe('My goals', () => {
     expect(screen.queryByTestId('goal-sheet')).toBeNull();
   });
 });
+
+describe('My goals — amounts (owner review of the chain, 28 Nov)', () => {
+  const progress = () => calls.filter((c) => c.url.endsWith('/progress') && c.method === 'POST');
+  const logField = () => within(screen.getByTestId('goal-priority')).getByRole('textbox', { name: en.life.goals.logPlaceholder });
+  const logBtn = () => within(screen.getByTestId('goal-priority')).getByRole('button', { name: en.life.goals.log });
+
+  it('logging π in Arabic-Indic digits sends the number', async () => {
+    view();
+    await screen.findByTestId('goal-priority');
+    fireEvent.change(logField(), { target: { value: '٢٫٥' } });
+    fireEvent.click(logBtn());
+    await waitFor(() => expect(progress().map((c) => JSON.parse(c.body))).toEqual([{ delta: 2.5 }]));
+  });
+
+  it('«1,000» is refused next to the field — nothing is sent, nothing is guessed', async () => {
+    view();
+    await screen.findByTestId('goal-priority');
+    fireEvent.change(logField(), { target: { value: '1,000' } });
+    fireEvent.click(logBtn());
+    const said = await screen.findByText(g.amountAmbiguous);
+    expect(logField().getAttribute('aria-invalid')).toBe('true');
+    expect(logField().getAttribute('aria-describedby')).toBe(said.id);
+    expect(progress()).toEqual([]);
+    // Typing again clears it.
+    fireEvent.change(logField(), { target: { value: '1000' } });
+    expect(screen.queryByText(g.amountAmbiguous)).toBeNull();
+  });
+
+  it('«0» or letters say so — never a silent no-op', async () => {
+    view();
+    await screen.findByTestId('goal-priority');
+    fireEvent.change(logField(), { target: { value: 'abc' } });
+    fireEvent.click(logBtn());
+    expect(await screen.findByText(g.amountInvalid)).toBeTruthy();
+    expect(progress()).toEqual([]);
+  });
+
+  it('more digits than a number can carry exactly: refused, not rounded', async () => {
+    view();
+    await screen.findByTestId('goal-priority');
+    fireEvent.change(logField(), { target: { value: '999999999.12345678' } });
+    fireEvent.click(logBtn());
+    expect(await screen.findByText(g.amountTooPrecise)).toBeTruthy();
+    expect(progress()).toEqual([]);
+  });
+
+  it('a log larger than the target’s own limit is sent — the service caps progress at the target', async () => {
+    goals = [G({ id: 'big', title: 'A billion', target_amount: 1_000_000_000, progress: 0, area: 'MONEY' })];
+    view();
+    await screen.findByTestId('goal-priority');
+    fireEvent.change(logField(), { target: { value: '1500000000' } });
+    fireEvent.click(logBtn());
+    await waitFor(() => expect(progress().map((c) => JSON.parse(c.body))).toEqual([{ delta: 1_500_000_000 }]));
+    expect(screen.queryByText(g.amountTooLarge)).toBeNull();
+  });
+
+  it('a log above the target’s limit with too many digits is refused beside the field, not rounded and sent', async () => {
+    goals = [G({ id: 'big', title: 'A billion', target_amount: 1_000_000_000, progress: 0, area: 'MONEY' })];
+    view();
+    await screen.findByTestId('goal-priority');
+    fireEvent.change(logField(), { target: { value: '1500000000.1234567' } });
+    fireEvent.click(logBtn());
+    expect(await screen.findByText(g.amountTooPrecise)).toBeTruthy();
+    expect(progress()).toEqual([]);
+    fireEvent.change(logField(), { target: { value: '1500000000.12345' } });
+    fireEvent.click(logBtn());
+    await waitFor(() => expect(progress().map((c) => JSON.parse(c.body))).toEqual([{ delta: 1500000000.12345 }]));
+  });
+
+  it('…while the same number as a target is refused beside the field', async () => {
+    view();
+    await screen.findByTestId('goal-priority');
+    fireEvent.click(screen.getByTestId('goal-new'));
+    fireEvent.change(within(sheet()).getByLabelText(g.fTitle), { target: { value: 'Too big' } });
+    fireEvent.change(within(sheet()).getByLabelText(g.fTarget), { target: { value: '1500000000' } });
+    fireEvent.click(within(sheet()).getByRole('button', { name: g.save }));
+    expect(await within(sheet()).findByText(g.amountTooLarge)).toBeTruthy();
+    expect(calls.some((c) => c.url === '/api/bff/life/goals' && c.method === 'POST')).toBe(false);
+  });
+
+  it('the sheet’s target: refused next to the target field; nothing is saved; the sheet stays', async () => {
+    view();
+    await screen.findByTestId('goal-priority');
+    fireEvent.click(screen.getByTestId('goal-new'));
+    fireEvent.change(within(sheet()).getByLabelText(g.fTitle), { target: { value: 'Phone' } });
+    const target = within(sheet()).getByLabelText(g.fTarget);
+    fireEvent.change(target, { target: { value: '1,000' } });
+    fireEvent.click(within(sheet()).getByRole('button', { name: g.save }));
+    const said = await within(sheet()).findByText(g.amountAmbiguous);
+    expect(target.getAttribute('aria-describedby')).toBe(said.id);
+    expect(calls.some((c) => c.url === '/api/bff/life/goals' && c.method === 'POST')).toBe(false);
+    fireEvent.change(target, { target: { value: '١٠٠٠' } });
+    fireEvent.click(within(sheet()).getByRole('button', { name: g.save }));
+    await waitFor(() => expect(calls.find((c) => c.url === '/api/bff/life/goals' && c.method === 'POST')?.body).toContain('"target_amount":1000'));
+  });
+});
+
