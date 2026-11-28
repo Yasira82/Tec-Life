@@ -69,11 +69,15 @@ test.describe('the redesign switch', () => {
     await page.goto('/app');
     await expect(page.locator('main[data-design="new"]')).toBeVisible();
     const nav = page.getByRole('navigation').last();
-    for (const label of ['My goals', 'My mirror', 'Me', 'Today']) {
+    for (const label of ['My goals', 'My mirror', 'Me']) {
       await nav.getByRole('button', { name: label, exact: true }).click();
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(label);
       await expect(nav.getByRole('button', { name: label, exact: true })).toHaveAttribute('aria-current', 'page');
     }
+    // Today's heading is the greeting; its first action is the coach.
+    await nav.getByRole('button', { name: 'Today', exact: true }).click();
+    await expect(nav.getByRole('button', { name: 'Today', exact: true })).toHaveAttribute('aria-current', 'page');
+    await expect(page.getByRole('button', { name: /Talk to your coach/ })).toBeVisible();
   });
 
   test('anyone else gets the current design, unchanged', async ({ context, page }) => {
@@ -95,12 +99,32 @@ test.describe('the redesign switch', () => {
     await expect(page.locator('main[data-design="new"]')).toHaveCount(0);
   });
 
+  test('Today: greeting, coach, step, closest goal — every control at least 44×44', async ({ context, page }) => {
+    await signIn(context, page, LISTED, await sign(LISTED));
+    await page.route('**/api/bff/life/journey', (r) => r.fulfill(ok({ keeping: true, entries: [
+      { id: 'e1', problem: 'My Pi is gone on arrival', understanding: 'u', step: 'Set 1π aside the day it arrives', step_outcome: null, created_at: new Date().toISOString(), days: [] },
+    ] })));
+    await page.route('**/api/bff/life/goals', (r) => r.fulfill(ok({ goals: [
+      { id: 'g1', title: 'Save 10π for a phone', description: null, status: 'ACTIVE', target_date: null, target_amount: 10, progress: 4, created_at: '', updated_at: '' },
+    ] })));
+    await page.goto('/app');
+    await expect(page.getByTestId('coach-hint')).toHaveText(/It remembers the conversations you kept/);
+    await expect(page.getByText('Set 1π aside the day it arrives')).toBeVisible();
+    await expect(page.getByText('Save 10π for a phone')).toBeVisible();
+    const small = await page.locator('main button').evaluateAll((bs) => bs
+      .map((b) => { const r = b.getBoundingClientRect(); return { n: (b.getAttribute('aria-label') || b.textContent || '').trim().slice(0, 24), w: r.width, h: r.height }; })
+      .filter((x) => x.w && x.h && Math.min(x.w, x.h) < 43.5).map((x) => `${x.n} ${Math.round(x.w)}×${Math.round(x.h)}`));
+    expect(small).toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+
   test('Arabic: right to left, Arabic tabs', async ({ context, page }) => {
     await signIn(context, page, LISTED, await sign(LISTED), 'ar');
     await page.goto('/app');
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
     const nav = page.getByRole('navigation').last();
     for (const label of ['اليوم', 'أهدافي', 'مرآتي', 'أنا']) await expect(nav.getByRole('button', { name: label, exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: /تحدّث مع مدربك/ })).toBeVisible();
     await nav.getByRole('button', { name: 'مرآتي', exact: true }).click();
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('مرآتي');
   });
