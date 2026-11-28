@@ -190,6 +190,35 @@ test.describe('the redesign switch', () => {
     expect(covered).toBe(false);
   });
 
+  test('Me: identity, skills, journey, privacy in three groups — every new control at least 44×44', async ({ context, page }) => {
+    await signIn(context, page, LISTED, await sign(LISTED));
+    await page.route('**/api/bff/life/skills', (r) => r.fulfill(ok({ skills: [{ id: 's1', name: 'Graphic design', level: 'PRACTISING', source: 'SELF_DECLARED', created_at: '', updated_at: '' }] })));
+    await page.route('**/api/bff/life/consent', (r) => r.fulfill(ok({ consent: [
+      { category: 'GOALS', granted: true }, { category: 'BUDGET', granted: false }, { category: 'CHECKIN', granted: true },
+      { category: 'JOURNEY', granted: true }, { category: 'CONVERSATIONS', granted: true },
+    ] })));
+    await page.goto('/app');
+    await page.getByRole('navigation').last().getByRole('button', { name: 'Me', exact: true }).click();
+    await expect(page.getByTestId('me-skills')).toContainText('Graphic design');
+    await expect(page.getByTestId('me-privacy')).toContainText('What Life keeps');
+    await expect(page.getByTestId('me-privacy')).toContainText('What TEC AI in the Hub may read');
+    // Turning the journey off asks first.
+    await page.getByRole('switch', { name: 'Keep my journey summaries' }).click();
+    await expect(page.getByTestId('confirm-off-JOURNEY')).toBeVisible();
+    const small = await page.evaluate(() => {
+      const out: string[] = [];
+      for (const el of document.querySelectorAll<HTMLElement>('main :is(button, a[href], input, select, textarea, summary)')) {
+        if (el.closest('[data-reused]') || el.closest('nav')) continue;
+        const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
+        if (Math.min(r.width, r.height) < 43.5) out.push(`${el.tagName} «${(el.getAttribute('aria-label') || el.textContent || '').trim().slice(0, 24)}» ${Math.round(r.width)}×${Math.round(r.height)}`);
+        if (el.matches('input, select, textarea') && parseFloat(getComputedStyle(el).fontSize) < 16) out.push(`${el.tagName} font ${getComputedStyle(el).fontSize}`);
+      }
+      return out;
+    });
+    expect(small).toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+
   test('My goals in Arabic, Pi Browser width: π in Arabic digits, «1,000» refused beside the field, the sheet keeps focus', async ({ context, page }) => {
     await signIn(context, page, LISTED, await sign(LISTED), 'ar');
     await page.route('**/api/bff/life/goals', (r) => r.fulfill(ok({ goals: [
@@ -220,6 +249,41 @@ test.describe('the redesign switch', () => {
     await page.keyboard.press('Escape');
     await expect(dialog).toBeHidden();
     expect(await edit.evaluate((b) => b === document.activeElement)).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+
+  test('Me in Arabic, Pi Browser width: turning the journey off removes what it kept from the screen; a count that cannot be read is never 0', async ({ context, page }) => {
+    await signIn(context, page, LISTED, await sign(LISTED), 'ar');
+    let keeping = true;
+    const entry = (i: number) => ({ id: `e${i}`, problem: 'p', understanding: 'u', step: null, step_outcome: null, created_at: new Date().toISOString() });
+    await page.route('**/api/bff/life/consent', (r) => {
+      if (r.request().method() === 'PUT') keeping = !(JSON.parse(r.request().postData() ?? '{}').consent?.JOURNEY === false) && keeping;
+      return r.fulfill(ok({ consent: [{ category: 'JOURNEY', granted: keeping }, { category: 'CONVERSATIONS', granted: true }] }));
+    });
+    await page.route('**/api/bff/life/journey', (r) => r.fulfill(ok({ keeping, entries: keeping ? [entry(1), entry(2), entry(3)] : [] })));
+    await page.route('**/api/bff/life/self', (r) => r.fulfill(ok({ keeping, statement: keeping ? 'شخص يخطط قبل أن ينفق' : null })));
+    let convsDown = true;
+    await page.route('**/api/bff/life/conversations', (r) => convsDown
+      ? r.fulfill({ status: 502, contentType: 'application/json', body: '{"error":"down"}' })
+      : r.fulfill(ok({ keeping: true, configured: true, conversations: [] })));
+    await page.goto('/app');
+    await page.getByRole('navigation').last().getByRole('button', { name: 'أنا', exact: true }).click();
+    // A count that cannot be read says so, with a retry — never «0».
+    const failed = page.getByTestId('journey-counts-failed');
+    await expect(failed).toBeVisible();
+    await expect(page.getByTestId('me-journey')).not.toContainText('0 ملخصات');
+    convsDown = false;
+    await failed.getByRole('button').click();
+    await expect(page.getByTestId('journey-counts')).toHaveText('3 ملخصات · 0 محادثات');
+    await expect(page.getByText('شخص يخطط قبل أن ينفق')).toBeVisible();
+    // Off, confirmed: the screen reads again and no longer shows what was deleted.
+    await page.getByRole('switch', { name: 'احتفظ بملخصات رحلتي' }).click();
+    const box = page.getByTestId('confirm-off-JOURNEY');
+    await expect(box).toHaveAttribute('data-phase', 'ready');
+    await box.getByRole('button', { name: 'احذف وأوقف' }).click();
+    await expect(box).toBeHidden();
+    await expect(page.getByTestId('journey-counts')).toHaveText('0 ملخصات · 0 محادثات');
+    await expect(page.getByText('شخص يخطط قبل أن ينفق')).toBeHidden();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });
 
