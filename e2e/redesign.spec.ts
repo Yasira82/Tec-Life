@@ -190,6 +190,35 @@ test.describe('the redesign switch', () => {
     expect(covered).toBe(false);
   });
 
+  test('Me: identity, skills, journey, privacy in three groups — every new control at least 44×44', async ({ context, page }) => {
+    await signIn(context, page, LISTED, await sign(LISTED));
+    await page.route('**/api/bff/life/skills', (r) => r.fulfill(ok({ skills: [{ id: 's1', name: 'Graphic design', level: 'PRACTISING', source: 'SELF_DECLARED', created_at: '', updated_at: '' }] })));
+    await page.route('**/api/bff/life/consent', (r) => r.fulfill(ok({ consent: [
+      { category: 'GOALS', granted: true }, { category: 'BUDGET', granted: false }, { category: 'CHECKIN', granted: true },
+      { category: 'JOURNEY', granted: true }, { category: 'CONVERSATIONS', granted: true },
+    ] })));
+    await page.goto('/app');
+    await page.getByRole('navigation').last().getByRole('button', { name: 'Me', exact: true }).click();
+    await expect(page.getByTestId('me-skills')).toContainText('Graphic design');
+    await expect(page.getByTestId('me-privacy')).toContainText('What Life keeps');
+    await expect(page.getByTestId('me-privacy')).toContainText('What TEC AI in the Hub may read');
+    // Turning the journey off asks first.
+    await page.getByRole('switch', { name: 'Keep my journey summaries' }).click();
+    await expect(page.getByTestId('confirm-off-JOURNEY')).toBeVisible();
+    const small = await page.evaluate(() => {
+      const out: string[] = [];
+      for (const el of document.querySelectorAll<HTMLElement>('main :is(button, a[href], input, select, textarea, summary)')) {
+        if (el.closest('[data-reused]') || el.closest('nav')) continue;
+        const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
+        if (Math.min(r.width, r.height) < 43.5) out.push(`${el.tagName} «${(el.getAttribute('aria-label') || el.textContent || '').trim().slice(0, 24)}» ${Math.round(r.width)}×${Math.round(r.height)}`);
+        if (el.matches('input, select, textarea') && parseFloat(getComputedStyle(el).fontSize) < 16) out.push(`${el.tagName} font ${getComputedStyle(el).fontSize}`);
+      }
+      return out;
+    });
+    expect(small).toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+
   test('Arabic: right to left, Arabic tabs', async ({ context, page }) => {
     await signIn(context, page, LISTED, await sign(LISTED), 'ar');
     await page.goto('/app');

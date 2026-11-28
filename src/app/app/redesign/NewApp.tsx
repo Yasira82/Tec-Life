@@ -23,10 +23,8 @@ import { isProPlan } from '../components/shared';
 import { SignInGate } from '../components/SignInGate';
 import { TodayView } from './today/TodayView';
 import { GoalsView } from './goals/GoalsView';
+import { MeView } from './me/MeView';
 import { Activity } from '../components/Activity';
-import { Becoming } from '../components/Becoming';
-import { Skills } from '../components/Skills';
-import { SettingsView } from '../components/SettingsView';
 import { ProblemSession, type Resume } from '../components/ProblemSession';
 import { JourneyDrawer } from '../components/JourneyDrawer';
 import { GoalPrefillReader } from '../components/GoalPrefillReader';
@@ -40,7 +38,7 @@ const ICONS: Record<NewTab, IconName> = { today: 'sparkles', goals: 'target', mi
 export function NewApp() {
   const { t } = useTranslation();
   const { user } = usePiAuth();
-  const { plan } = useSubscription();
+  const { plan, daysRemaining } = useSubscription();
   const isPro = isProPlan(plan ?? (user as { subscriptionPlan?: string } | null)?.subscriptionPlan);
   const [tab, setTab] = useState<NewTab>('today');
   const [inSession, setInSession] = useState(false);
@@ -85,13 +83,7 @@ export function NewApp() {
             <GoalsView isPro={isPro} prefill={prefill} onPrefillUsed={() => setPrefill(null)} key={prefill ? `pf:${prefillN}:${prefill.title}` : 'goals'} />
           )}
           {tab === 'mirror' && <Activity />}
-          {tab === 'me' && (
-            <>
-              <Becoming />
-              <Skills />
-              <SettingsView isPro={isPro} />
-            </>
-          )}
+          {tab === 'me' && <MeView isPro={isPro} daysRemaining={daysRemaining ?? null} onOpenJourney={() => setMenuOpen(true)} />}
           <JourneyDrawer open={menuOpen} onClose={() => setMenuOpen(false)} onNew={() => openSession()} onContinue={openSession}
             onMakeGoal={(step) => { const p = stepAsGoal(step); if (!p) return; setPrefill(p); setPrefillN((n) => n + 1); setTab('goals'); }} />
           <NewNav active={tab} onSelect={goTo} />
