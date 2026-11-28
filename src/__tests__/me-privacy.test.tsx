@@ -114,7 +114,7 @@ describe('MePrivacy — turning a keep switch off', () => {
   it('the exact count, then the request only after Confirm; closes on success', async () => {
     render(<MePrivacy />);
     await turnOff(m.keepJourney);
-    await waitFor(() => expect(box('JOURNEY').textContent).toContain('This deletes 3 summaries and cannot be undone.'));
+    await waitFor(() => expect(box('JOURNEY').textContent).toContain('Right now we found 3 summaries.'));
     expect(puts()).toEqual([]);
     fireEvent.click(within(box('JOURNEY')).getByRole('button', { name: m.offDo }));
     await waitFor(() => expect(screen.queryByTestId('confirm-off-JOURNEY')).toBeNull());
@@ -127,7 +127,7 @@ describe('MePrivacy — turning a keep switch off', () => {
     routes['GET /api/bff/life/self'] = () => ok({ keeping: true, statement: 'someone who plans first' });
     render(<MePrivacy />);
     await turnOff(m.keepJourney);
-    await waitFor(() => expect(box('JOURNEY').textContent).toContain('This deletes at least 500 summaries and your «I’m becoming» sentence'));
+    await waitFor(() => expect(box('JOURNEY').textContent).toContain('Right now we found at least 500 summaries and your «I’m becoming» sentence.'));
   });
 
   it('summaries that cannot be counted: says so, offers a retry, nothing to delete', async () => {
@@ -140,7 +140,7 @@ describe('MePrivacy — turning a keep switch off', () => {
     expect(box('JOURNEY').textContent).not.toMatch(/\d+ summaries/);
     routes['GET /api/bff/life/journey'] = () => ok({ keeping: true, entries: entries(4) });
     fireEvent.click(within(box('JOURNEY')).getByRole('button', { name: m.retry }));
-    await waitFor(() => expect(box('JOURNEY').textContent).toContain('This deletes 4 summaries'));
+    await waitFor(() => expect(box('JOURNEY').textContent).toContain('Right now we found 4 summaries.'));
     expect(puts()).toEqual([]);
   });
 
@@ -174,6 +174,26 @@ describe('MePrivacy — turning a keep switch off', () => {
     fireEvent.click(within(box('CONVERSATIONS')).getByRole('button', { name: m.offDo }));
     await waitFor(() => expect(screen.queryByTestId('confirm-off-CONVERSATIONS')).toBeNull());
     expect(screen.getByRole('switch', { name: m.keepConvs }).getAttribute('aria-checked')).toBe('false');
+  });
+
+  it('the count read is what was found now — never a promise of what the server will delete', async () => {
+    render(<MePrivacy />);
+    await turnOff(m.keepConvs);
+    await waitFor(() => expect(phase('CONVERSATIONS')).toBe('ready'));
+    const t = box('CONVERSATIONS').textContent!;
+    expect(t).toContain('Right now we found 2 conversations.');
+    expect(t).toContain('everything kept at that moment is deleted');
+    expect(t).not.toMatch(/deletes? \d+|\d+ (summaries|conversations) (will be|are) deleted/i);
+  });
+
+  it('every language says «found now» + «whatever is kept when it runs», not a final number', () => {
+    expect(meCopy('ar').offConfirm).toBe('عثرنا حاليًا على {n}. عند التأكيد سيُحذف كل ما هو محفوظ وقت تنفيذ العملية، ولا يمكن التراجع.');
+    for (const l of ['en', 'ar', 'es', 'fr', 'pt', 'tr', 'ru', 'hi', 'id', 'vi', 'ko', 'zh'] as const) {
+      const c = meCopy(l).offConfirm;
+      expect(c.match(/\{n\}/g)).toHaveLength(1);
+      // Two sentences: what was found, then what the deletion covers — the number is only in the first.
+      expect(c.indexOf('{n}')).toBeLessThan(c.search(/[.。।]\s*\S/));
+    }
   });
 
   it('«Keep it on» sends nothing', async () => {

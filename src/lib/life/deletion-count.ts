@@ -7,7 +7,9 @@
 // What the reads return: the journey list is capped at JOURNEY_LIMITS.entries (500), the conversation
 // list at CONVERSATION_LIMITS.perUser (200). Writes are refused at the same caps, so normally the list
 // IS the total — but the write's count-then-create is not atomic, so a list that comes back AT the
-// cap is said as «at least». A cap mirrored here that falls behind the service only makes «at least»
+// cap is said as «at least». And the read and the deletion are separate requests: something kept in
+// between is deleted too, so the screen says what it FOUND, never a number the deletion promises
+// (owner review, 28 Nov 2026). A cap mirrored here that falls behind the service only makes «at least»
 // appear more often, never less: the safe direction.
 import type { Journey, Self } from '@/lib-client/life/journey';
 import type { Conversations } from '@/lib-client/life/conversations';
