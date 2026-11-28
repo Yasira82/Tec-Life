@@ -20,13 +20,13 @@ import { useSubscription } from '@/lib-client/life/useLife';
 import { useTranslation } from '@/lib/i18n';
 import { isProPlan } from '../components/shared';
 import { SignInGate } from '../components/SignInGate';
-import { StepToday } from '../components/StepToday';
+import { TodayView } from './today/TodayView';
 import { Goals } from '../components/Goals';
 import { Activity } from '../components/Activity';
 import { Becoming } from '../components/Becoming';
 import { Skills } from '../components/Skills';
 import { SettingsView } from '../components/SettingsView';
-import { ProblemSession, ProblemSessionEntry, type Resume } from '../components/ProblemSession';
+import { ProblemSession, type Resume } from '../components/ProblemSession';
 import { JourneyDrawer } from '../components/JourneyDrawer';
 import { GoalPrefillReader } from '../components/GoalPrefillReader';
 import { type GoalPrefill, stepAsGoal } from '@/lib/life/prefill';
@@ -59,7 +59,9 @@ export function NewApp() {
     <main data-design="new" style={{ minHeight: '100vh', background: C.bg, color: C.text, fontFamily: 'var(--tec-font-ui)', paddingBottom: 112 }}>
       <div style={{ maxWidth: 560, margin: '0 auto', padding: 'calc(18px + env(safe-area-inset-top)) 18px 0', display: 'flex', flexDirection: 'column', gap: 18 }}>
         <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-          <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0, color: C.text }}>{t.life.v2.tabs[tab]}</h1>
+          {tab === 'today' && !inSession
+            ? <span />
+            : <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0, color: C.text }}>{t.life.v2.tabs[tab]}</h1>}
           {/* Tells a tester which design they are on — the redesign is not for everyone yet. */}
           <span style={{ fontSize: 11, color: C.subtext, border: `1px solid ${C.border}`, borderRadius: 999, padding: '2px 10px', whiteSpace: 'nowrap' }}>
             {t.life.v2.preview}
@@ -75,10 +77,8 @@ export function NewApp() {
             </div>
           )}
           {tab === 'today' && !inSession && (
-            <>
-              <ProblemSessionEntry onStart={() => openSession()} onContinue={openSession} onMenu={() => setMenuOpen(true)} />
-              <StepToday />
-            </>
+            <TodayView onTalk={() => openSession()} onContinue={openSession}
+              onGoals={() => goTo('goals')} onMenu={() => setMenuOpen(true)} />
           )}
           {tab === 'goals' && (
             <Goals isPro={isPro} prefill={prefill} onPrefillUsed={() => setPrefill(null)} key={prefill ? `pf:${prefillN}:${prefill.title}` : 'goals'} />
