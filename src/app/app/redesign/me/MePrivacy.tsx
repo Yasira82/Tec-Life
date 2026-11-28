@@ -25,6 +25,7 @@ import { listConversations } from '@/lib-client/life/conversations';
 import { meCopy } from '@/lib/life/me-copy';
 import { fill } from '@/lib/life/today-copy';
 import { conversationsDeletion, journeyDeletion, type DeletionCount } from '@/lib/life/deletion-count';
+import { localDigits } from '@/lib/life/digits';
 
 const KEEP: LifeDataCategory[] = ['JOURNEY', 'CONVERSATIONS'];
 const REMINDER: LifeDataCategory[] = ['CHECKIN'];
@@ -129,7 +130,7 @@ export function MePrivacy({ onDeleted }: { onDeleted?: (cat: 'JOURNEY' | 'CONVER
   const confirmBox = (c: LifeDataCategory) => {
     if (off?.cat !== c) return null;
     const what = (k: DeletionCount) => {
-      const n = k.atLeast ? fill(m.atLeast, { n: k.n }) : String(k.n);
+      const n = k.atLeast ? fill(m.atLeast, { n: k.n }, locale) : localDigits(locale, k.n);
       return fill(c === 'JOURNEY' ? m.offSummaries : m.offConversations, { n }) + (k.self ? m.andSelf : '');
     };
     const { phase } = off;

@@ -20,6 +20,7 @@ import { parseSteps } from '@/lib/life/steps';
 import { sessionCopy } from '@/lib/life/session-copy';
 import { stepCopy } from '@/lib/life/step-copy';
 import { todayCopy, fill } from '@/lib/life/today-copy';
+import { localDigits } from '@/lib/life/digits';
 import { closestGoal, coachState, partOfDay } from '@/lib/life/today';
 import type { Resume } from '../../components/ProblemSession';
 
@@ -185,7 +186,7 @@ function StepCard({ journey }: { journey: Journey }) {
       </div>
       {saved === 'saved' && <div role="status" style={{ fontSize: 12.5, color: C.subtext }}>{c.saved}</div>}
       {saved === 'failed' && <div role="alert" style={{ fontSize: 12.5, color: C.text }}>{c.failed}</div>}
-      <div data-testid="today-week" style={{ fontSize: 13, color: C.subtext, lineHeight: 1.6 }}>{c.week(review.done, review.partly)}</div>
+      <div data-testid="today-week" style={{ fontSize: 13, color: C.subtext, lineHeight: 1.6 }}>{localDigits(locale, c.week(review.done, review.partly))}</div>
     </div>
   );
 }
@@ -212,6 +213,7 @@ function GoalCard({ onGoals }: { onGoals: () => void }) {
   else {
     const steps = parseSteps(g.description ?? '');
     const hasTarget = !!g.target_amount && g.target_amount > 0;
+    const fmtPiOf = (n: number) => localDigits(locale, n);
     const share = hasTarget ? g.progress / g.target_amount! : steps.length ? steps.filter((x) => x.done).length / steps.length : null;
     body = (
       <button type="button" onClick={onGoals} aria-label={`${t.closest}: ${g.title}. ${t.openGoals}`} style={{ ...card, cursor: 'pointer', textAlign: 'start', color: C.text, width: '100%' }}>
@@ -225,8 +227,8 @@ function GoalCard({ onGoals }: { onGoals: () => void }) {
         )}
         <div style={{ fontSize: 13, color: C.subtext }}>
           {hasTarget
-            ? `${fill(t.ofTarget, { p: g.progress, t: g.target_amount! })} · ${fill(t.left, { n: Math.max(0, g.target_amount! - g.progress) })}`
-            : steps.length ? fill(t.steps, { d: steps.filter((x) => x.done).length, n: steps.length }) : t.openGoals}
+            ? `${fill(t.ofTarget, { p: fmtPiOf(g.progress), t: fmtPiOf(g.target_amount!) })} · ${fill(t.left, { n: fmtPiOf(Math.max(0, g.target_amount! - g.progress)) })}`
+            : steps.length ? fill(t.steps, { d: steps.filter((x) => x.done).length, n: steps.length }, locale) : t.openGoals}
         </div>
       </button>
     );

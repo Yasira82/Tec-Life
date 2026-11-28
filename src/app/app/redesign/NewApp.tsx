@@ -60,10 +60,6 @@ export function NewApp() {
           {tab === 'today' && !inSession
             ? <span />
             : <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0, color: C.text }}>{t.life.v2.tabs[tab]}</h1>}
-          {/* Tells a tester which design they are on — the redesign is not for everyone yet. */}
-          <span style={{ fontSize: 11, color: C.subtext, border: `1px solid ${C.border}`, borderRadius: 999, padding: '2px 10px', whiteSpace: 'nowrap' }}>
-            {t.life.v2.preview}
-          </span>
         </header>
 
         <SignInGate>

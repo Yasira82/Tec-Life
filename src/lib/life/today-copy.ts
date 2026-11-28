@@ -2,6 +2,7 @@
 // words (its title, the question, the three answers, saved / failed, the week) are step-copy's
 // and session-copy's — the same step, the same words. A missing language falls back to English.
 import type { Locale } from '@/lib/i18n/locales';
+import { localDigits } from './digits';
 
 export interface TodayCopy {
   greet: Record<'morning' | 'afternoon' | 'evening', string>;
@@ -248,6 +249,12 @@ const COPY: Partial<Record<Locale, TodayCopy>> = { en, ar, es, fr, pt, tr, ru, h
 
 export const todayCopy = (locale: Locale): TodayCopy => COPY[locale] ?? en;
 
-/** `{x}` placeholders, filled. */
-export const fill = (s: string, v: Record<string, string | number>) =>
-  s.replace(/\{(\w+)\}/g, (_, k: string) => String(v[k] ?? ''));
+/**
+ * `{x}` placeholders, filled. With a locale, NUMBER values are written in that screen's digits
+ * (localDigits); string values — which may be a person's own words — are put in untouched.
+ */
+export const fill = (s: string, v: Record<string, string | number>, locale?: Locale) =>
+  s.replace(/\{(\w+)\}/g, (_, k: string) => {
+    const x = v[k];
+    return typeof x === 'number' && locale ? localDigits(locale, x) : String(x ?? '');
+  });

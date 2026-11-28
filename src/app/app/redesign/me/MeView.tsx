@@ -37,6 +37,7 @@ import { FeedbackCard } from '@/components/feedback/FeedbackCard';
 import { SocialLinks } from '@/components/social/SocialLinks';
 import { Sheet } from '../Sheet';
 import { MePrivacy } from './MePrivacy';
+import { localDigits } from '@/lib/life/digits';
 
 type Counts = { state: 'loading' } | { state: 'failed' } | { state: 'ok'; s: number; sAtLeast: boolean; c: number; cAtLeast: boolean };
 
@@ -86,7 +87,7 @@ export function MeView({ isPro, daysRemaining, onOpenJourney }: { isPro: boolean
   };
   // The skills editor in the sheet keeps its own list; this one is read again when the sheet closes.
   const closeSkills = () => { setSkillsOpen(false); reloadSkills(); };
-  const countText = (n: number, atLeast: boolean) => (atLeast ? fill(m.atLeast, { n }) : String(n));
+  const countText = (n: number, atLeast: boolean) => (atLeast ? fill(m.atLeast, { n }, locale) : localDigits(locale, n));
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
