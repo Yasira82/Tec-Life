@@ -139,9 +139,20 @@ describe('readPayoutsIn — the newest 200, never a cut list read as complete', 
     expect(readPayoutsIn({ payouts: [SENT, { status: 'OWED' }] }, '2026-10').kind).toBe('complete');
     expect(readPayoutsIn({ payouts: [SENT, { status: 'SENT' }] }, '2026-10').kind).toBe('unreadable');
   });
-  it('200 rows whose oldest is inside the month → partial; a row with no created_at at the cap → unreadable', () => {
+  it('at the 200 cap → partial, whatever the dates (the list is cut by created_at, the month counts sent_at)', () => {
     const inMonth = Array.from({ length: 200 }, () => ({ ...SENT }));
     expect(readPayoutsIn({ payouts: inMonth }, '2026-10').kind).toBe('partial');
-    expect(readPayoutsIn({ payouts: [...inMonth.slice(1), { status: 'OWED' }] }, '2026-10').kind).toBe('unreadable');
+    const reachesBack = [...inMonth.slice(1), { ...SENT, created_at: '2025-01-01T00:00:00Z' }];
+    expect(readPayoutsIn({ payouts: reachesBack }, '2026-10').kind).toBe('partial');
+  });
+  it('a date must be a real instant: sent_at when present, else created_at', () => {
+    expect(readPayoutsIn({ payouts: [{ ...SENT, sent_at: 'nope' }] }, '2026-10').kind).toBe('unreadable');
+    expect(readPayoutsIn({ payouts: [{ status: 'SENT', amount: '3', created_at: 'nope' }] }, '2026-10').kind).toBe('unreadable');
+    const r = readPayoutsIn({ payouts: [{ status: 'SENT', amount: '3', created_at: '2026-10-09T00:00:00Z' }] }, '2026-10');
+    expect(r.kind === 'complete' && r.side.total).toBe('3');
+  });
+  it('no payouts at all is a complete 0', () => {
+    const r = readPayoutsIn({ payouts: [] }, '2026-10');
+    expect(r).toEqual({ kind: 'complete', side: { total: '0', lines: [] } });
   });
 });

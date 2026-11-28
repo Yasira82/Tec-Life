@@ -188,29 +188,42 @@ export function paymentsOutCounted(rows: PaymentRow[]): { side: CashflowSide; sk
 
 export interface PayoutRow { status?: unknown; amount?: unknown; sent_at?: unknown; created_at?: unknown; source?: unknown }
 
-/** commerce-service `payouts/mine` returns at most this many, newest first (payout.service.ts `listMine`). */
+/** commerce-service `payouts/mine` returns at most this many (payout.service.ts `listMine`). */
 export const PAYOUTS_READ_CAP = 200;
 
+/** A real point in time, as an ISO string — or null when the value is not one. */
+function isoInstant(v: unknown): string | null {
+  if (typeof v !== 'string' || v.trim() === '') return null;
+  const t = Date.parse(v);
+  return Number.isFinite(t) ? new Date(t).toISOString() : null;
+}
+
 /**
- * commerce-service `GET /commerce/payouts/mine` → `{ payouts: [...] }`, the newest 200. The in side is complete
- * only when every SENT payout has an exact amount and a date, and the list cannot have been cut inside the
- * period (fewer than 200 rows, or the oldest row is older than the period's start).
+ * commerce-service `GET /commerce/payouts/mine` → `{ payouts: [...] }`. Verified in commerce `listMine`
+ * (owner review of #137): the rows are the newest 200 by `created_at` (`orderBy: { created_at: 'desc' },
+ * take: 200`), while the month's in side counts a payout by `sent_at` (falling back to `created_at`).
+ * The two dates differ — a payout created before the month can be sent inside it — so a list cut by creation
+ * date proves NOTHING about what was sent in the month. At the cap the side is therefore 'partial', always:
+ * completeness cannot be proven within this contract.
+ *
+ * Below the cap it is complete only when every SENT payout has an exact amount and a REAL date (`sent_at`,
+ * or `created_at` when there is no `sent_at`): an unreadable date is refused, never dropped from the total.
+ * Dates are passed on normalized to ISO, so the month comparison is on real instants, not on text.
  */
 export function readPayoutsIn(data: unknown, period: string):
   { kind: 'complete'; side: CashflowSide } | { kind: 'partial' } | { kind: 'unreadable' } {
   if (!isObj(data) || !Array.isArray(data.payouts) || !data.payouts.every(isObj)) return { kind: 'unreadable' };
   const rows = data.payouts as PayoutRow[];
-  const dateOf = (r: PayoutRow) => (typeof r.sent_at === 'string' ? r.sent_at : typeof r.created_at === 'string' ? r.created_at : null);
+  if (rows.length >= PAYOUTS_READ_CAP) return { kind: 'partial' };
+  const sent: PayoutRow[] = [];
   for (const r of rows) {
     if (r.status !== 'SENT') continue;
-    if (toMicro(r.amount) === null || dateOf(r) === null) return { kind: 'unreadable' };
+    if (toMicro(r.amount) === null) return { kind: 'unreadable' };
+    // The date payoutsIn will use: sent_at when present (it must then be real), else created_at.
+    const hasSent = r.sent_at !== undefined && r.sent_at !== null;
+    const at = hasSent ? isoInstant(r.sent_at) : isoInstant(r.created_at);
+    if (at === null) return { kind: 'unreadable' };
+    sent.push({ ...r, sent_at: at, created_at: at });
   }
-  if (rows.length >= PAYOUTS_READ_CAP) {
-    const { from } = periodBounds(period);
-    const created = rows.map((r) => (typeof r.created_at === 'string' ? r.created_at : null));
-    if (created.some((c) => c === null)) return { kind: 'unreadable' };
-    const oldest = (created as string[]).reduce((a, b) => (a < b ? a : b));
-    if (oldest >= from) return { kind: 'partial' };
-  }
-  return { kind: 'complete', side: payoutsIn(rows, period) };
+  return { kind: 'complete', side: payoutsIn(sent, period) };
 }

@@ -213,12 +213,37 @@ describe('complete readings only (owner review of #136)', () => {
     expect(d.net).toBeNull();
   });
 
-  it('cash flow in: 200 payouts reaching back before the month → complete', async () => {
-    const rows = [...Array.from({ length: 199 }, () => ({ ...SENT, status: 'OWED' })), { ...SENT, created_at: '2026-09-20T00:00:00Z', sent_at: '2026-10-02T00:00:00Z' }];
+  it('cash flow in: 200 payouts whose oldest was CREATED before the month → still partial (owner review of #137)', async () => {
+    // The list is the newest 200 by created_at; the month counts by sent_at. An omitted, older payout may
+    // have been sent inside the month, so the cap proves nothing about completeness.
+    const rows = [...Array.from({ length: 199 }, () => ({ ...SENT, status: 'OWED' })), { ...SENT, created_at: '2026-08-01T00:00:00Z', sent_at: '2026-10-02T00:00:00Z' }];
     const d = await flowWith(OK_PAYS, { payouts: rows });
+    expect(d.in).toBeNull();
+    expect(d.in_status).toBe('partial');
+    expect(d.net).toBeNull();
+  });
+
+  it('cash flow in: an old created_at with an in-month sent_at is counted in the month', async () => {
+    const d = await flowWith(OK_PAYS, { payouts: [{ ...SENT, created_at: '2026-08-01T00:00:00Z', sent_at: '2026-10-15T00:00:00Z', amount: '4' }] });
+    expect(d.in.total).toBe('4');
+    expect(d.net).toBe('-8.5');
+  });
+
+  it.each([
+    ['an invalid sent_at', { ...SENT, sent_at: 'not a date' }],
+    ['no sent_at and an invalid created_at', { status: 'SENT', amount: '3', created_at: 'yesterday-ish' }],
+    ['an empty sent_at', { ...SENT, sent_at: '' }],
+  ])('cash flow in: %s → unreadable, never dropped from the total', async (_n, row) => {
+    const d = await flowWith(OK_PAYS, { payouts: [SENT, row] });
+    expect(d.in).toBeNull();
+    expect(d.in_status).toBe(502);
+    expect(d.net).toBeNull();
+  });
+
+  it('cash flow in: below the cap, every SENT row readable → complete', async () => {
+    const d = await flowWith(OK_PAYS, { payouts: [SENT, { ...SENT, amount: '2', sent_at: '2026-10-20T00:00:00Z' }, { ...SENT, sent_at: '2026-09-30T23:59:59Z' }] });
     expect(d.in_status).toBeNull();
-    expect(d.in.total).toBe('3');
-    expect(d.net).toBe('-9.5');
+    expect(d.in.total).toBe('5');
   });
 
   it('cash flow: both sides complete → a net; no payouts at all is a complete 0 in', async () => {
