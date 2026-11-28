@@ -8,24 +8,32 @@
 //     reader and one to another, and π is money. The screen says how to write it instead.
 //   • At most 8 decimals — the platform's π precision (C-71, DECIMAL(20,8)).
 //   • At most 15 significant digits. The value travels as a JavaScript number (the routes' Zod
-//     schemas take `z.number()`) and is stored by tec-life-service as a Float (double). A double
-//     keeps any decimal of 15 significant digits exactly (DBL_DIG = 15); past that, some do not —
-//     999999999.12345678 would arrive as …123457. So a longer amount is refused, never rounded.
-//   • Above 0, and no more than `max`.
+//     schemas take `z.number()`) and tec-life-service stores it as a Float (a binary double). A
+//     double does NOT hold most decimal fractions exactly — 2.5 does, 0.1 does not. What it does
+//     guarantee is decimal round-trip precision: any decimal of up to 15 significant digits
+//     (DBL_DIG = 15), turned into the nearest double and printed back to that many digits, comes
+//     back as the same decimal. Past 15, that fails for some — 999999999.12345678 comes back as
+//     …123457. So a longer amount is refused, never rounded. (The JSON hop is tested here; the
+//     database read-back is the same double, and Postgres prints float8 in its shortest exact form.)
+//   • Above 0, and no more than the limit of the field it is typed into (below).
 // Nothing else (spaces inside, signs, «1e3», «0x10», «.5») is a number.
 //
-// The limit, from the code (28 Nov 2026):
-//   • a goal's target: the BFF schemas — POST /api/bff/life/goals and PATCH /api/bff/life/goals/:id
-//     — take `target_amount` up to 1_000_000_000. AMOUNT_MAX is that number; goal-route-limits.test.ts
-//     sends the routes AMOUNT_MAX and just above it, so a change on either side fails a test.
-//   • logging π: neither the BFF (POST …/progress) nor tec-life-service sets an upper bound on
-//     `delta`; the service caps the goal's progress at its target. Logging is offered only on a goal
-//     with a target, and no target exceeds AMOUNT_MAX, so using the same limit refuses no log that
-//     could change anything.
+// The limits are each field's own, from the code (28 Nov 2026):
+//   • a goal's target — TARGET_MAX: the BFF schemas (POST /api/bff/life/goals, PATCH …/goals/:id)
+//     take `target_amount` up to 1_000_000_000. goal-route-limits.test.ts sends the real handlers
+//     that number and just above it, so a change on either side fails a test.
+//   • logging π — PROGRESS_MAX: neither the BFF (POST …/goals/:id/progress) nor tec-life-service sets
+//     an upper bound on `delta`; the service caps the goal's progress at its target. So a log larger
+//     than any target is valid (it completes the goal) and is NOT refused here. The only bound is the
+//     15-significant-digit rule above, which keeps it below 10^15 — well inside the integers a number
+//     holds exactly (2^53 ≈ 9.007 × 10^15).
 export type AmountProblem = 'empty' | 'ambiguous' | 'invalid' | 'too_precise' | 'too_large';
 export type AmountResult = { ok: true; value: number } | { ok: false; problem: AmountProblem };
 
-export const AMOUNT_MAX = 1_000_000_000;
+/** A goal's π target: the BFF's own limit on `target_amount`. */
+export const TARGET_MAX = 1_000_000_000;
+/** Logged π: no server limit; the 15-significant-digit rule is the bound. */
+export const PROGRESS_MAX = Number.POSITIVE_INFINITY;
 export const AMOUNT_DECIMALS = 8;
 export const AMOUNT_SIGNIFICANT = 15;
 
@@ -45,7 +53,8 @@ function significantDigits(int: string, frac: string): number {
   return digits.length;
 }
 
-export function parseAmount(raw: string, max = AMOUNT_MAX): AmountResult {
+/** `max` is the field's limit and is required: a target and a log do not share one. */
+export function parseAmount(raw: string, max: number): AmountResult {
   const s = toWesternDigits(raw.trim()).replace(/٫/g, '.');
   if (!s) return { ok: false, problem: 'empty' };
   if (/[,،٬]/.test(s)) return { ok: false, problem: 'ambiguous' };

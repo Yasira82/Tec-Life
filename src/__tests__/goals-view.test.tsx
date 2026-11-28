@@ -193,6 +193,27 @@ describe('My goals — amounts (owner review of the chain, 28 Nov)', () => {
     expect(progress()).toEqual([]);
   });
 
+  it('a log larger than the target’s own limit is sent — the service caps progress at the target', async () => {
+    goals = [G({ id: 'big', title: 'A billion', target_amount: 1_000_000_000, progress: 0, area: 'MONEY' })];
+    view();
+    await screen.findByTestId('goal-priority');
+    fireEvent.change(logField(), { target: { value: '1500000000' } });
+    fireEvent.click(logBtn());
+    await waitFor(() => expect(progress().map((c) => JSON.parse(c.body))).toEqual([{ delta: 1_500_000_000 }]));
+    expect(screen.queryByText(g.amountTooLarge)).toBeNull();
+  });
+
+  it('…while the same number as a target is refused beside the field', async () => {
+    view();
+    await screen.findByTestId('goal-priority');
+    fireEvent.click(screen.getByTestId('goal-new'));
+    fireEvent.change(within(sheet()).getByLabelText(g.fTitle), { target: { value: 'Too big' } });
+    fireEvent.change(within(sheet()).getByLabelText(g.fTarget), { target: { value: '1500000000' } });
+    fireEvent.click(within(sheet()).getByRole('button', { name: g.save }));
+    expect(await within(sheet()).findByText(g.amountTooLarge)).toBeTruthy();
+    expect(calls.some((c) => c.url === '/api/bff/life/goals' && c.method === 'POST')).toBe(false);
+  });
+
   it('the sheet’s target: refused next to the target field; nothing is saved; the sheet stays', async () => {
     view();
     await screen.findByTestId('goal-priority');

@@ -20,7 +20,7 @@ import { futureCopy, type LifeArea } from '@/lib/life/future-copy';
 import { goalsCopy } from '@/lib/life/goals-copy';
 import { todayCopy, fill } from '@/lib/life/today-copy';
 import { createBody, draftOf, emptyDraft, patchBody, shareOf, splitGoals, type GoalDraft } from '@/lib/life/goals-edit';
-import { parseAmount } from '@/lib/life/amount';
+import { PROGRESS_MAX, parseAmount } from '@/lib/life/amount';
 import { parseSteps, toggleStep } from '@/lib/life/steps';
 import { type GoalPrefill } from '@/lib/life/prefill';
 import { sessionCopy } from '@/lib/life/session-copy';
@@ -97,7 +97,8 @@ export function GoalsView({ isPro, prefill, onPrefillUsed }: { isPro: boolean; p
   // otherwise the reason is said next to the field — never a silent no-op, never a guess.
   const logPi = async () => {
     if (!priority) return;
-    const r = parseAmount(log);
+    // A log larger than the target is valid — the service caps progress at the target.
+    const r = parseAmount(log, PROGRESS_MAX);
     if (!r.ok) {
       setLogProblem(r.problem === 'ambiguous' ? g.amountAmbiguous : r.problem === 'too_precise' ? g.amountTooPrecise
         : r.problem === 'too_large' ? g.amountTooLarge : g.amountInvalid);

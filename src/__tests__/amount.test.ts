@@ -3,9 +3,9 @@
  * logging π and a goal's target. Any script's digits, «.» or «٫»; a comma is refused, never guessed.
  */
 import { describe, it, expect } from 'vitest';
-import { parseAmount, AMOUNT_MAX } from '@/lib/life/amount';
+import { parseAmount, TARGET_MAX, PROGRESS_MAX } from '@/lib/life/amount';
 
-const value = (s: string) => { const r = parseAmount(s); return r.ok ? r.value : r.problem; };
+const value = (s: string, max = TARGET_MAX) => { const r = parseAmount(s, max); return r.ok ? r.value : r.problem; };
 
 describe('parseAmount — accepted', () => {
   it.each([
@@ -27,7 +27,7 @@ describe('parseAmount — refused', () => {
   ])('%s → %s', (input, problem) => { expect(value(input)).toBe(problem); });
 
   it('the limit is the caller’s', () => {
-    expect(value(String(AMOUNT_MAX))).toBe(AMOUNT_MAX);
+    expect(value(String(TARGET_MAX))).toBe(TARGET_MAX);
     expect(parseAmount('11', 10)).toEqual({ ok: false, problem: 'too_large' });
   });
 });
@@ -36,7 +36,7 @@ describe('parseAmount — precision near the limit (owner review of ec0fdc0)', (
   // The value travels as a JSON number and is stored as a double: what is accepted must arrive
   // exactly as typed. A double keeps every decimal of up to 15 significant digits.
   const exact = (typed: string) => {
-    const r = parseAmount(typed);
+    const r = parseAmount(typed, TARGET_MAX);
     if (!r.ok) throw new Error(`${typed} refused: ${r.problem}`);
     const sent = JSON.parse(JSON.stringify({ delta: r.value })).delta as number;
     const frac = typed.split('.')[1]?.length ?? 0;
@@ -64,10 +64,24 @@ describe('parseAmount — precision near the limit (owner review of ec0fdc0)', (
       const room = Math.max(0, Math.min(8, 15 - int.replace(/^0+/, '').length));
       const frac = Array.from({ length: rnd(room + 1) }, () => rnd(10)).join('');
       const typed = frac ? `${int}.${frac}` : int;
-      const r = parseAmount(typed);
+      const r = parseAmount(typed, TARGET_MAX);
       if (!r.ok) { expect(r.problem === 'invalid' && Number(typed) === 0).toBe(true); continue; }
       expect(exact(typed)).toEqual({ same: true, back: typed });
     }
+  });
+});
+
+describe('each field its own limit (owner review of 4e5b688)', () => {
+  it('a target stops at the BFF’s 1,000,000,000; logged π does not', () => {
+    expect(value('1500000000', TARGET_MAX)).toBe('too_large');
+    expect(value('1500000000', PROGRESS_MAX)).toBe(1_500_000_000);
+  });
+
+  it('logged π: bounded only by the 15-significant-digit rule — always an exact integer range', () => {
+    expect(value('999999999999999', PROGRESS_MAX)).toBe(999_999_999_999_999);
+    expect(Number.isSafeInteger(999_999_999_999_999)).toBe(true);
+    expect(value('1000000000000000', PROGRESS_MAX)).toBe('too_precise');
+    expect(value('99999999999.99999', PROGRESS_MAX)).toBe('too_precise');
   });
 });
 

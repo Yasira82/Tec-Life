@@ -8,7 +8,7 @@ import type { Goal } from '@/lib-client/life/useLife';
 import type { LifeArea } from './future-copy';
 import { STEP_MAX, cleanStep, parseSteps, withSteps } from './steps';
 import { closestGoal } from './today';
-import { parseAmount } from './amount';
+import { TARGET_MAX, parseAmount } from './amount';
 
 export interface GoalDraft {
   title: string;
@@ -45,7 +45,7 @@ const stepLines = (text: string) =>
 function targetOf(d: GoalDraft): number | null | DraftProblem {
   if (!takesTarget(d.area)) return null;
   if (!d.target.trim()) return null;
-  const r = parseAmount(d.target);
+  const r = parseAmount(d.target, TARGET_MAX);
   if (r.ok) return r.value;
   return r.problem === 'ambiguous' ? 'ambiguous_target' : r.problem === 'too_precise' ? 'precise_target'
     : r.problem === 'too_large' ? 'large_target' : 'bad_target';
