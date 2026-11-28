@@ -16,12 +16,13 @@ import { useState } from 'react';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { Icon, type IconName } from '@yasser172/tec-ui';
 import { C, bgA, goldA } from '@/lib-client/palette';
+import { SAFE_BOTTOM } from '@/lib/safe-bottom';
 import { useSubscription } from '@/lib-client/life/useLife';
 import { useTranslation } from '@/lib/i18n';
 import { isProPlan } from '../components/shared';
 import { SignInGate } from '../components/SignInGate';
 import { TodayView } from './today/TodayView';
-import { Goals } from '../components/Goals';
+import { GoalsView } from './goals/GoalsView';
 import { Activity } from '../components/Activity';
 import { Becoming } from '../components/Becoming';
 import { Skills } from '../components/Skills';
@@ -56,7 +57,7 @@ export function NewApp() {
   };
 
   return (
-    <main data-design="new" style={{ minHeight: '100vh', background: C.bg, color: C.text, fontFamily: 'var(--tec-font-ui)', paddingBottom: 112 }}>
+    <main data-design="new" style={{ minHeight: '100vh', background: C.bg, color: C.text, fontFamily: 'var(--tec-font-ui)', paddingBottom: `calc(112px + ${SAFE_BOTTOM})` }}>
       <div style={{ maxWidth: 560, margin: '0 auto', padding: 'calc(18px + env(safe-area-inset-top)) 18px 0', display: 'flex', flexDirection: 'column', gap: 18 }}>
         <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
           {tab === 'today' && !inSession
@@ -81,7 +82,7 @@ export function NewApp() {
               onGoals={() => goTo('goals')} onMenu={() => setMenuOpen(true)} />
           )}
           {tab === 'goals' && (
-            <Goals isPro={isPro} prefill={prefill} onPrefillUsed={() => setPrefill(null)} key={prefill ? `pf:${prefillN}:${prefill.title}` : 'goals'} />
+            <GoalsView isPro={isPro} prefill={prefill} onPrefillUsed={() => setPrefill(null)} key={prefill ? `pf:${prefillN}:${prefill.title}` : 'goals'} />
           )}
           {tab === 'mirror' && <Activity />}
           {tab === 'me' && (
@@ -106,7 +107,7 @@ export function NewNav({ active, onSelect }: { active: NewTab; onSelect: (t: New
   return (
     <nav aria-label={t.life.brand} style={{
       position: 'fixed', zIndex: 200,
-      left: 12, right: 12, bottom: 'calc(12px + max(env(safe-area-inset-bottom), var(--tec-safe-bottom-fallback, 0px)))',
+      left: 12, right: 12, bottom: `calc(12px + ${SAFE_BOTTOM})`,
       maxWidth: 560, margin: '0 auto',
       background: bgA(0.9), backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
       border: `1px solid ${C.border}`, borderRadius: 22,

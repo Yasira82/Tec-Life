@@ -118,6 +118,111 @@ test.describe('the redesign switch', () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });
 
+  test('My goals: the closest goal large, the others one line, the sheet — every control at least 44×44', async ({ context, page }) => {
+    await signIn(context, page, LISTED, await sign(LISTED));
+    await page.route('**/api/bff/life/goals', (r) => r.fulfill(ok({ goals: [
+      { id: 'a', title: 'Save 10π for a phone', description: '- [x] open a note\n- [ ] 1π every Friday', status: 'ACTIVE', target_date: null, target_amount: 10, progress: 8, area: 'MONEY', created_at: '', updated_at: '' },
+      { id: 'b', title: 'Walk after dinner', description: null, status: 'ACTIVE', target_date: null, target_amount: null, progress: 0, area: 'HEALTH', created_at: '', updated_at: '' },
+    ] })));
+    await page.route('**/api/bff/life/future', (r) => r.fulfill(ok({ vision: 'A calm life', areas: [{ area: 'MONEY', note: null }, { area: 'HEALTH', note: null }] })));
+    await page.goto('/app');
+    await page.getByRole('navigation').last().getByRole('button', { name: 'My goals', exact: true }).click();
+    await expect(page.getByTestId('goal-priority')).toContainText('Save 10π for a phone');
+    await expect(page.getByTestId('goal-row-b')).toBeVisible();
+    // The new screen's own controls. The parts it reuses unchanged (the vision editor, Pace,
+    // the Pro insights) are marked `data-reused` and measured by #127's touch-target suite.
+    const undersized = () => page.evaluate(() => {
+      const out: string[] = [];
+      for (const el of document.querySelectorAll<HTMLElement>('main button, main a[href], main input, main select, main textarea, [data-testid="goal-sheet"] :is(button, a[href], input, select, textarea)')) {
+        if (el.closest('[data-reused]') || el.closest('nav')) continue;
+        const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
+        if (el.matches('input[type="checkbox"]')) { const l = el.closest('label')?.getBoundingClientRect(); if (l && l.height >= 43.5) continue; }
+        if (Math.min(r.width, r.height) < 43.5) out.push(`${el.tagName} «${(el.getAttribute('aria-label') || el.textContent || '').trim().slice(0, 20)}» ${Math.round(r.width)}×${Math.round(r.height)}`);
+        if (el.matches('input:not([type="checkbox"]), select, textarea') && parseFloat(getComputedStyle(el).fontSize) < 16) out.push(`${el.tagName} font ${getComputedStyle(el).fontSize}`);
+      }
+      return out;
+    });
+    expect(await undersized()).toEqual([]);
+    await page.getByTestId('goal-row-b').click();
+    await expect(page.getByTestId('goal-sheet')).toBeVisible();
+    expect(await undersized()).toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+
+  test('My goals: the vision is two lines at most, and nothing hides under the tab bar (Pi Browser on Android)', async ({ context, page }) => {
+    await signIn(context, page, LISTED, await sign(LISTED));
+    const many = Array.from({ length: 9 }, (_, i) => ({ id: `g${i}`, title: `Goal number ${i + 1}`, description: null, status: i > 6 ? 'DONE' : 'ACTIVE', target_date: null, target_amount: i === 0 ? 10 : null, progress: i === 0 ? 3 : 0, area: i % 2 ? 'HEALTH' : 'MONEY', created_at: '', updated_at: `2026-11-${10 + i}` }));
+    await page.route('**/api/bff/life/goals', (r) => r.fulfill(ok({ goals: many })));
+    await page.route('**/api/bff/life/future', (r) => r.fulfill(ok({
+      vision: 'A calm life with money set aside every month, good health that lets me play with my children, time for my family every evening, and work I am proud of.',
+      areas: [{ area: 'MONEY', note: null }, { area: 'HEALTH', note: null }],
+    })));
+    await page.goto('/app');
+    // Pi Browser on Android reports no inset; lib/safe-bottom.ts then reserves Android's 48px.
+    await page.addStyleTag({ content: ':root{--tec-safe-bottom-fallback:48px}' });
+    await page.getByRole('navigation').last().getByRole('button', { name: 'My goals', exact: true }).click();
+    const vision = page.getByTestId('vision-text');
+    await expect(vision).toBeVisible();
+    const lines = await vision.evaluate((el) => Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight)));
+    expect(lines).toBeLessThanOrEqual(2);
+    // The closest goal now starts in the first screen, not below a tall card.
+    const top = await page.getByTestId('goal-priority').evaluate((el) => el.getBoundingClientRect().top);
+    expect(top).toBeLessThan(400);
+    // At the end of the scroll, the last thing on the page sits above the tab bar.
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await page.waitForTimeout(300);
+    const { lastBottom, navTop, navGap } = await page.evaluate(() => {
+      const nav = document.querySelector('nav')!.getBoundingClientRect();
+      // The page's content — not the tab bar's own buttons (the bar sits inside <main>).
+      const items = [...document.querySelectorAll<HTMLElement>('main button, main a[href], main [data-reused]')]
+        .filter((el) => !el.closest('nav'))
+        .map((el) => el.getBoundingClientRect()).filter((r) => r.height > 0);
+      return { lastBottom: Math.max(...items.map((r) => r.bottom)), navTop: nav.top, navGap: window.innerHeight - nav.bottom };
+    });
+    expect(lastBottom).toBeLessThanOrEqual(navTop);
+    expect(navGap).toBeGreaterThanOrEqual(48 + 12 - 1); // the bar stays above Android's own buttons
+    // The add button, scrolled to just above the bar, is not covered by it.
+    await page.getByTestId('goal-new').evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    const covered = await page.getByTestId('goal-new').evaluate((el) => {
+      const r = el.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+      return !(hit && (hit === el || el.contains(hit)));
+    });
+    expect(covered).toBe(false);
+  });
+
+  test('My goals in Arabic, Pi Browser width: π in Arabic digits, «1,000» refused beside the field, the sheet keeps focus', async ({ context, page }) => {
+    await signIn(context, page, LISTED, await sign(LISTED), 'ar');
+    await page.route('**/api/bff/life/goals', (r) => r.fulfill(ok({ goals: [
+      { id: 'a', title: 'ادّخار ١٠π لهاتف', description: null, status: 'ACTIVE', target_date: null, target_amount: 10, progress: 2, area: 'MONEY', created_at: '', updated_at: '' },
+    ] })));
+    const sent: string[] = [];
+    await page.route('**/api/bff/life/goals/a/progress', (r) => { sent.push(r.request().postData() ?? ''); return r.fulfill(ok({ goal: {} })); });
+    await page.goto('/app');
+    await page.getByRole('navigation').last().getByRole('button', { name: 'أهدافي', exact: true }).click();
+    const card = page.getByTestId('goal-priority');
+    const field = card.getByRole('textbox');
+    await field.fill('1,000');
+    const log = card.getByRole('button', { name: 'تسجيل', exact: true });
+    await log.click();
+    await expect(card.getByRole('alert')).toHaveText('اكتبه بدون فاصلة: نقطة للكسور، مثل 1000 أو 2.5.');
+    expect(sent).toEqual([]);
+    await field.fill('٢٫٥');
+    await log.click();
+    await expect.poll(() => sent).toEqual(['{"delta":2.5}']);
+    // The sheet: focus goes in, Tab stays in, closing returns it to the opener.
+    const edit = card.getByRole('button', { name: 'تعديل' });
+    await edit.click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    expect(await dialog.evaluate((d) => d.contains(document.activeElement))).toBe(true);
+    for (let i = 0; i < 12; i++) await page.keyboard.press('Tab');
+    expect(await dialog.evaluate((d) => d.contains(document.activeElement))).toBe(true);
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+    expect(await edit.evaluate((b) => b === document.activeElement)).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+
   test('Arabic: right to left, Arabic tabs', async ({ context, page }) => {
     await signIn(context, page, LISTED, await sign(LISTED), 'ar');
     await page.goto('/app');
