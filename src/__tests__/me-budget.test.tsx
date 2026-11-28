@@ -69,7 +69,43 @@ describe('MeBudget — what is read', () => {
     expect((await screen.findByTestId('budget-spent-unknown')).textContent).toBe(b.spentPartial);
   });
 
-  it('a budget that could not be read is said, with a retry — never «no caps»', async () => {
+  it('partial WITH numbers in the answer: no spend, no bar, no left/over, no «spent with no cap» (owner review of #136)', async () => {
+    stub(() => ok({ ...known, spent_status: 'partial',
+      lines: [{ category: 'ecommerce', cap_pi: '40', spent_pi: '30', pct: 75, over: false }, { category: 'assets', cap_pi: '10', spent_pi: '12', pct: 100, over: true }],
+      unallocated: [{ source: 'tec', spent_pi: '8' }] }));
+    render(<MeBudget />);
+    expect((await screen.findByTestId('budget-spent-unknown')).textContent).toBe(b.spentPartial);
+    for (const app of ['ecommerce', 'assets']) {
+      const row = screen.getByTestId(`budget-${app}`);
+      expect(screen.getByTestId(`budget-${app}-state`).textContent).toBe(b.lineUnknown);
+      expect(screen.queryByTestId(`budget-${app}-bar`)).toBeNull();
+      expect(row.textContent).not.toMatch(/30|12|left|Over/);
+    }
+    expect(screen.queryByTestId('budget-unallocated')).toBeNull();
+    expect(screen.getByTestId('me-budget').textContent).not.toContain('8π');
+  });
+
+  it('a failed spend read (a status number) with numbers in the answer: the same — nothing shown as final', async () => {
+    stub(() => ok({ ...known, spent_status: 502 }));
+    render(<MeBudget />);
+    expect((await screen.findByTestId('budget-spent-unknown')).textContent).toBe(b.spentUnknown);
+    expect(screen.queryByTestId('budget-ecommerce-bar')).toBeNull();
+    expect(screen.queryByTestId('budget-unallocated')).toBeNull();
+  });
+
+  it.each([
+    ['a malformed line', { ...known, lines: [{ category: 'ecommerce', cap_pi: '40' }] }],
+    ['a line missing spent_pi', { ...known, lines: [{ category: 'ecommerce', cap_pi: '40', pct: 75, over: false }] }],
+    ['a malformed unallocated item', { ...known, unallocated: [{ source: 'tec' }] }],
+  ])('%s → unread with a retry, no crash, never «no caps»', async (_name, data) => {
+    stub(() => ok(data));
+    render(<MeBudget />);
+    const failed = await screen.findByTestId('budget-failed');
+    expect(within(failed).getByRole('button', { name: k.retry })).toBeTruthy();
+    expect(screen.queryByText(b.empty)).toBeNull();
+  });
+
+    it('a budget that could not be read is said, with a retry — never «no caps»', async () => {
     let fail = true;
     stub(() => (fail ? [502, { error: 'down' }] : ok(known)));
     render(<MeBudget />);
