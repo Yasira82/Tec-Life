@@ -37,6 +37,7 @@ import { FeedbackCard } from '@/components/feedback/FeedbackCard';
 import { SocialLinks } from '@/components/social/SocialLinks';
 import { Sheet } from '../Sheet';
 import { MePrivacy } from './MePrivacy';
+import { MeBudget } from './MeBudget';
 import { localDigits } from '@/lib/life/digits';
 
 type Counts = { state: 'loading' } | { state: 'failed' } | { state: 'ok'; s: number; sAtLeast: boolean; c: number; cAtLeast: boolean };
@@ -155,6 +156,8 @@ export function MeView({ isPro, daysRemaining, onOpenJourney }: { isPro: boolean
         </div>
         <button type="button" onClick={onOpenJourney} style={{ ...quiet, borderColor: goldA(0.5), color: C.gold }}>{m.openJourney}</button>
       </section>
+
+      <MeBudget />
 
       <MePrivacy onDeleted={afterDeletion} />
 

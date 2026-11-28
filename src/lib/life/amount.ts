@@ -37,6 +37,13 @@ export type AmountResult = { ok: true; value: number } | { ok: false; problem: A
 export const TARGET_MAX = 1_000_000_000;
 /** Logged π: no server limit; the 15-significant-digit rule is the bound. */
 export const PROGRESS_MAX = Number.POSITIVE_INFINITY;
+/**
+ * A budget cap: the BFF (PUT /api/bff/life/budget) takes `cap_pi` up to 1,000,000,000 as a number, and as a
+ * string up to 12 integer digits with ≤ 8 decimals — the same shape tec-life-service's `parsePiCap` accepts.
+ * The cap is SENT AS A STRING (amountString below): the service turns a number into text with String(), and
+ * String(0.00000001) is "1e-8", which its own check refuses.
+ */
+export const CAP_MAX = 1_000_000_000;
 export const AMOUNT_DECIMALS = 8;
 export const AMOUNT_SIGNIFICANT = 15;
 
@@ -71,4 +78,17 @@ export function parseAmount(raw: string, max: number): AmountResult {
   if (!Number.isFinite(value) || value <= 0) return { ok: false, problem: 'invalid' };
   if (value > max) return { ok: false, problem: 'too_large' };
   return { ok: true, value };
+}
+
+/**
+ * The exact decimal the person typed, in Western digits with no leading or trailing zeros ("٠٠٢٫٥٠" → "2.5"),
+ * or null when parseAmount refuses it. Built from the TYPED TEXT, never from the number, so nothing is rounded
+ * on the way: what is saved is what was typed.
+ */
+export function amountString(raw: string, max: number): string | null {
+  if (!parseAmount(raw, max).ok) return null;
+  const [int = '', frac = ''] = toWesternDigits(raw.trim()).replace(/٫/g, '.').split('.');
+  const i = int.replace(/^0+(?=\d)/, '');
+  const f = frac.replace(/0+$/, '');
+  return f ? `${i}.${f}` : i;
 }

@@ -39,11 +39,11 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 describe('Me', () => {
-  it('in order: identity, skills, journey, privacy, settings', async () => {
+  it('in order: identity, skills, journey, budget, privacy, settings (budget added by A1, owner 2026-11-28)', async () => {
     render(<MeView isPro={false} daysRemaining={null} onOpenJourney={vi.fn()} />);
     await screen.findByText('Graphic design');
     const ids = [...document.querySelectorAll('[data-testid^="me-"]')].map((e) => e.getAttribute('data-testid'));
-    expect(ids).toEqual(['me-identity', 'me-skills', 'me-journey', 'me-privacy', 'me-settings', 'me-more']);
+    expect(ids).toEqual(['me-identity', 'me-skills', 'me-journey', 'me-budget', 'me-privacy', 'me-settings', 'me-more']);
     await waitFor(() => expect(screen.getByTestId('me-identity').textContent).toContain('@sara'));
   });
 
