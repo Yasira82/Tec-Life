@@ -13,7 +13,7 @@
 //
 // Admin-only readings render as before (each renders nothing for anyone else). Nothing here calls a
 // route the current design does not call.
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { C, goldA, identityA } from '@/lib-client/palette';
 import { THEME_ORDER, readTheme, saveTheme, type ThemeChoice } from '@/lib-client/theme';
@@ -24,6 +24,7 @@ import { usePreferences, useSkills } from '@/lib-client/life/useLife';
 import { readJourney } from '@/lib-client/life/journey';
 import { listConversations } from '@/lib-client/life/conversations';
 import { meCopy } from '@/lib/life/me-copy';
+import { CONVERSATIONS_READ_CAP, JOURNEY_READ_CAP } from '@/lib/life/deletion-count';
 import { fill } from '@/lib/life/today-copy';
 import { uiCopy } from '@/lib/life/ui-copy';
 import { Becoming } from '../../components/Becoming';
@@ -36,6 +37,8 @@ import { FeedbackCard } from '@/components/feedback/FeedbackCard';
 import { SocialLinks } from '@/components/social/SocialLinks';
 import { Sheet } from '../Sheet';
 import { MePrivacy } from './MePrivacy';
+
+type Counts = { state: 'loading' } | { state: 'failed' } | { state: 'ok'; s: number; sAtLeast: boolean; c: number; cAtLeast: boolean };
 
 const FOCUS_OPTIONS = ['Saving', 'Earning', 'Learning', 'Building', 'Trading'];
 const card: CSSProperties = { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 18, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 };
@@ -51,16 +54,39 @@ export function MeView({ isPro, daysRemaining, onOpenJourney }: { isPro: boolean
   const { user, isAuthenticated, logout } = usePiAuth();
   const username = me.username ?? user?.piUsername ?? null;
   const signedIn = me.authenticated || isAuthenticated || isPro || !!username;
-  const { skills, loading: skillsLoading } = useSkills();
+  const { skills, loading: skillsLoading, error: skillsError, reload: reloadSkills } = useSkills();
   const { prefs, loading: prefsLoading, saving, save } = usePreferences();
   const [theme, setTheme] = useState<ThemeChoice>('system');
   useEffect(() => { setTheme(readTheme()); }, []);
   const [skillsOpen, setSkillsOpen] = useState(false);
-  const [counts, setCounts] = useState<{ s: number; c: number } | null>(null);
-  useEffect(() => {
-    void Promise.all([readJourney(), listConversations()]).then(([j, l]) =>
-      setCounts({ s: j?.keeping ? j.entries.length : 0, c: l?.keeping ? l.conversations.length : 0 }));
+  // What is kept, read from the source — and read AGAIN whenever it may have changed (a keep switch
+  // turned off below). A read that fails is said, with a retry; it is never shown as 0. At a read cap
+  // the count is «at least» (owner review of the redesign chain, 28 Nov 2026).
+  // Only the NEWEST read may write: a read started before a deletion can answer after the read
+  // started by it, and must not put the deleted counts back (owner review of 2e0f43f).
+  const [counts, setCounts] = useState<Counts>({ state: 'loading' });
+  const countsAsked = useRef(0);
+  const loadCounts = useCallback(() => {
+    const n = ++countsAsked.current;
+    setCounts({ state: 'loading' });
+    void Promise.all([readJourney(), listConversations()]).then(([j, l]) => {
+      if (n !== countsAsked.current) return;
+      if (!j || !l) { setCounts({ state: 'failed' }); return; }
+      const s = j.keeping ? j.entries.length : 0;
+      const c = l.keeping ? l.conversations.length : 0;
+      setCounts({ state: 'ok', s, sAtLeast: s >= JOURNEY_READ_CAP, c, cAtLeast: c >= CONVERSATIONS_READ_CAP });
+    });
   }, []);
+  useEffect(() => { loadCounts(); }, [loadCounts]);
+  // «I'm becoming…» is deleted with the journey: remounting the card makes it read the source again.
+  const [becomingKey, setBecomingKey] = useState(0);
+  const afterDeletion = (cat: 'JOURNEY' | 'CONVERSATIONS') => {
+    if (cat === 'JOURNEY') setBecomingKey((k) => k + 1);
+    loadCounts();
+  };
+  // The skills editor in the sheet keeps its own list; this one is read again when the sheet closes.
+  const closeSkills = () => { setSkillsOpen(false); reloadSkills(); };
+  const countText = (n: number, atLeast: boolean) => (atLeast ? fill(m.atLeast, { n }) : String(n));
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -78,7 +104,7 @@ export function MeView({ isPro, daysRemaining, onOpenJourney }: { isPro: boolean
             <div style={{ fontSize: 13, color: C.subtext }}>{isPro ? s.planPro : s.planFree}{signedIn ? ` · ${s.connectedPi}` : ''}</div>
           </div>
         </div>
-        <div data-reused="becoming"><Becoming /></div>
+        <div data-reused="becoming"><Becoming key={becomingKey} /></div>
       </section>
 
       {/* My skills */}
@@ -89,6 +115,12 @@ export function MeView({ isPro, daysRemaining, onOpenJourney }: { isPro: boolean
         </div>
         <div style={{ ...card, padding: '2px 16px', gap: 0 }}>
           {skillsLoading && skills.length === 0 ? <div aria-busy="true" style={{ height: 52 }} />
+            : skillsError ? (
+              <div role="alert" data-testid="skills-failed" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '10px 0' }}>
+                <span style={{ fontSize: 14, color: C.text }}>{m.skillsFailed}</span>
+                <button type="button" onClick={reloadSkills} style={quiet}>{m.retry}</button>
+              </div>
+            )
             : skills.length === 0 ? <p style={{ margin: '14px 0', fontSize: 14, color: C.subtext }}>{m.noSkills}</p>
             : skills.map((k, i) => {
               const step = ['LEARNING', 'PRACTISING', 'PROFICIENT', 'EXPERT'].indexOf(k.level) + 1;
@@ -109,12 +141,21 @@ export function MeView({ isPro, daysRemaining, onOpenJourney }: { isPro: boolean
       <section data-testid="me-journey" style={{ ...card, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ minWidth: 0 }}>
           <h2 style={h2}>{m.journey}</h2>
-          <div style={{ fontSize: 13, color: C.subtext, marginTop: 2 }}>{counts ? fill(m.counts, counts) : '…'}</div>
+          {counts.state === 'failed' ? (
+            <div role="alert" data-testid="journey-counts-failed" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
+              <span style={{ fontSize: 13, color: C.text }}>{m.countsFailed}</span>
+              <button type="button" onClick={loadCounts} style={quiet}>{m.retry}</button>
+            </div>
+          ) : (
+            <div data-testid="journey-counts" aria-busy={counts.state === 'loading'} style={{ fontSize: 13, color: C.subtext, marginTop: 2 }}>
+              {counts.state === 'ok' ? fill(m.counts, { s: countText(counts.s, counts.sAtLeast), c: countText(counts.c, counts.cAtLeast) }) : '…'}
+            </div>
+          )}
         </div>
         <button type="button" onClick={onOpenJourney} style={{ ...quiet, borderColor: goldA(0.5), color: C.gold }}>{m.openJourney}</button>
       </section>
 
-      <MePrivacy />
+      <MePrivacy onDeleted={afterDeletion} />
 
       {/* Subscription */}
       <div data-reused="life-pro"><LifePro isPro={isPro} daysRemaining={daysRemaining} /></div>
@@ -175,7 +216,7 @@ export function MeView({ isPro, daysRemaining, onOpenJourney }: { isPro: boolean
       )}
 
       {skillsOpen && (
-        <Sheet title={t.life.skills.title} testId="skills-sheet" onClose={() => setSkillsOpen(false)}>
+        <Sheet title={t.life.skills.title} testId="skills-sheet" onClose={closeSkills}>
           <div data-reused="skills"><Skills /></div>
         </Sheet>
       )}

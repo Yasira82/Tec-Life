@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { LifeArea } from '@/lib/life/future-copy';
 
 // TEC Life (C-106) client hooks. Self-declared personal context — the caller's own
@@ -157,14 +157,20 @@ export function useSkills() {
   const [error,   setError]   = useState<string | null>(null);
   const [busy,    setBusy]    = useState(false);
 
+  // Only the NEWEST read may write: a read that answers after a later one (started when the list was
+  // first shown, overtaken by the read after an edit) must not put an older list back. Owner review of
+  // the redesign chain, 28 Nov 2026. A late answer changes nothing — not the list, the error or loading.
+  const asked = useRef(0);
   const reload = useCallback(() => {
+    const n = ++asked.current;
+    const current = () => n === asked.current;
     setLoading(true);
     setError(null);
     fetch('/api/bff/life/skills', { credentials: 'include', cache: 'no-store' })
       .then(readJson)
-      .then((d) => setSkills((d.skills as Skill[]) ?? []))
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Failed to load skills'))
-      .finally(() => setLoading(false));
+      .then((d) => { if (current()) setSkills((d.skills as Skill[]) ?? []); })
+      .catch((e: unknown) => { if (current()) setError(e instanceof Error ? e.message : 'Failed to load skills'); })
+      .finally(() => { if (current()) setLoading(false); });
   }, []);
 
   useEffect(() => reload(), [reload]);

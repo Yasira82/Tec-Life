@@ -18,7 +18,17 @@ describe('createBody', () => {
   it('a π target must be a number above 0', () => {
     expect(createBody({ ...emptyDraft(), title: 'x', target: 'abc' })).toEqual({ ok: false, problem: 'bad_target' });
     expect(createBody({ ...emptyDraft(), title: 'x', target: '-2' })).toEqual({ ok: false, problem: 'bad_target' });
-    expect(createBody({ ...emptyDraft(), title: 'x', target: '2,5' })).toMatchObject({ ok: true, target: 2.5 });
+    // A comma is never guessed (owner review, 28 Nov): «2,5» and «1,000» are refused, not read.
+    expect(createBody({ ...emptyDraft(), title: 'x', target: '2,5' })).toEqual({ ok: false, problem: 'ambiguous_target' });
+    expect(createBody({ ...emptyDraft(), title: 'x', target: '1,000' })).toEqual({ ok: false, problem: 'ambiguous_target' });
+  });
+  it('a π target reads the same way as logging π: any script’s digits, «.» or «٫»', () => {
+    expect(createBody({ ...emptyDraft(), title: 'x', target: '١٠' })).toMatchObject({ ok: true, target: 10 });
+    expect(createBody({ ...emptyDraft(), title: 'x', target: '٢٫٥' })).toMatchObject({ ok: true, target: 2.5 });
+    expect(createBody({ ...emptyDraft(), title: 'x', target: '2000000000' })).toEqual({ ok: false, problem: 'large_target' });
+    const goal = { id: 'g', title: 'x', description: null, status: 'ACTIVE', target_date: null, target_amount: 5, progress: 0, area: 'MONEY', created_at: '', updated_at: '' } as never;
+    expect(patchBody(goal, { title: 'x', area: 'MONEY', target: '1,000', steps: '' })).toEqual({ ok: false, problem: 'ambiguous_target' });
+    expect(patchBody(goal, { title: 'x', area: 'MONEY', target: '٨', steps: '' })).toEqual({ ok: true, patch: { target_amount: 8 } });
   });
   it('only a money goal (or one with no area) carries a target', () => {
     expect(createBody({ title: 'Walk', area: 'HEALTH', target: '10', steps: '' })).toEqual({ ok: true, title: 'Walk', area: 'HEALTH' });

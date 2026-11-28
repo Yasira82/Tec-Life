@@ -8,6 +8,7 @@ import type { Goal } from '@/lib-client/life/useLife';
 import type { LifeArea } from './future-copy';
 import { STEP_MAX, cleanStep, parseSteps, withSteps } from './steps';
 import { closestGoal } from './today';
+import { TARGET_MAX, parseAmount } from './amount';
 
 export interface GoalDraft {
   title: string;
@@ -32,17 +33,22 @@ export const draftOf = (g: Goal): GoalDraft => ({
   steps: parseSteps(g.description).map((s) => s.text).join('\n'),
 });
 
-export type DraftProblem = 'no_title' | 'bad_target';
+/** Why a draft cannot be saved. The target ones belong next to the target field. */
+export type DraftProblem = 'no_title' | 'bad_target' | 'ambiguous_target' | 'precise_target' | 'large_target';
+export const isTargetProblem = (p: string): p is 'bad_target' | 'ambiguous_target' | 'precise_target' | 'large_target' =>
+  p === 'bad_target' || p === 'ambiguous_target' || p === 'precise_target' || p === 'large_target';
 
 const stepLines = (text: string) =>
   text.split('\n').map(cleanStep).filter(Boolean).slice(0, STEP_MAX);
 
-function targetOf(d: GoalDraft): number | null | 'bad' {
+// The same reading as logging π (amount.ts): any script's digits, «.» or «٫», never a comma.
+function targetOf(d: GoalDraft): number | null | DraftProblem {
   if (!takesTarget(d.area)) return null;
-  const raw = d.target.trim().replace(',', '.');
-  if (!raw) return null;
-  const n = Number(raw);
-  return Number.isFinite(n) && n > 0 && n <= 1_000_000_000 ? n : 'bad';
+  if (!d.target.trim()) return null;
+  const r = parseAmount(d.target, TARGET_MAX);
+  if (r.ok) return r.value;
+  return r.problem === 'ambiguous' ? 'ambiguous_target' : r.problem === 'too_precise' ? 'precise_target'
+    : r.problem === 'too_large' ? 'large_target' : 'bad_target';
 }
 
 /** The body for a new goal, or why it cannot be saved. */
@@ -51,7 +57,7 @@ export function createBody(d: GoalDraft):
   const title = d.title.trim().slice(0, 200);
   if (!title) return { ok: false, problem: 'no_title' };
   const target = targetOf(d);
-  if (target === 'bad') return { ok: false, problem: 'bad_target' };
+  if (typeof target === 'string') return { ok: false, problem: target };
   const steps = stepLines(d.steps);
   return {
     ok: true, title,
@@ -71,7 +77,7 @@ export function patchBody(g: Goal, d: GoalDraft): { ok: true; patch: GoalPatch }
   const title = d.title.trim().slice(0, 200);
   if (!title) return { ok: false, problem: 'no_title' };
   const target = targetOf(d);
-  if (target === 'bad') return { ok: false, problem: 'bad_target' };
+  if (typeof target === 'string') return { ok: false, problem: target };
   const patch: GoalPatch = {};
   if (title !== g.title) patch.title = title;
   const area = d.area || null;

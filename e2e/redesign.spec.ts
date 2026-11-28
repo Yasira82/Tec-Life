@@ -256,6 +256,74 @@ test.describe('the redesign switch', () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });
 
+  test('My goals in Arabic, Pi Browser width: π in Arabic digits, «1,000» refused beside the field, the sheet keeps focus', async ({ context, page }) => {
+    await signIn(context, page, LISTED, await sign(LISTED), 'ar');
+    await page.route('**/api/bff/life/goals', (r) => r.fulfill(ok({ goals: [
+      { id: 'a', title: 'ادّخار ١٠π لهاتف', description: null, status: 'ACTIVE', target_date: null, target_amount: 10, progress: 2, area: 'MONEY', created_at: '', updated_at: '' },
+    ] })));
+    const sent: string[] = [];
+    await page.route('**/api/bff/life/goals/a/progress', (r) => { sent.push(r.request().postData() ?? ''); return r.fulfill(ok({ goal: {} })); });
+    await page.goto('/app');
+    await page.getByRole('navigation').last().getByRole('button', { name: 'أهدافي', exact: true }).click();
+    const card = page.getByTestId('goal-priority');
+    const field = card.getByRole('textbox');
+    await field.fill('1,000');
+    const log = card.getByRole('button', { name: 'تسجيل', exact: true });
+    await log.click();
+    await expect(card.getByRole('alert')).toHaveText('اكتبه بدون فاصلة: نقطة للكسور، مثل 1000 أو 2.5.');
+    expect(sent).toEqual([]);
+    await field.fill('٢٫٥');
+    await log.click();
+    await expect.poll(() => sent).toEqual(['{"delta":2.5}']);
+    // The sheet: focus goes in, Tab stays in, closing returns it to the opener.
+    const edit = card.getByRole('button', { name: 'تعديل' });
+    await edit.click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    expect(await dialog.evaluate((d) => d.contains(document.activeElement))).toBe(true);
+    for (let i = 0; i < 12; i++) await page.keyboard.press('Tab');
+    expect(await dialog.evaluate((d) => d.contains(document.activeElement))).toBe(true);
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+    expect(await edit.evaluate((b) => b === document.activeElement)).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+
+  test('Me in Arabic, Pi Browser width: turning the journey off removes what it kept from the screen; a count that cannot be read is never 0', async ({ context, page }) => {
+    await signIn(context, page, LISTED, await sign(LISTED), 'ar');
+    let keeping = true;
+    const entry = (i: number) => ({ id: `e${i}`, problem: 'p', understanding: 'u', step: null, step_outcome: null, created_at: new Date().toISOString() });
+    await page.route('**/api/bff/life/consent', (r) => {
+      if (r.request().method() === 'PUT') keeping = !(JSON.parse(r.request().postData() ?? '{}').consent?.JOURNEY === false) && keeping;
+      return r.fulfill(ok({ consent: [{ category: 'JOURNEY', granted: keeping }, { category: 'CONVERSATIONS', granted: true }] }));
+    });
+    await page.route('**/api/bff/life/journey', (r) => r.fulfill(ok({ keeping, entries: keeping ? [entry(1), entry(2), entry(3)] : [] })));
+    await page.route('**/api/bff/life/self', (r) => r.fulfill(ok({ keeping, statement: keeping ? 'شخص يخطط قبل أن ينفق' : null })));
+    let convsDown = true;
+    await page.route('**/api/bff/life/conversations', (r) => convsDown
+      ? r.fulfill({ status: 502, contentType: 'application/json', body: '{"error":"down"}' })
+      : r.fulfill(ok({ keeping: true, configured: true, conversations: [] })));
+    await page.goto('/app');
+    await page.getByRole('navigation').last().getByRole('button', { name: 'أنا', exact: true }).click();
+    // A count that cannot be read says so, with a retry — never «0».
+    const failed = page.getByTestId('journey-counts-failed');
+    await expect(failed).toBeVisible();
+    await expect(page.getByTestId('me-journey')).not.toContainText('0 ملخصات');
+    convsDown = false;
+    await failed.getByRole('button').click();
+    await expect(page.getByTestId('journey-counts')).toHaveText('3 ملخصات · 0 محادثات');
+    await expect(page.getByText('شخص يخطط قبل أن ينفق')).toBeVisible();
+    // Off, confirmed: the screen reads again and no longer shows what was deleted.
+    await page.getByRole('switch', { name: 'احتفظ بملخصات رحلتي' }).click();
+    const box = page.getByTestId('confirm-off-JOURNEY');
+    await expect(box).toHaveAttribute('data-phase', 'ready');
+    await box.getByRole('button', { name: 'احذف وأوقف' }).click();
+    await expect(box).toBeHidden();
+    await expect(page.getByTestId('journey-counts')).toHaveText('0 ملخصات · 0 محادثات');
+    await expect(page.getByText('شخص يخطط قبل أن ينفق')).toBeHidden();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+
   test('Arabic: right to left, Arabic tabs', async ({ context, page }) => {
     await signIn(context, page, LISTED, await sign(LISTED), 'ar');
     await page.goto('/app');
