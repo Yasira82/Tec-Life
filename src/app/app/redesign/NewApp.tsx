@@ -24,7 +24,7 @@ import { SignInGate } from '../components/SignInGate';
 import { TodayView } from './today/TodayView';
 import { GoalsView } from './goals/GoalsView';
 import { MeView } from './me/MeView';
-import { Activity } from '../components/Activity';
+import { MirrorView } from './mirror/MirrorView';
 import { ProblemSession, type Resume } from '../components/ProblemSession';
 import { JourneyDrawer } from '../components/JourneyDrawer';
 import { GoalPrefillReader } from '../components/GoalPrefillReader';
@@ -82,7 +82,7 @@ export function NewApp() {
           {tab === 'goals' && (
             <GoalsView isPro={isPro} prefill={prefill} onPrefillUsed={() => setPrefill(null)} key={prefill ? `pf:${prefillN}:${prefill.title}` : 'goals'} />
           )}
-          {tab === 'mirror' && <Activity />}
+          {tab === 'mirror' && <MirrorView onTalk={() => openSession()} />}
           {tab === 'me' && <MeView isPro={isPro} daysRemaining={daysRemaining ?? null} onOpenJourney={() => setMenuOpen(true)} />}
           <JourneyDrawer open={menuOpen} onClose={() => setMenuOpen(false)} onNew={() => openSession()} onContinue={openSession}
             onMakeGoal={(step) => { const p = stepAsGoal(step); if (!p) return; setPrefill(p); setPrefillN((n) => n + 1); setTab('goals'); }} />
