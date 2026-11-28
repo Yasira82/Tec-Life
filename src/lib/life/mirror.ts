@@ -37,8 +37,11 @@ export function summariesIn(journey: Journey, today: string, days: number): { n:
   // Inside the period AND not after today: a record dated in the future (a phone clock behind the
   // server's, or bad data) is counted nowhere (owner review of #133).
   const entries = journey.entries.filter((e) => { const d = dayOf(e.created_at); return d >= start && d <= today; });
-  const oldest = journey.entries[journey.entries.length - 1];
-  const atLeast = journey.entries.length >= JOURNEY_READ_CAP && !!oldest && dayOf(oldest.created_at) >= start;
+  // The capped read may have cut the period short only when its OLDEST record is itself inside the
+  // period, bounded on both sides (owner review of #133). The oldest is found, not assumed from the
+  // list's order; a read whose oldest record is after today proves nothing about the period.
+  const oldestDay = journey.entries.reduce<string | null>((min, e) => { const d = dayOf(e.created_at); return min === null || d < min ? d : min; }, null);
+  const atLeast = journey.entries.length >= JOURNEY_READ_CAP && oldestDay !== null && oldestDay >= start && oldestDay <= today;
   return { n: entries.length, atLeast, entries };
 }
 

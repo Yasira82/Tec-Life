@@ -38,6 +38,28 @@ describe('summaries in a period', () => {
   });
 });
 
+describe('«at least» at the 500 read cap, with future-dated records', () => {
+  const ahead = (n: number) => entry(`f${n}`, -n);
+
+  it('a full read that is all in the future proves nothing about the period', () => {
+    const allFuture = Array.from({ length: 500 }, (_, i) => ahead(i + 1));
+    expect(summariesIn(J(allFuture), TODAY, 90)).toMatchObject({ n: 0, atLeast: false });
+  });
+
+  it('future records filling part of the cap: «at least» follows the oldest real one', () => {
+    const mixed = [...Array.from({ length: 450 }, (_, i) => ahead(i + 1)), ...Array.from({ length: 50 }, (_, i) => entry(`r${i}`, i))];
+    // Oldest is 49 days back: inside 90 days, so records older than it may be missing.
+    expect(summariesIn(J(mixed), TODAY, 90)).toMatchObject({ n: 50, atLeast: true });
+    // A week holds only real records 0–6 days back, and the read reaches past it: exact.
+    expect(summariesIn(J(mixed), TODAY, 7)).toMatchObject({ n: 7, atLeast: false });
+  });
+
+  it('the oldest is found, not taken from the list’s order', () => {
+    const shuffled = [entry('old', 120), ...Array.from({ length: 499 }, (_, i) => entry(`n${i}`, i % 60))];
+    expect(summariesIn(J(shuffled), TODAY, 90).atLeast).toBe(false);
+  });
+});
+
 describe('the step answers', () => {
   const j = J([
     entry('new', 1, { step: 's1', days: [{ day: ago(0), answer: 'DONE' }, { day: ago(2), answer: 'NOT_YET' }, { day: ago(9), answer: 'DONE' }] }),
