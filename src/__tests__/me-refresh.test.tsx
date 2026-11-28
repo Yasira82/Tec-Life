@@ -7,7 +7,7 @@
  * CONVERSATIONS keeps its own behaviour: turning it off re-reads the counts only.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, cleanup, waitFor, within } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup, waitFor, within, act } from '@testing-library/react';
 import React from 'react';
 import { MeView } from '../app/app/redesign/me/MeView';
 import { meCopy } from '@/lib/life/me-copy';
@@ -26,7 +26,23 @@ let down: Set<string>;
 let refusePut: boolean;
 let calls: { url: string; method: string; body: string }[];
 // A response to hold back: the test releases it when it wants the old read to arrive.
-let hold: { url: string; release?: () => void; held: boolean } | null;
+let hold: { url: string; release?: () => void; held: boolean; read?: Promise<void> } | null;
+
+/**
+ * Releases the held (old) answer and waits until the app has FINISHED with it — no fixed delay:
+ *   1. `hold.read` settles only when the app's own code has read that answer's body (res.json()),
+ *      so the old answer provably reached the guard;
+ *   2. the guard and everything after it run as microtasks with no timer in between; one macrotask
+ *      boundary (setTimeout 0) comes only after the microtask queue is empty — an ordering the event
+ *      loop guarantees, not a timing guess.
+ */
+async function releaseOldAndSettle() {
+  await act(async () => {
+    hold!.release!();
+    await hold!.read;
+    await new Promise<void>((r) => setTimeout(r, 0));
+  });
+}
 
 beforeEach(() => {
   db = { journey: 3, convs: 2, statement: 'someone who plans first', skills: ['Writing'], consent: { JOURNEY: true, CONVERSATIONS: true, GOALS: false } };
@@ -43,7 +59,11 @@ beforeEach(() => {
         : url === '/api/bff/life/skills'
           ? ok({ skills: db.skills.map((name, i) => ({ id: `s${i}`, name, level: 'LEARNING', source: 'SELF_DECLARED', created_at: '', updated_at: '' })) })
           : ok({});
-      return new Promise<Response>((r) => { hold!.release = () => r(answer); });
+      // Its body read is signalled: the test waits for the app to have read it (releaseOldAndSettle).
+      let bodyRead!: () => void;
+      hold.read = new Promise<void>((r) => { bodyRead = r; });
+      const signalled = { ...answer, json: async () => { const b = await answer.json(); bodyRead(); return b; } } as Response;
+      return new Promise<Response>((r) => { hold!.release = () => r(signalled); });
     }
     if (url === '/api/auth/me') return { ok: true, status: 200, json: async () => ({ authenticated: true, user: { piUsername: 'sara' } }) } as Response;
     if (url === '/api/bff/life/journey') return ok({ keeping: db.consent.JOURNEY, entries: db.consent.JOURNEY ? entries(db.journey) : [] });
@@ -130,8 +150,7 @@ describe('1b — a read started before the deletion that answers after it (owner
     await turnOff(m.keepJourney);
     await waitFor(() => expect(counts()).toBe('0 summaries · 2 conversations'));
     // Now the old read arrives — with the deleted 3 summaries in it.
-    hold!.release!();
-    await new Promise((r) => setTimeout(r, 50));
+    await releaseOldAndSettle();
     expect(counts()).toBe('0 summaries · 2 conversations');
   });
 });
@@ -198,8 +217,7 @@ describe('3 — the skills list', () => {
     // The read after the edit answers first…
     expect(await within(screen.getByTestId('me-skills')).findByText('Graphic design')).toBeTruthy();
     // …then the old one arrives, without «Graphic design» in it.
-    hold!.release!();
-    await new Promise((r) => setTimeout(r, 50));
+    await releaseOldAndSettle();
     expect(within(screen.getByTestId('me-skills')).getByText('Graphic design')).toBeTruthy();
   });
 
