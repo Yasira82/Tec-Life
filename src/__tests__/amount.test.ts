@@ -85,3 +85,57 @@ describe('each field its own limit (owner review of 4e5b688)', () => {
   });
 });
 
+describe('logged π across its whole range — PROGRESS_MAX (owner review of 2cf8643)', () => {
+  // Same check as for a target, but with the log's own limit: accepted means it arrives exactly.
+  const exactLog = (typed: string) => {
+    const r = parseAmount(typed, PROGRESS_MAX);
+    if (!r.ok) throw new Error(`${typed} refused: ${r.problem}`);
+    const sent = JSON.parse(JSON.stringify({ delta: r.value })).delta as number;
+    const frac = typed.split('.')[1]?.length ?? 0;
+    return { same: sent === r.value, back: sent.toFixed(frac) };
+  };
+
+  it.each([
+    '1500000000.12345',      // above the target's limit, with decimals (15 significant)
+    '999999999999999',       // the largest 15-digit integer
+    '99999999999999.9',      // a decimal just under 10^14, 15 significant
+    '12345678901234.5',
+    '500000000000.125',
+    '1000000000000.01',
+  ])('%s is accepted and arrives exactly as typed', (typed) => {
+    expect(exactLog(typed)).toEqual({ same: true, back: typed });
+  });
+
+  it.each([
+    ['1500000000.123456', 'too_precise'],   // 16 significant digits
+    ['1500000000.1234567', 'too_precise'],  // 17 — this one happens to survive as a double; the rule is a
+                                            // guarantee (15 always do), not a per-number check, so it is refused too
+    ['999999999999999.9', 'too_precise'],
+    ['1000000000000000', 'too_precise'],
+    ['9007199254740993', 'too_precise'],    // 16 digits that do NOT survive: a double makes it …992
+  ])('%s → %s — refused, never rounded and sent', (typed, problem) => {
+    expect(value(typed, PROGRESS_MAX)).toBe(problem);
+  });
+
+  it('past 15 digits some numbers change on the way — why the rule exists', () => {
+    // Without the rule, each of these would travel as a different number than the one typed.
+    for (const typed of ['999999999.12345678', '9007199254740993', '1234567890.12345678', '99999999999999999']) {
+      expect(String(Number(typed))).not.toBe(typed);
+      expect(parseAmount(typed, PROGRESS_MAX)).toEqual({ ok: false, problem: 'too_precise' });
+    }
+  });
+
+  it('every accepted log round-trips — 5,000 generated from 1 up to 10^15', () => {
+    let seed = 7;
+    const rnd = (n: number) => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed % n; };
+    for (let i = 0; i < 5000; i++) {
+      const len = 1 + rnd(15);                                   // 1–15 integer digits
+      const int = String(1 + rnd(9)) + Array.from({ length: len - 1 }, () => rnd(10)).join('');
+      const room = Math.min(8, 15 - int.length);
+      const frac = Array.from({ length: rnd(room + 1) }, () => rnd(10)).join('');
+      const typed = frac ? `${int}.${frac}` : int;
+      expect(exactLog(typed)).toEqual({ same: true, back: typed });
+    }
+  });
+});
+

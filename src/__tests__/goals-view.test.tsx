@@ -203,6 +203,19 @@ describe('My goals — amounts (owner review of the chain, 28 Nov)', () => {
     expect(screen.queryByText(g.amountTooLarge)).toBeNull();
   });
 
+  it('a log above the target’s limit with too many digits is refused beside the field, not rounded and sent', async () => {
+    goals = [G({ id: 'big', title: 'A billion', target_amount: 1_000_000_000, progress: 0, area: 'MONEY' })];
+    view();
+    await screen.findByTestId('goal-priority');
+    fireEvent.change(logField(), { target: { value: '1500000000.1234567' } });
+    fireEvent.click(logBtn());
+    expect(await screen.findByText(g.amountTooPrecise)).toBeTruthy();
+    expect(progress()).toEqual([]);
+    fireEvent.change(logField(), { target: { value: '1500000000.12345' } });
+    fireEvent.click(logBtn());
+    await waitFor(() => expect(progress().map((c) => JSON.parse(c.body))).toEqual([{ delta: 1500000000.12345 }]));
+  });
+
   it('…while the same number as a target is refused beside the field', async () => {
     view();
     await screen.findByTestId('goal-priority');
