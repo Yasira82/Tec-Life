@@ -126,6 +126,16 @@ describe('method — a closed list, each with its definition in plain words', ()
     expect(of('friction')).toEqual(['measure_without_followup', 'no_steps', 'not_yet_3_in_a_row', 'steps_none_ticked']);
     expect(of('pattern')).toEqual(['after_conversation']);
   });
+  it('after_conversation groups by DATE, whatever the answer; "done" is what is compared (owner, 28 Nov)', () => {
+    const d = METHODS.after_conversation.definition;
+    expect(d).toMatch(/^Groups by date, whatever the answer:/);
+    expect(d).toContain('`after` = answered days that are the day immediately after a day a summary was kept');
+    expect(d).toContain('`other` = every other answered day');
+    expect(d).toContain('Compared: the days answered "done" in each group');
+    expect(d).toContain('derived by C2 from the source dates, never passed in');
+    // The earlier wording put "done" into the group itself; it must not come back.
+    expect(d).not.toMatch(/^Days the step was fully done/);
+  });
   it('an unknown method, or one of another kind, is refused', () => {
     expect(() => makeObservation({ kind: 'friction', method: 'made_up' as MethodKey, value: null, now: NOW, period: PERIOD, source_records: [rec('a', day(1))] })).toThrow(/unknown method/);
     expect(() => makeObservation({ kind: 'friction', method: 'helped', value: null, now: NOW, period: PERIOD, source_records: [rec('a', day(1))] })).toThrow(/not a friction method/);

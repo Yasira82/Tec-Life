@@ -34,7 +34,7 @@ export type EvidenceStatus = 'insufficient' | 'preliminary';
  */
 export const METHODS = {
   // Patterns — a small list fixed in advance (plan §4 C2: never search many comparisons for one that differs).
-  after_conversation: { kind: 'pattern', groups: ['after', 'other'], definition: 'Days the step was fully done, on the day after a kept summary versus all other answered days; each day counted once; "partly" is not "done"; days with no answer are not counted.' },
+  after_conversation: { kind: 'pattern', groups: ['after', 'other'], definition: 'Groups by date, whatever the answer: `after` = answered days that are the day immediately after a day a summary was kept; `other` = every other answered day. Compared: the days answered "done" in each group. Each day counted once; "partly" is not "done"; days with no answer are not counted. The groups are derived by C2 from the source dates, never passed in.' },
   // Friction — the four rules the current data supports (plan §4 C1).
   no_steps:                 { kind: 'friction', definition: 'An active goal whose description has no step lines.' },
   steps_none_ticked:        { kind: 'friction', definition: 'An active goal with step lines, none of them ticked.' },
