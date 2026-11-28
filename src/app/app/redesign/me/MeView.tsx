@@ -13,7 +13,7 @@
 //
 // Admin-only readings render as before (each renders nothing for anyone else). Nothing here calls a
 // route the current design does not call.
-import { useCallback, useEffect, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { C, goldA, identityA } from '@/lib-client/palette';
 import { THEME_ORDER, readTheme, saveTheme, type ThemeChoice } from '@/lib-client/theme';
@@ -62,10 +62,15 @@ export function MeView({ isPro, daysRemaining, onOpenJourney }: { isPro: boolean
   // What is kept, read from the source — and read AGAIN whenever it may have changed (a keep switch
   // turned off below). A read that fails is said, with a retry; it is never shown as 0. At a read cap
   // the count is «at least» (owner review of the redesign chain, 28 Nov 2026).
+  // Only the NEWEST read may write: a read started before a deletion can answer after the read
+  // started by it, and must not put the deleted counts back (owner review of 2e0f43f).
   const [counts, setCounts] = useState<Counts>({ state: 'loading' });
+  const countsAsked = useRef(0);
   const loadCounts = useCallback(() => {
+    const n = ++countsAsked.current;
     setCounts({ state: 'loading' });
     void Promise.all([readJourney(), listConversations()]).then(([j, l]) => {
+      if (n !== countsAsked.current) return;
       if (!j || !l) { setCounts({ state: 'failed' }); return; }
       const s = j.keeping ? j.entries.length : 0;
       const c = l.keeping ? l.conversations.length : 0;

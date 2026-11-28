@@ -25,14 +25,24 @@ let db: { journey: number; convs: number; statement: string | null; skills: stri
 let down: Set<string>;
 let refusePut: boolean;
 let calls: { url: string; method: string; body: string }[];
+// A response to hold back: the test releases it when it wants the old read to arrive.
+let hold: { url: string; release?: () => void; held: boolean } | null;
 
 beforeEach(() => {
   db = { journey: 3, convs: 2, statement: 'someone who plans first', skills: ['Writing'], consent: { JOURNEY: true, CONVERSATIONS: true, GOALS: false } };
-  down = new Set(); refusePut = false; calls = [];
+  down = new Set(); refusePut = false; calls = []; hold = null;
   vi.stubGlobal('fetch', vi.fn(async (u: RequestInfo | URL, init?: RequestInit) => {
     const url = String(u).split('?')[0]!; const method = init?.method ?? 'GET'; const body = typeof init?.body === 'string' ? init.body : '';
     calls.push({ url, method, body });
     if (down.has(url) && method === 'GET') return fail();
+    if (hold && !hold.held && hold.url === url && method === 'GET') {
+      // Answer with the server as it is NOW, but only when released — a read started before a change.
+      hold.held = true;
+      const answer = url === '/api/bff/life/conversations'
+        ? ok({ keeping: true, configured: true, conversations: entries(db.convs).map((e) => ({ ...e, readable: true })) })
+        : ok({});
+      return new Promise<Response>((r) => { hold!.release = () => r(answer); });
+    }
     if (url === '/api/auth/me') return { ok: true, status: 200, json: async () => ({ authenticated: true, user: { piUsername: 'sara' } }) } as Response;
     if (url === '/api/bff/life/journey') return ok({ keeping: db.consent.JOURNEY, entries: db.consent.JOURNEY ? entries(db.journey) : [] });
     if (url === '/api/bff/life/self') return ok({ keeping: db.consent.JOURNEY, statement: db.consent.JOURNEY ? db.statement : null });
@@ -104,6 +114,23 @@ describe('1 — after a keep switch is turned off', () => {
     await waitFor(() => expect(counts()).toBe('3 summaries · 0 conversations'));
     expect(screen.getByText(/someone who plans first/)).toBeTruthy();
     expect(reads('/api/bff/life/self')).toBe(selfReads);
+  });
+});
+
+describe('1b — a read started before the deletion that answers after it (owner review of 2e0f43f)', () => {
+  it('the old counts never come back over the new ones', async () => {
+    hold = { url: '/api/bff/life/conversations', held: false };
+    view();
+    // The first count read is in flight: its journey answer (3 summaries) is in, its conversations held.
+    await waitFor(() => expect(hold!.held).toBe(true));
+    expect(screen.getByTestId('journey-counts').getAttribute('aria-busy')).toBe('true');
+    // The journey is turned off and the server confirms; the new read answers first.
+    await turnOff(m.keepJourney);
+    await waitFor(() => expect(counts()).toBe('0 summaries · 2 conversations'));
+    // Now the old read arrives — with the deleted 3 summaries in it.
+    hold!.release!();
+    await new Promise((r) => setTimeout(r, 50));
+    expect(counts()).toBe('0 summaries · 2 conversations');
   });
 });
 
