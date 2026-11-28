@@ -31,6 +31,8 @@ export const ko = {
     welcomeName: '환영합니다, {name}님',
     subtitle:    '한 걸음씩 나를 만들어 가요',
     nav: { home: '홈', goals: '나의 미래', skills: '기술', activity: '활동', settings: '설정' },
+    // The redesign (Phase 1, behind the server switch): its four tabs, and the label that tells a tester which design they are on.
+    v2: { preview: '새 디자인 미리보기', tabs: { today: '오늘', goals: '내 목표', mirror: '내 거울', me: '나' } },
     home: {
       focus: '지금 집중',
       focusHint: '완료에 가장 가까운',

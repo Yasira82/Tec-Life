@@ -31,6 +31,8 @@ export const vi = {
     welcomeName: 'Chào mừng, {name}',
     subtitle:    'xây dựng bản thân từng bước một',
     nav: { home: 'Trang chủ', goals: 'Tương lai', skills: 'Kỹ năng', activity: 'Hoạt động', settings: 'Cài đặt' },
+    // The redesign (Phase 1, behind the server switch): its four tabs, and the label that tells a tester which design they are on.
+    v2: { preview: 'Xem trước thiết kế mới', tabs: { today: 'Hôm nay', goals: 'Mục tiêu', mirror: 'Tấm gương', me: 'Tôi' } },
     home: {
       focus: 'Trọng tâm của bạn',
       focusHint: 'gần hoàn thành nhất',

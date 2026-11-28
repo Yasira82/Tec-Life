@@ -31,6 +31,8 @@ export const fr = {
     welcomeName: 'Bienvenue, {name}',
     subtitle:    'construisez-vous, pas à pas',
     nav: { home: 'Accueil', goals: 'Mon avenir', skills: 'Compétences', activity: 'Activité', settings: 'Réglages' },
+    // The redesign (Phase 1, behind the server switch): its four tabs, and the label that tells a tester which design they are on.
+    v2: { preview: 'Aperçu du nouveau design', tabs: { today: 'Aujourd’hui', goals: 'Mes objectifs', mirror: 'Mon miroir', me: 'Moi' } },
     home: {
       focus: 'Votre priorité',
       focusHint: 'le plus proche du but',

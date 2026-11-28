@@ -31,6 +31,8 @@ export const pt = {
     welcomeName: 'Bem-vindo, {name}',
     subtitle:    'construa-se, passo a passo',
     nav: { home: 'Início', goals: 'Meu futuro', skills: 'Habilidades', activity: 'Atividade', settings: 'Ajustes' },
+    // The redesign (Phase 1, behind the server switch): its four tabs, and the label that tells a tester which design they are on.
+    v2: { preview: 'Prévia do novo design', tabs: { today: 'Hoje', goals: 'Minhas metas', mirror: 'Meu espelho', me: 'Eu' } },
     home: {
       focus: 'Seu foco',
       focusHint: 'mais perto de concluir',

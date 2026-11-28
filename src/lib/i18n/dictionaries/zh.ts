@@ -31,6 +31,8 @@ export const zh = {
     welcomeName: '欢迎，{name}',
     subtitle:    '一步一步，成就更好的自己',
     nav: { home: '首页', goals: '我的未来', skills: '技能', activity: '动态', settings: '设置' },
+    // The redesign (Phase 1, behind the server switch): its four tabs, and the label that tells a tester which design they are on.
+    v2: { preview: '新设计预览', tabs: { today: '今天', goals: '我的目标', mirror: '我的镜子', me: '我' } },
     home: {
       focus: '当前焦点',
       focusHint: '最接近完成',

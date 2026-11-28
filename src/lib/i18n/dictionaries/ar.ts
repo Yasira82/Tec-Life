@@ -31,6 +31,8 @@ export const ar = {
     welcomeName: 'مرحباً، {name}',
     subtitle:    'ابنِ نفسك خطوة بخطوة',
     nav: { home: 'الرئيسية', goals: 'مستقبلي', skills: 'المهارات', activity: 'النشاط', settings: 'الإعدادات' },
+    // The redesign (Phase 1, behind the server switch): its four tabs, and the label that tells a tester which design they are on.
+    v2: { preview: 'معاينة التصميم الجديد', tabs: { today: 'اليوم', goals: 'أهدافي', mirror: 'مرآتي', me: 'أنا' } },
     home: {
       focus: 'تركيزك',
       focusHint: 'الأقرب للاكتمال',

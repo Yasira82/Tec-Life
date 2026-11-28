@@ -60,6 +60,11 @@ jobs:
           E2E_MODE:                    'true'
           PLAYWRIGHT_BASE_URL:         'http://localhost:3000'
           NEXT_PUBLIC_API_GATEWAY_URL: 'http://localhost:8080'
+          # The redesign switch for e2e/redesign.spec.ts: on for ONE test name, verified with a
+          # test-only secret (no real token is ever signed with it). Production sets neither here.
+          JWT_SECRET:                  'e2e-only-redesign-switch-secret-not-a-real-key'
+          LIFE_REDESIGN_ENABLED:       'true'
+          LIFE_REDESIGN_USERS:         'e2e_redesign'
 
       - name: Upload Report
         uses: actions/upload-artifact@v7

@@ -31,6 +31,8 @@ export const tr = {
     welcomeName: 'Hoş geldin, {name}',
     subtitle:    'kendini adım adım inşa et',
     nav: { home: 'Ana sayfa', goals: 'Geleceğim', skills: 'Beceriler', activity: 'Etkinlik', settings: 'Ayarlar' },
+    // The redesign (Phase 1, behind the server switch): its four tabs, and the label that tells a tester which design they are on.
+    v2: { preview: 'Yeni tasarım önizlemesi', tabs: { today: 'Bugün', goals: 'Hedeflerim', mirror: 'Aynam', me: 'Ben' } },
     home: {
       focus: 'Odağın',
       focusHint: 'tamamlanmaya en yakın',
