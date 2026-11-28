@@ -16,7 +16,7 @@
 // nothing to delete. While the server works the confirmation stays, and it closes only on success.
 // A refusal stays on screen, and the switch shows what the server says is stored. Any other switch
 // that fails to save says so too; settings that cannot be loaded say so instead of vanishing.
-import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { C, errorA, goldA } from '@/lib-client/palette';
 import { useTranslation } from '@/lib/i18n';
 import { useConsent, useIntent, purgeLifeData, type LifeDataCategory } from '@/lib-client/life/useLife';
@@ -51,13 +51,20 @@ export function MePrivacy({ onDeleted }: { onDeleted?: (cat: 'JOURNEY' | 'CONVER
   const [purge, setPurge] = useState<'idle' | 'busy' | 'done' | 'failed'>('idle');
 
   // How much a keep switch would delete — read when the person asks to turn it off, and again on retry.
+  // Only the NEWEST count may fill the confirmation (owner review of edcf9a1). Each count takes a
+  // sequence number; «Keep it on» moves the number on too, so a count still in flight when the box
+  // was closed can never fill a box opened after it — even for the same switch.
+  const countAsked = useRef(0);
   const count = useCallback(async (cat: LifeDataCategory) => {
+    const n = ++countAsked.current;
     setOff({ cat, phase: 'counting' });
     const c = cat === 'JOURNEY'
       ? await Promise.all([readJourney(), readSelf()]).then(([j, s]) => journeyDeletion(j, s))
       : await listConversations().then(conversationsDeletion);
-    setOff((o) => (o && o.cat === cat ? (c ? { cat, phase: 'ready', count: c } : { cat, phase: 'countFailed' }) : o));
+    if (n !== countAsked.current) return;
+    setOff((o) => (o && o.cat === cat && o.phase === 'counting' ? (c ? { cat, phase: 'ready', count: c } : { cat, phase: 'countFailed' }) : o));
   }, []);
+  const closeOff = () => { countAsked.current++; setOff(null); };
 
   // The second tap of «delete my data» disarms itself, as on the current screen.
   useEffect(() => {
@@ -141,7 +148,7 @@ export function MePrivacy({ onDeleted }: { onDeleted?: (cat: 'JOURNEY' | 'CONVER
             ? <button type="button" onClick={() => void count(c)} style={btn(false)}>{m.retry}</button>
             : <button type="button" disabled={phase !== 'ready' && phase !== 'failed'} onClick={() => void confirmOff()}
                 style={{ ...btn(true), opacity: phase === 'ready' || phase === 'failed' ? 1 : 0.5 }}>{m.offDo}</button>}
-          <button type="button" disabled={phase === 'deleting'} onClick={() => setOff(null)} style={btn(false)}>{m.offKeep}</button>
+          <button type="button" disabled={phase === 'deleting'} onClick={closeOff} style={btn(false)}>{m.offKeep}</button>
         </div>
       </div>
     );

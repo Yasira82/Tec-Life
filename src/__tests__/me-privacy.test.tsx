@@ -206,6 +206,70 @@ describe('MePrivacy — turning a keep switch off', () => {
   });
 });
 
+describe('MePrivacy — a count that answers late (owner review of edcf9a1)', () => {
+  /** A journey read held back until released; `read` settles when the app has read its body. */
+  function holdOneJourneyRead(n: number) {
+    let release!: () => void; let bodyRead!: () => void;
+    const read = new Promise<void>((r) => { bodyRead = r; });
+    const answer = ok({ keeping: true, entries: entries(n) });
+    const signalled = { ...answer, json: async () => { const b = await answer.json(); bodyRead(); return b; } } as Response;
+    const pending = new Promise<Response>((r) => { release = () => r(signalled); });
+    return { route: () => pending, read, release: () => release() };
+  }
+  /** Lets the old answer through and waits until the app has finished with it — no fixed delay. */
+  const settle = async (h: { read: Promise<void>; release: () => void }) => {
+    await act(async () => { h.release(); await h.read; await new Promise<void>((r) => setTimeout(r, 0)); });
+  };
+
+  it('closed while counting, opened again: the old count never fills the new box', async () => {
+    const old = holdOneJourneyRead(3);          // what was kept when the first box opened
+    routes['GET /api/bff/life/journey'] = old.route;
+    render(<MePrivacy />);
+    await turnOff(m.keepJourney);
+    expect(phase('JOURNEY')).toBe('counting');
+    fireEvent.click(within(box('JOURNEY')).getByRole('button', { name: m.offKeep }));
+    expect(screen.queryByTestId('confirm-off-JOURNEY')).toBeNull();
+    // A summary was kept since; the second box counts it.
+    routes['GET /api/bff/life/journey'] = () => ok({ keeping: true, entries: entries(4) });
+    await turnOff(m.keepJourney);
+    await waitFor(() => expect(box('JOURNEY').textContent).toContain('Right now we found 4 summaries.'));
+    // Now the first count arrives, with 3 in it.
+    await settle(old);
+    expect(box('JOURNEY').textContent).toContain('Right now we found 4 summaries.');
+    expect(box('JOURNEY').textContent).not.toContain('3 summaries');
+    expect(puts()).toEqual([]);
+  });
+
+  it('closed while counting and left closed: the late count opens nothing', async () => {
+    const old = holdOneJourneyRead(3);
+    routes['GET /api/bff/life/journey'] = old.route;
+    render(<MePrivacy />);
+    await turnOff(m.keepJourney);
+    fireEvent.click(within(box('JOURNEY')).getByRole('button', { name: m.offKeep }));
+    await settle(old);
+    expect(screen.queryByTestId('confirm-off-JOURNEY')).toBeNull();
+    expect(puts()).toEqual([]);
+  });
+
+  it('a late count cannot reopen a confirmation that is already deleting', async () => {
+    const old = holdOneJourneyRead(3);
+    routes['GET /api/bff/life/journey'] = old.route;
+    let finish!: () => void;
+    routes['PUT /api/bff/life/consent'] = () => new Promise<Response>((r) => { finish = () => r(ok({ consent })); });
+    render(<MePrivacy />);
+    await turnOff(m.keepJourney);
+    fireEvent.click(within(box('JOURNEY')).getByRole('button', { name: m.offKeep }));
+    routes['GET /api/bff/life/journey'] = () => ok({ keeping: true, entries: entries(4) });
+    await turnOff(m.keepJourney);
+    await waitFor(() => expect(phase('JOURNEY')).toBe('ready'));
+    fireEvent.click(within(box('JOURNEY')).getByRole('button', { name: m.offDo }));
+    await waitFor(() => expect(phase('JOURNEY')).toBe('deleting'));
+    await settle(old);
+    expect(phase('JOURNEY')).toBe('deleting');
+    await act(async () => { finish(); });
+  });
+});
+
 describe('MePrivacy — loading and saving', () => {
   it('settings that cannot be loaded say so, with a retry — never an empty screen', async () => {
     routes['GET /api/bff/life/consent'] = () => fail();
