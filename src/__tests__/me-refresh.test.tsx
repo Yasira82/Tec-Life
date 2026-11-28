@@ -40,7 +40,9 @@ beforeEach(() => {
       hold.held = true;
       const answer = url === '/api/bff/life/conversations'
         ? ok({ keeping: true, configured: true, conversations: entries(db.convs).map((e) => ({ ...e, readable: true })) })
-        : ok({});
+        : url === '/api/bff/life/skills'
+          ? ok({ skills: db.skills.map((name, i) => ({ id: `s${i}`, name, level: 'LEARNING', source: 'SELF_DECLARED', created_at: '', updated_at: '' })) })
+          : ok({});
       return new Promise<Response>((r) => { hold!.release = () => r(answer); });
     }
     if (url === '/api/auth/me') return { ok: true, status: 200, json: async () => ({ authenticated: true, user: { piUsername: 'sara' } }) } as Response;
@@ -179,6 +181,26 @@ describe('3 — the skills list', () => {
     await waitFor(() => expect(calls.some((c) => c.url === '/api/bff/life/skills' && c.method === 'POST')).toBe(true));
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(await within(screen.getByTestId('me-skills')).findByText('Graphic design')).toBeTruthy();
+  });
+
+  it('a read started before the edit that answers after it never puts the older list back (owner review of e41a4b1)', async () => {
+    hold = { url: '/api/bff/life/skills', held: false };
+    view();
+    // The list's first read is in flight, holding the list as it was: «Writing» only.
+    await waitFor(() => expect(hold!.held).toBe(true));
+    const list = screen.getByTestId('me-skills');
+    fireEvent.click(within(list).getByRole('button', { name: m.manage }));
+    const sheet = screen.getByTestId('skills-sheet');
+    fireEvent.change(within(sheet).getByPlaceholderText(en.life.skills.addPlaceholder), { target: { value: 'Graphic design' } });
+    fireEvent.click(within(sheet).getByRole('button', { name: en.life.skills.add }));
+    await waitFor(() => expect(calls.some((c) => c.url === '/api/bff/life/skills' && c.method === 'POST')).toBe(true));
+    fireEvent.keyDown(window, { key: 'Escape' });
+    // The read after the edit answers first…
+    expect(await within(screen.getByTestId('me-skills')).findByText('Graphic design')).toBeTruthy();
+    // …then the old one arrives, without «Graphic design» in it.
+    hold!.release!();
+    await new Promise((r) => setTimeout(r, 50));
+    expect(within(screen.getByTestId('me-skills')).getByText('Graphic design')).toBeTruthy();
   });
 
   it('a list that cannot be read says so, with a retry — not «no skills»', async () => {
