@@ -340,7 +340,9 @@ export function useConsent() {
 
   useEffect(() => reload(), [reload]);
 
-  const grant = useCallback(async (category: LifeDataCategory, granted: boolean) => {
+  // true when the server stored it. Callers that ignore the answer behave as before; the
+  // redesign's privacy section uses it to keep a confirmation open until the result is known.
+  const grant = useCallback(async (category: LifeDataCategory, granted: boolean): Promise<boolean> => {
     setSaving(true);
     setError(null);
     // Optimistic, then reconciled with the server's answer — the toggle must
@@ -354,9 +356,11 @@ export function useConsent() {
       });
       const data = await readJson(res);
       setConsent((data.consent as ConsentEntry[]) ?? []);
+      return true;
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Failed to save');
       reload(); // roll back to server truth
+      return false;
     } finally {
       setSaving(false);
     }
