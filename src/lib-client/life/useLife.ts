@@ -530,7 +530,7 @@ export interface CashflowSide { total: string; lines: { label: string; amount_pi
 export interface Cashflow {
   period:     string;
   in:         CashflowSide | null;
-  in_status:  number | null;
+  in_status:  number | 'partial' | null;
   out:        CashflowSide | null;
   out_status: number | 'partial' | null;
   net:        string | null;

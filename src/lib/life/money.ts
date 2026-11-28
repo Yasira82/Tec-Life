@@ -150,3 +150,67 @@ export function paymentsOut(rows: PaymentRow[]): CashflowSide {
   }
   return { total: fromMicro(total), lines };
 }
+
+// ── Reading an owning service's answer COMPLETELY (owner review of Tec-Life #136) ────────────────────────
+//
+// A figure is complete only when the answer it came from is the expected shape AND every row in it was
+// counted. Anything else is not a smaller number — it is an unknown, and the routes say so:
+//   'partial'      the service said there is more (hasNext === true) or its own page limit was reached;
+//   UNREADABLE     the answer is not the expected shape (no list, no explicit hasNext), or a row in it could
+//                  not be counted (a status that should not be there, an amount that is not exact, no date).
+// Missing is never 0: `payments ?? []` turned a broken answer into "spent nothing", complete.
+
+/** The status a side carries when the owning service's answer cannot be counted fully. */
+export const UNREADABLE = 502;
+
+const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
+
+export type HistoryRead = { kind: 'complete'; rows: PaymentRow[] } | { kind: 'partial' } | { kind: 'unreadable' };
+
+/**
+ * payment-service `GET /payment/history` → `{ payments: [...], pagination: { hasNext } }`. Complete only when
+ * `payments` is a list of objects and `pagination.hasNext` is EXPLICITLY false.
+ */
+export function readPaymentHistory(data: unknown): HistoryRead {
+  if (!isObj(data) || !Array.isArray(data.payments) || !data.payments.every(isObj)) return { kind: 'unreadable' };
+  const p = data.pagination;
+  if (!isObj(p) || typeof p.hasNext !== 'boolean') return { kind: 'unreadable' };
+  if (p.hasNext) return { kind: 'partial' };
+  return { kind: 'complete', rows: data.payments as PaymentRow[] };
+}
+
+/** Completed payments as the out side, with the rows that could not be counted. */
+export function paymentsOutCounted(rows: PaymentRow[]): { side: CashflowSide; skipped: number } {
+  let skipped = 0;
+  for (const r of rows) if (r.status !== 'completed' || toMicro(r.amount) === null) skipped += 1;
+  return { side: paymentsOut(rows), skipped };
+}
+
+export interface PayoutRow { status?: unknown; amount?: unknown; sent_at?: unknown; created_at?: unknown; source?: unknown }
+
+/** commerce-service `payouts/mine` returns at most this many, newest first (payout.service.ts `listMine`). */
+export const PAYOUTS_READ_CAP = 200;
+
+/**
+ * commerce-service `GET /commerce/payouts/mine` → `{ payouts: [...] }`, the newest 200. The in side is complete
+ * only when every SENT payout has an exact amount and a date, and the list cannot have been cut inside the
+ * period (fewer than 200 rows, or the oldest row is older than the period's start).
+ */
+export function readPayoutsIn(data: unknown, period: string):
+  { kind: 'complete'; side: CashflowSide } | { kind: 'partial' } | { kind: 'unreadable' } {
+  if (!isObj(data) || !Array.isArray(data.payouts) || !data.payouts.every(isObj)) return { kind: 'unreadable' };
+  const rows = data.payouts as PayoutRow[];
+  const dateOf = (r: PayoutRow) => (typeof r.sent_at === 'string' ? r.sent_at : typeof r.created_at === 'string' ? r.created_at : null);
+  for (const r of rows) {
+    if (r.status !== 'SENT') continue;
+    if (toMicro(r.amount) === null || dateOf(r) === null) return { kind: 'unreadable' };
+  }
+  if (rows.length >= PAYOUTS_READ_CAP) {
+    const { from } = periodBounds(period);
+    const created = rows.map((r) => (typeof r.created_at === 'string' ? r.created_at : null));
+    if (created.some((c) => c === null)) return { kind: 'unreadable' };
+    const oldest = (created as string[]).reduce((a, b) => (a < b ? a : b));
+    if (oldest >= from) return { kind: 'partial' };
+  }
+  return { kind: 'complete', side: payoutsIn(rows, period) };
+}

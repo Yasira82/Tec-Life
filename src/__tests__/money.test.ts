@@ -104,3 +104,44 @@ describe('cash flow', () => {
     expect(netOf(inn, null)).toBeNull();
   });
 });
+
+// Owner review of Tec-Life #136 — the readers behind both routes.
+import { readPaymentHistory, readPayoutsIn, paymentsOutCounted, UNREADABLE, PAYOUTS_READ_CAP } from '@/lib/life/money';
+
+describe('readPaymentHistory — complete only when hasNext is explicitly false and the list is a list', () => {
+  const row = { amount: '1', status: 'completed' };
+  it.each([
+    [undefined, 'unreadable'], [null, 'unreadable'], [{}, 'unreadable'],
+    [{ payments: [row] }, 'unreadable'],
+    [{ payments: [row], pagination: {} }, 'unreadable'],
+    [{ payments: [row], pagination: { hasNext: null } }, 'unreadable'],
+    [{ payments: null, pagination: { hasNext: false } }, 'unreadable'],
+    [{ payments: [row, 'x'], pagination: { hasNext: false } }, 'unreadable'],
+    [{ payments: [row], pagination: { hasNext: true } }, 'partial'],
+    [{ payments: [], pagination: { hasNext: false } }, 'complete'],
+  ])('%j → %s', (data, kind) => { expect(readPaymentHistory(data).kind).toBe(kind); });
+
+  it('the status for an unreadable answer is 502', () => { expect(UNREADABLE).toBe(502); });
+});
+
+describe('paymentsOutCounted — rows it could not count are counted', () => {
+  it('skipped = not completed or not an exact amount', () => {
+    const r = paymentsOutCounted([{ amount: '2', status: 'completed' }, { amount: 'x', status: 'completed' }, { amount: '3', status: 'failed' }]);
+    expect(r.skipped).toBe(2);
+    expect(r.side.total).toBe('2');
+  });
+});
+
+describe('readPayoutsIn — the newest 200, never a cut list read as complete', () => {
+  const SENT = { status: 'SENT', amount: '3', sent_at: '2026-10-02T10:00:00Z', created_at: '2026-10-01T10:00:00Z' };
+  it('cap is the service’s 200', () => { expect(PAYOUTS_READ_CAP).toBe(200); });
+  it('an OWED payout with no amount does not matter; a SENT one does', () => {
+    expect(readPayoutsIn({ payouts: [SENT, { status: 'OWED' }] }, '2026-10').kind).toBe('complete');
+    expect(readPayoutsIn({ payouts: [SENT, { status: 'SENT' }] }, '2026-10').kind).toBe('unreadable');
+  });
+  it('200 rows whose oldest is inside the month → partial; a row with no created_at at the cap → unreadable', () => {
+    const inMonth = Array.from({ length: 200 }, () => ({ ...SENT }));
+    expect(readPayoutsIn({ payouts: inMonth }, '2026-10').kind).toBe('partial');
+    expect(readPayoutsIn({ payouts: [...inMonth.slice(1), { status: 'OWED' }] }, '2026-10').kind).toBe('unreadable');
+  });
+});
