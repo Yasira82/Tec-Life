@@ -59,14 +59,18 @@ export function useGoals() {
 
   useEffect(() => reload(), [reload]);
 
-  const mutate = useCallback(async (fn: () => Promise<Response>) => {
+  // true when the server kept it — so a form can stay open on a refusal (the redesign's goal
+  // sheet closes only on success). Callers that ignore the answer behave exactly as before.
+  const mutate = useCallback(async (fn: () => Promise<Response>): Promise<boolean> => {
     setBusy(true);
     setError(null);
     try {
       await readJson(await fn());
       reload();
+      return true;
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Action failed');
+      return false;
     } finally {
       setBusy(false);
     }
@@ -113,11 +117,19 @@ export function useGoals() {
       body: JSON.stringify({ status }),
     })), [mutate]);
 
+  /** Several fields at once, through the same PATCH route and schema (the redesign's edit sheet). */
+  const updateGoal = useCallback((id: string, patch: { title?: string; description?: string | null; target_amount?: number | null; area?: LifeArea | null }) =>
+    mutate(() => fetch(`/api/bff/life/goals/${id}`, {
+      method: 'PATCH', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patch),
+    })), [mutate]);
+
   const removeGoal = useCallback((id: string) =>
     mutate(() => fetch(`/api/bff/life/goals/${id}`, { method: 'DELETE', credentials: 'include' })),
     [mutate]);
 
-  return { goals, loading, error, busy, reload, addGoal, addProgress, setStatus, setDescription, setArea, removeGoal };
+  return { goals, loading, error, busy, reload, addGoal, addProgress, setStatus, setDescription, setArea, updateGoal, removeGoal };
 }
 
 // ── Skills (C-106 §4) ────────────────────────────────────────

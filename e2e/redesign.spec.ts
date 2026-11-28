@@ -118,6 +118,37 @@ test.describe('the redesign switch', () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });
 
+  test('My goals: the closest goal large, the others one line, the sheet — every control at least 44×44', async ({ context, page }) => {
+    await signIn(context, page, LISTED, await sign(LISTED));
+    await page.route('**/api/bff/life/goals', (r) => r.fulfill(ok({ goals: [
+      { id: 'a', title: 'Save 10π for a phone', description: '- [x] open a note\n- [ ] 1π every Friday', status: 'ACTIVE', target_date: null, target_amount: 10, progress: 8, area: 'MONEY', created_at: '', updated_at: '' },
+      { id: 'b', title: 'Walk after dinner', description: null, status: 'ACTIVE', target_date: null, target_amount: null, progress: 0, area: 'HEALTH', created_at: '', updated_at: '' },
+    ] })));
+    await page.route('**/api/bff/life/future', (r) => r.fulfill(ok({ vision: 'A calm life', areas: [{ area: 'MONEY', note: null }, { area: 'HEALTH', note: null }] })));
+    await page.goto('/app');
+    await page.getByRole('navigation').last().getByRole('button', { name: 'My goals', exact: true }).click();
+    await expect(page.getByTestId('goal-priority')).toContainText('Save 10π for a phone');
+    await expect(page.getByTestId('goal-row-b')).toBeVisible();
+    // The new screen's own controls. The parts it reuses unchanged (the vision editor, Pace,
+    // the Pro insights) are marked `data-reused` and measured by #127's touch-target suite.
+    const undersized = () => page.evaluate(() => {
+      const out: string[] = [];
+      for (const el of document.querySelectorAll<HTMLElement>('main button, main a[href], main input, main select, main textarea, [data-testid="goal-sheet"] :is(button, a[href], input, select, textarea)')) {
+        if (el.closest('[data-reused]') || el.closest('nav')) continue;
+        const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
+        if (el.matches('input[type="checkbox"]')) { const l = el.closest('label')?.getBoundingClientRect(); if (l && l.height >= 43.5) continue; }
+        if (Math.min(r.width, r.height) < 43.5) out.push(`${el.tagName} «${(el.getAttribute('aria-label') || el.textContent || '').trim().slice(0, 20)}» ${Math.round(r.width)}×${Math.round(r.height)}`);
+        if (el.matches('input:not([type="checkbox"]), select, textarea') && parseFloat(getComputedStyle(el).fontSize) < 16) out.push(`${el.tagName} font ${getComputedStyle(el).fontSize}`);
+      }
+      return out;
+    });
+    expect(await undersized()).toEqual([]);
+    await page.getByTestId('goal-row-b').click();
+    await expect(page.getByTestId('goal-sheet')).toBeVisible();
+    expect(await undersized()).toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+
   test('Arabic: right to left, Arabic tabs', async ({ context, page }) => {
     await signIn(context, page, LISTED, await sign(LISTED), 'ar');
     await page.goto('/app');

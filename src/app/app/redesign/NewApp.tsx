@@ -21,7 +21,7 @@ import { useTranslation } from '@/lib/i18n';
 import { isProPlan } from '../components/shared';
 import { SignInGate } from '../components/SignInGate';
 import { TodayView } from './today/TodayView';
-import { Goals } from '../components/Goals';
+import { GoalsView } from './goals/GoalsView';
 import { Activity } from '../components/Activity';
 import { Becoming } from '../components/Becoming';
 import { Skills } from '../components/Skills';
@@ -81,7 +81,7 @@ export function NewApp() {
               onGoals={() => goTo('goals')} onMenu={() => setMenuOpen(true)} />
           )}
           {tab === 'goals' && (
-            <Goals isPro={isPro} prefill={prefill} onPrefillUsed={() => setPrefill(null)} key={prefill ? `pf:${prefillN}:${prefill.title}` : 'goals'} />
+            <GoalsView isPro={isPro} prefill={prefill} onPrefillUsed={() => setPrefill(null)} key={prefill ? `pf:${prefillN}:${prefill.title}` : 'goals'} />
           )}
           {tab === 'mirror' && <Activity />}
           {tab === 'me' && (
