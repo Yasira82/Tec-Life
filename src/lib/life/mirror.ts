@@ -1,7 +1,19 @@
 // The redesign's «My mirror» (Phase 1, owner 2026-11-28), as plain arithmetic on Life's own reads.
 //
 // Where every number comes from (approved mockup v4, «Where My mirror's numbers come from»):
-//   • days you logged progress, goals finished → /life/trajectory?window_days=7|30|90 (no cap);
+//   • days you logged progress, goals finished → /life/trajectory?window_days=7|30|90 (no cap).
+//     What that read is, from tec-life-service `getTrajectory` on main (e64ab24e; owner review of
+//     9f5a44f, 28 Nov 2026) — limits the screen inherits and does not correct:
+//       – it counts logged STEPS only (`kind: 'step'`); corrections are excluded;
+//       – its period is a ROLLING window, now minus N×24 hours, and `active_days` are UTC days —
+//         while every other number here uses whole calendar days of the phone, ending today. Near a
+//         day's edge the two can differ by a day without anything being wrong in the data;
+//       – «goals finished» counts goals whose status is DONE and whose `updated_at` falls in the
+//         window, with no upper bound. `updated_at` is the last change, not when the goal was
+//         finished: a goal finished earlier and edited inside the window is counted. It is NOT a
+//         record of when goals were completed — that would need a completion date in the backend.
+//     Whether production runs this code is not confirmed here: the gateway sends /identity/life/* to
+//     tec-life-service only when LIFE_SERVICE_URL is set, and the deployed version is not checked;
 //   • summaries kept   → /life/journey, counted by created_at; the read is capped at 500, so a list
 //                        that comes back at the cap with its oldest entry still inside the period is
 //                        said as «at least»;
@@ -12,7 +24,7 @@
 // The evidence rule (owner, same mockup): nothing is read INTO the person's records unless there are
 // 5 or more dated records, on 3 or more different days, spanning 14 or more days. A record is a dated
 // step answer (done or partly) or a kept summary. Logged progress is NOT counted: the trajectory read
-// mixes corrections in with steps and gives no date per row, so it cannot be told apart here.
+// returns totals only — no date per logged step — so it cannot show different days or a span.
 // Ticks on a goal's steps carry no date and count as nothing.
 import type { Journey, JourneyEntry, JourneyOutcome } from '@/lib-client/life/journey';
 import { localDayKey, shiftDay } from './step-week';

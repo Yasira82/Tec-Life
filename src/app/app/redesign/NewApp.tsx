@@ -3,12 +3,11 @@
 // The redesign's shell (Phase 1 Foundation) — shown ONLY to people the server switch names
 // (../layout.tsx, lib/server/design-flag.ts). Everyone else gets ../page.tsx, unchanged.
 //
-// What the Foundation is: four tabs — Today, My goals, My mirror, Me — the order the
-// approved mockups settled on, with the navigation, the sign-in door and the session
-// wiring in place. What it is NOT yet: the new screens. Until each is rebuilt and reviewed,
-// a tab shows the parts of today's app that cover it, imported as they are and unmodified,
-// so a tester on the switch can still use all of Life. Each later step replaces one tab's
-// body and nothing else.
+// Four tabs — Today, My goals, My mirror, Me — in the order the approved mockups settled on,
+// with the navigation, the sign-in door and the session wiring. Each tab is its rebuilt
+// screen (Phase 1: #130 Today, #131 My goals, #132 Me, #133 My mirror); inside them, parts of
+// today's app are reused unchanged where they already did the job (marked data-reused).
+// The server switch and the current design are as the Foundation (#129) left them.
 //
 // The data reads are the same BFF routes the current design uses: no new endpoint, no
 // change to what any route sends or returns.
