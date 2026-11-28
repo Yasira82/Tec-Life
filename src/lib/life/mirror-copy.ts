@@ -18,7 +18,7 @@ export interface MirrorCopy {
 const en: MirrorCopy = {
   period: { week: 'Week', month: 'Month', m3: '3 months' }, periodLabel: 'Period',
   q1: 'What happened?', q2: 'What did I learn?', q3: 'What’s next?',
-  sDays: 'Days you logged progress', sGoals: 'Goals finished', sSummaries: 'Summaries kept', sSteps: 'Days you did your step',
+  sDays: 'Days you logged progress', sGoals: 'Goals finished', sSummaries: 'Summaries kept', sSteps: 'Days you fully did your step',
   only14: 'Life keeps this for the last 14 days only, so it shows under “Week” only.',
   weekDots: 'Your step, last 7 days', atLeast: 'at least {n}',
   journeyOff: 'Your journey isn’t kept, so summaries and steps don’t show here.',
@@ -38,7 +38,7 @@ const en: MirrorCopy = {
 const ar: MirrorCopy = {
   period: { week: 'أسبوع', month: 'شهر', m3: '٣ أشهر' }, periodLabel: 'الفترة',
   q1: 'ماذا حدث؟', q2: 'ماذا تعلّمت؟', q3: 'ما التالي؟',
-  sDays: 'أيام سجّلت فيها تقدّمًا', sGoals: 'أهداف أنجزتها', sSummaries: 'ملخصات محفوظة', sSteps: 'أيام نفّذت فيها خطوتك',
+  sDays: 'أيام سجّلت فيها تقدّمًا', sGoals: 'أهداف أنجزتها', sSummaries: 'ملخصات محفوظة', sSteps: 'أيام نفّذت فيها خطوتك كاملة',
   only14: 'تحتفظ Life بهذا لآخر ١٤ يومًا فقط، لذلك يظهر في «أسبوع» فقط.',
   weekDots: 'خطوتك في آخر ٧ أيام', atLeast: '{n} على الأقل',
   journeyOff: 'رحلتك غير محفوظة، لذلك لا تظهر الملخصات والخطوات هنا.',
@@ -58,7 +58,7 @@ const ar: MirrorCopy = {
 const es: MirrorCopy = {
   period: { week: 'Semana', month: 'Mes', m3: '3 meses' }, periodLabel: 'Periodo',
   q1: '¿Qué pasó?', q2: '¿Qué aprendí?', q3: '¿Qué sigue?',
-  sDays: 'Días en que registraste avance', sGoals: 'Metas terminadas', sSummaries: 'Resúmenes guardados', sSteps: 'Días en que hiciste tu paso',
+  sDays: 'Días en que registraste avance', sGoals: 'Metas terminadas', sSummaries: 'Resúmenes guardados', sSteps: 'Días en que hiciste tu paso completo',
   only14: 'Life guarda esto solo de los últimos 14 días, así que aparece solo en «Semana».',
   weekDots: 'Tu paso, últimos 7 días', atLeast: 'al menos {n}',
   journeyOff: 'Tu recorrido no se guarda, así que aquí no aparecen resúmenes ni pasos.',
@@ -78,7 +78,7 @@ const es: MirrorCopy = {
 const fr: MirrorCopy = {
   period: { week: 'Semaine', month: 'Mois', m3: '3 mois' }, periodLabel: 'Période',
   q1: 'Que s’est-il passé ?', q2: 'Qu’ai-je appris ?', q3: 'Et ensuite ?',
-  sDays: 'Jours avec un progrès noté', sGoals: 'Objectifs terminés', sSummaries: 'Résumés conservés', sSteps: 'Jours où vous avez fait votre pas',
+  sDays: 'Jours avec un progrès noté', sGoals: 'Objectifs terminés', sSummaries: 'Résumés conservés', sSteps: 'Jours où vous avez fait votre pas en entier',
   only14: 'Life ne garde cela que pour les 14 derniers jours : visible seulement dans « Semaine ».',
   weekDots: 'Votre pas, 7 derniers jours', atLeast: 'au moins {n}',
   journeyOff: 'Votre parcours n’est pas conservé : résumés et pas n’apparaissent pas ici.',
@@ -98,7 +98,7 @@ const fr: MirrorCopy = {
 const pt: MirrorCopy = {
   period: { week: 'Semana', month: 'Mês', m3: '3 meses' }, periodLabel: 'Período',
   q1: 'O que aconteceu?', q2: 'O que aprendi?', q3: 'E agora?',
-  sDays: 'Dias em que registrou progresso', sGoals: 'Metas concluídas', sSummaries: 'Resumos guardados', sSteps: 'Dias em que fez seu passo',
+  sDays: 'Dias em que registrou progresso', sGoals: 'Metas concluídas', sSummaries: 'Resumos guardados', sSteps: 'Dias em que fez seu passo por inteiro',
   only14: 'O Life guarda isso só dos últimos 14 dias, por isso aparece só em «Semana».',
   weekDots: 'Seu passo, últimos 7 dias', atLeast: 'pelo menos {n}',
   journeyOff: 'Sua jornada não é guardada, então resumos e passos não aparecem aqui.',
@@ -118,7 +118,7 @@ const pt: MirrorCopy = {
 const tr: MirrorCopy = {
   period: { week: 'Hafta', month: 'Ay', m3: '3 ay' }, periodLabel: 'Dönem',
   q1: 'Ne oldu?', q2: 'Ne öğrendim?', q3: 'Sırada ne var?',
-  sDays: 'İlerleme kaydettiğin günler', sGoals: 'Biten hedefler', sSummaries: 'Saklanan özetler', sSteps: 'Adımını attığın günler',
+  sDays: 'İlerleme kaydettiğin günler', sGoals: 'Biten hedefler', sSummaries: 'Saklanan özetler', sSteps: 'Adımını tamamen attığın günler',
   only14: 'Life bunu yalnızca son 14 gün için saklar, bu yüzden yalnızca «Hafta»da görünür.',
   weekDots: 'Adımın, son 7 gün', atLeast: 'en az {n}',
   journeyOff: 'Yolculuğun saklanmıyor, bu yüzden özetler ve adımlar burada görünmez.',
@@ -138,7 +138,7 @@ const tr: MirrorCopy = {
 const ru: MirrorCopy = {
   period: { week: 'Неделя', month: 'Месяц', m3: '3 месяца' }, periodLabel: 'Период',
   q1: 'Что произошло?', q2: 'Чему я научился?', q3: 'Что дальше?',
-  sDays: 'Дни, когда вы отмечали прогресс', sGoals: 'Завершённые цели', sSummaries: 'Сохранённые резюме', sSteps: 'Дни, когда вы сделали шаг',
+  sDays: 'Дни, когда вы отмечали прогресс', sGoals: 'Завершённые цели', sSummaries: 'Сохранённые резюме', sSteps: 'Дни, когда вы сделали шаг полностью',
   only14: 'Life хранит это только за последние 14 дней, поэтому видно только в «Неделе».',
   weekDots: 'Ваш шаг, последние 7 дней', atLeast: 'не менее {n}',
   journeyOff: 'Ваш путь не сохраняется, поэтому резюме и шаги здесь не видны.',
@@ -158,7 +158,7 @@ const ru: MirrorCopy = {
 const hi: MirrorCopy = {
   period: { week: 'सप्ताह', month: 'महीना', m3: '3 महीने' }, periodLabel: 'अवधि',
   q1: 'क्या हुआ?', q2: 'मैंने क्या सीखा?', q3: 'आगे क्या?',
-  sDays: 'जिन दिनों आपने प्रगति दर्ज की', sGoals: 'पूरे हुए लक्ष्य', sSummaries: 'सहेजे गए सारांश', sSteps: 'जिन दिनों आपने अपना कदम उठाया',
+  sDays: 'जिन दिनों आपने प्रगति दर्ज की', sGoals: 'पूरे हुए लक्ष्य', sSummaries: 'सहेजे गए सारांश', sSteps: 'जिन दिनों आपने अपना कदम पूरा उठाया',
   only14: 'Life इसे केवल पिछले 14 दिनों के लिए रखता है, इसलिए यह केवल «सप्ताह» में दिखता है।',
   weekDots: 'आपका कदम, पिछले 7 दिन', atLeast: 'कम से कम {n}',
   journeyOff: 'आपकी यात्रा सहेजी नहीं जा रही, इसलिए सारांश और कदम यहाँ नहीं दिखते।',
@@ -178,7 +178,7 @@ const hi: MirrorCopy = {
 const id: MirrorCopy = {
   period: { week: 'Minggu', month: 'Bulan', m3: '3 bulan' }, periodLabel: 'Periode',
   q1: 'Apa yang terjadi?', q2: 'Apa yang kupelajari?', q3: 'Apa selanjutnya?',
-  sDays: 'Hari kamu mencatat kemajuan', sGoals: 'Tujuan selesai', sSummaries: 'Ringkasan tersimpan', sSteps: 'Hari kamu melakukan langkahmu',
+  sDays: 'Hari kamu mencatat kemajuan', sGoals: 'Tujuan selesai', sSummaries: 'Ringkasan tersimpan', sSteps: 'Hari kamu melakukan langkahmu sepenuhnya',
   only14: 'Life menyimpan ini hanya untuk 14 hari terakhir, jadi hanya tampil di «Minggu».',
   weekDots: 'Langkahmu, 7 hari terakhir', atLeast: 'setidaknya {n}',
   journeyOff: 'Perjalananmu tidak disimpan, jadi ringkasan dan langkah tidak tampil di sini.',
@@ -198,7 +198,7 @@ const id: MirrorCopy = {
 const vi: MirrorCopy = {
   period: { week: 'Tuần', month: 'Tháng', m3: '3 tháng' }, periodLabel: 'Khoảng thời gian',
   q1: 'Đã có gì xảy ra?', q2: 'Tôi học được gì?', q3: 'Tiếp theo là gì?',
-  sDays: 'Số ngày bạn ghi tiến độ', sGoals: 'Mục tiêu đã xong', sSummaries: 'Bản tóm tắt đã lưu', sSteps: 'Số ngày bạn làm bước của mình',
+  sDays: 'Số ngày bạn ghi tiến độ', sGoals: 'Mục tiêu đã xong', sSummaries: 'Bản tóm tắt đã lưu', sSteps: 'Số ngày bạn làm trọn bước của mình',
   only14: 'Life chỉ giữ dữ liệu này trong 14 ngày gần nhất, nên chỉ hiện ở «Tuần».',
   weekDots: 'Bước của bạn, 7 ngày qua', atLeast: 'ít nhất {n}',
   journeyOff: 'Hành trình của bạn không được lưu, nên tóm tắt và bước không hiện ở đây.',
@@ -218,7 +218,7 @@ const vi: MirrorCopy = {
 const ko: MirrorCopy = {
   period: { week: '주', month: '월', m3: '3개월' }, periodLabel: '기간',
   q1: '무슨 일이 있었나요?', q2: '무엇을 배웠나요?', q3: '다음은 무엇인가요?',
-  sDays: '진행을 기록한 날', sGoals: '완료한 목표', sSummaries: '저장한 요약', sSteps: '한 걸음을 실천한 날',
+  sDays: '진행을 기록한 날', sGoals: '완료한 목표', sSummaries: '저장한 요약', sSteps: '한 걸음을 끝까지 실천한 날',
   only14: 'Life는 이 기록을 최근 14일만 보관해서 «주»에서만 보여요.',
   weekDots: '최근 7일의 한 걸음', atLeast: '최소 {n}',
   journeyOff: '여정이 저장되지 않아 요약과 한 걸음이 여기 보이지 않아요.',
@@ -238,7 +238,7 @@ const ko: MirrorCopy = {
 const zh: MirrorCopy = {
   period: { week: '一周', month: '一个月', m3: '3 个月' }, periodLabel: '时间段',
   q1: '发生了什么？', q2: '我学到了什么？', q3: '下一步是什么？',
-  sDays: '记录进展的天数', sGoals: '完成的目标', sSummaries: '保存的摘要', sSteps: '完成这一步的天数',
+  sDays: '记录进展的天数', sGoals: '完成的目标', sSummaries: '保存的摘要', sSteps: '完整完成这一步的天数',
   only14: 'Life 只保留最近 14 天的这项记录，所以只在「一周」中显示。',
   weekDots: '你的这一步，最近 7 天', atLeast: '至少 {n}',
   journeyOff: '你的旅程没有保存，所以这里不显示摘要和步骤。',

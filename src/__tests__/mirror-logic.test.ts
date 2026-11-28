@@ -88,6 +88,43 @@ describe('the evidence rule', () => {
   });
 });
 
+describe('a record dated after today counts nowhere', () => {
+  const ahead = (n: number) => shiftDay(TODAY, n);
+
+  it('a summary dated in the future is not a kept summary of the period', () => {
+    const j = J([entry('f', -3), entry('a', 1)]);
+    expect(summariesIn(j, TODAY, 7).n).toBe(1);
+    expect(summariesIn(j, TODAY, 90).entries.map((e) => e.id)).toEqual(['a']);
+  });
+
+  it('neither a future summary nor a future step answer is evidence', () => {
+    const j = J([
+      entry('f', -2, { step: 's', days: [{ day: ahead(2), answer: 'DONE' }] }),
+      entry('a', 1, { step: 's', days: [{ day: ahead(1), answer: 'PARTLY' }, { day: ago(1), answer: 'DONE' }] }),
+    ]);
+    expect(evidenceIn(j, TODAY, 90).map((e) => `${e.kind}:${e.day}`)).toEqual([`summary:${ago(1)}`, `step:${ago(1)}`]);
+  });
+
+  it('future records cannot carry the gate over the days or the 14-day span', () => {
+    // Real: 5 records on 2 days, 1 day apart — not enough.
+    const real = [entry('a', 1), entry('b', 1), entry('c', 1), entry('d', 2), entry('e', 2)];
+    // With future-dated records on 10 more days, as far as 20 days ahead, it would pass if they counted.
+    const future = Array.from({ length: 10 }, (_, i) => entry(`f${i}`, -(i * 2 + 2)));
+    const g = checkGate(evidenceIn(J([...future, ...real]), TODAY, 90));
+    expect(g).toMatchObject({ records: 5, days: 2, span: 1, enough: false });
+  });
+});
+
+describe('days with the step done', () => {
+  it('counts DONE only, and every language says «fully»', () => {
+    const j = J([entry('a', 0, { step: 's', days: [{ day: ago(0), answer: 'DONE' }, { day: ago(1), answer: 'PARTLY' }] })]);
+    expect(stepDaysDone(j, TODAY, 7)).toBe(1);
+    expect(mirrorCopy('en').sSteps).toBe('Days you fully did your step');
+    expect(mirrorCopy('ar').sSteps).toBe('أيام نفّذت فيها خطوتك كاملة');
+    expect(new Set(LOCALES.map(({ code }) => mirrorCopy(code).sSteps)).size).toBe(12);
+  });
+});
+
 describe('own words', () => {
   it('what the person confirmed helped or now practise — nothing else, nothing inferred', () => {
     const out = ownLessons([

@@ -34,7 +34,9 @@ const between = (a: string, b: string) => Math.round((Date.parse(`${b}T00:00:00Z
 /** Kept summaries inside the period; `atLeast` when the capped read may have cut the period short. */
 export function summariesIn(journey: Journey, today: string, days: number): { n: number; atLeast: boolean; entries: JourneyEntry[] } {
   const start = periodStart(today, days);
-  const entries = journey.entries.filter((e) => dayOf(e.created_at) >= start);
+  // Inside the period AND not after today: a record dated in the future (a phone clock behind the
+  // server's, or bad data) is counted nowhere (owner review of #133).
+  const entries = journey.entries.filter((e) => { const d = dayOf(e.created_at); return d >= start && d <= today; });
   const oldest = journey.entries[journey.entries.length - 1];
   const atLeast = journey.entries.length >= JOURNEY_READ_CAP && !!oldest && dayOf(oldest.created_at) >= start;
   return { n: entries.length, atLeast, entries };
@@ -55,7 +57,7 @@ export function stepWeek(journey: Journey, today: string, n = 7): { day: string;
   });
 }
 
-/** Days with the step done, in the period — or null when Life has no answers that far back. */
+/** Days with the step fully done (DONE only — a «partly» day is shown in the bars, not counted here), in the period — or null when Life has no answers that far back. */
 export function stepDaysDone(journey: Journey, today: string, days: number): number | null {
   if (days > STEP_DAYS_BACK) return null;
   return stepWeek(journey, today, days).filter((d) => d.answer === 'DONE').length;
@@ -69,7 +71,7 @@ export function evidenceIn(journey: Journey, today: string, days: number): Evide
   const out: Evidence[] = [];
   for (const e of journey.entries) {
     const day = dayOf(e.created_at);
-    if (day >= start) out.push({ kind: 'summary', day, text: e.problem, id: `s:${e.id}` });
+    if (day >= start && day <= today) out.push({ kind: 'summary', day, text: e.problem, id: `s:${e.id}` });
     for (const d of e.days ?? []) {
       if (d.day < start || d.day > today || d.answer === 'NOT_YET' || !e.step) continue;
       out.push({ kind: 'step', day: d.day, text: e.step, answer: d.answer, id: `d:${e.id}:${d.day}` });
