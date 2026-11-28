@@ -499,14 +499,18 @@ export function useBudget(period?: string) {
 
   useEffect(() => reload(), [reload]);
 
-  const mutate = useCallback(async (fn: () => Promise<Response>) => {
+  // Resolves true when the server accepted the change, false when it did not — a caller that closes a form
+  // on success must know which (the redesign's budget, A1). The current design ignores the value.
+  const mutate = useCallback(async (fn: () => Promise<Response>): Promise<boolean> => {
     setBusy(true);
     setError(null);
     try {
       await readJson(await fn());
       reload();
+      return true;
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Action failed');
+      return false;
     } finally {
       setBusy(false);
     }
