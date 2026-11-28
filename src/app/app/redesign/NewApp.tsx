@@ -3,12 +3,11 @@
 // The redesign's shell (Phase 1 Foundation) — shown ONLY to people the server switch names
 // (../layout.tsx, lib/server/design-flag.ts). Everyone else gets ../page.tsx, unchanged.
 //
-// What the Foundation is: four tabs — Today, My goals, My mirror, Me — the order the
-// approved mockups settled on, with the navigation, the sign-in door and the session
-// wiring in place. What it is NOT yet: the new screens. Until each is rebuilt and reviewed,
-// a tab shows the parts of today's app that cover it, imported as they are and unmodified,
-// so a tester on the switch can still use all of Life. Each later step replaces one tab's
-// body and nothing else.
+// Four tabs — Today, My goals, My mirror, Me — in the order the approved mockups settled on,
+// with the navigation, the sign-in door and the session wiring. Each tab is its rebuilt
+// screen (Phase 1: #130 Today, #131 My goals, #132 Me, #133 My mirror); inside them, parts of
+// today's app are reused unchanged where they already did the job (marked data-reused).
+// The server switch and the current design are as the Foundation (#129) left them.
 //
 // The data reads are the same BFF routes the current design uses: no new endpoint, no
 // change to what any route sends or returns.
@@ -24,7 +23,7 @@ import { SignInGate } from '../components/SignInGate';
 import { TodayView } from './today/TodayView';
 import { GoalsView } from './goals/GoalsView';
 import { MeView } from './me/MeView';
-import { Activity } from '../components/Activity';
+import { MirrorView } from './mirror/MirrorView';
 import { ProblemSession, type Resume } from '../components/ProblemSession';
 import { JourneyDrawer } from '../components/JourneyDrawer';
 import { GoalPrefillReader } from '../components/GoalPrefillReader';
@@ -82,7 +81,7 @@ export function NewApp() {
           {tab === 'goals' && (
             <GoalsView isPro={isPro} prefill={prefill} onPrefillUsed={() => setPrefill(null)} key={prefill ? `pf:${prefillN}:${prefill.title}` : 'goals'} />
           )}
-          {tab === 'mirror' && <Activity />}
+          {tab === 'mirror' && <MirrorView onTalk={() => openSession()} />}
           {tab === 'me' && <MeView isPro={isPro} daysRemaining={daysRemaining ?? null} onOpenJourney={() => setMenuOpen(true)} />}
           <JourneyDrawer open={menuOpen} onClose={() => setMenuOpen(false)} onNew={() => openSession()} onContinue={openSession}
             onMakeGoal={(step) => { const p = stepAsGoal(step); if (!p) return; setPrefill(p); setPrefillN((n) => n + 1); setTab('goals'); }} />

@@ -49,7 +49,7 @@ const SHAPES: Record<string, unknown> = {
   '/api/bff/life/journey': { keeping: true, entries: [] },
   '/api/bff/life/conversations': { keeping: true, configured: true, conversations: [] },
   '/api/bff/subscription': { subscription: { plan: 'FREE', isActive: false, isExpired: false, daysRemaining: null } },
-  '/api/bff/life/trajectory': { projectable: false, reason: 'not_enough_data', goals: [] },
+  '/api/bff/life/trajectory': { trajectory: { window_days: 7, entries: 0, active_days: 0, pi_logged: 0, pi_per_week: 0, first_entry_at: null, completed_in_window: 0, projectable: false, goals: [] } },
   '/api/bff/life/activity': [],
   '/api/bff/life/budget': { period: '2026-11', lines: [], unallocated: [], spent_total: '0', spent_status: null },
   '/api/bff/life/consent': { consent: [] },
@@ -212,6 +212,43 @@ test.describe('the redesign switch', () => {
         const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
         if (Math.min(r.width, r.height) < 43.5) out.push(`${el.tagName} «${(el.getAttribute('aria-label') || el.textContent || '').trim().slice(0, 24)}» ${Math.round(r.width)}×${Math.round(r.height)}`);
         if (el.matches('input, select, textarea') && parseFloat(getComputedStyle(el).fontSize) < 16) out.push(`${el.tagName} font ${getComputedStyle(el).fontSize}`);
+      }
+      return out;
+    });
+    expect(small).toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+
+  test('My mirror: Life’s own numbers, the evidence rule, each part on its own — 44×44, nothing sideways', async ({ context, page }) => {
+    await signIn(context, page, LISTED, await sign(LISTED), 'ar');
+    const day = (n: number) => { const d = new Date(); d.setDate(d.getDate() - n); return d; };
+    const key = (n: number) => { const d = day(n); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+    const entry = (n: number, extra: object = {}) => ({ id: `e${n}`, problem: `مشكلة ${n}`, understanding: 'u', step: null, step_outcome: null, created_at: day(n).toISOString(), ...extra });
+    await page.route('**/api/bff/life/journey', (r) => r.fulfill(ok({ keeping: true, entries: [
+      entry(1, { step: 'ادّخر ٢π', helped: 'خطوة صغيرة يوم وصول الراتب', days: [{ day: key(1), answer: 'DONE' }, { day: key(3), answer: 'PARTLY' }] }),
+      entry(8), entry(15), entry(20),
+    ] })));
+    // The progress read fails: only its own card says so, with a retry.
+    await page.route('**/api/bff/life/trajectory**', (r) => r.fulfill({ status: 502, contentType: 'application/json', body: '{"error":"down"}' }));
+    await page.goto('/app');
+    await page.getByRole('navigation').last().getByRole('button', { name: 'مرآتي', exact: true }).click();
+    await expect(page.getByTestId('mirror-progress').getByRole('alert')).toBeVisible();
+    await expect(page.getByTestId('stat-summaries')).toContainText('1');
+    await expect(page.getByTestId('stat-step-days')).toContainText('1');
+    // A week holds 3 records on 2 days: not enough — the screen says so, with where they stand.
+    await expect(page.getByTestId('mirror-not-enough')).toBeVisible();
+    await page.getByRole('button', { name: '٣ أشهر' }).click();
+    await expect(page.getByTestId('stat-summaries')).toContainText('4');
+    await expect(page.getByTestId('stat-step-days')).toContainText('—');
+    // 6 records on 6 days over 20 days: the person's own words, with the records behind them.
+    await expect(page.getByTestId('mirror-own')).toContainText('خطوة صغيرة يوم وصول الراتب');
+    await expect(page.getByTestId('mirror-step')).toContainText('ادّخر ٢π');
+    const small = await page.evaluate(() => {
+      const out: string[] = [];
+      for (const el of document.querySelectorAll<HTMLElement>('main :is(button, a[href], summary)')) {
+        if (el.closest('nav')) continue;
+        const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
+        if (Math.min(r.width, r.height) < 43.5) out.push(`${el.tagName} «${(el.textContent || '').trim().slice(0, 24)}» ${Math.round(r.width)}×${Math.round(r.height)}`);
       }
       return out;
     });
