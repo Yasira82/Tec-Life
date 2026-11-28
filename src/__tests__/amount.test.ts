@@ -50,7 +50,7 @@ describe('parseAmount — precision near the limit (owner review of ec0fdc0)', (
   });
 
   it.each([
-    ['999999999.12345678', 'too_precise'],  // 17 significant digits: a double would make it …123457
+    ['999999999.12345678', 'too_precise'],  // 17 significant digits: a double makes it …1234568
     ['999999999.1234567', 'too_precise'],   // 16
     ['1000000000.00000001', 'too_precise'],
     ['1000000000.1', 'too_large'],

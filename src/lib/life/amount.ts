@@ -15,8 +15,9 @@
 //     back as the same decimal. Past 15 it depends on the number — 999999999.12345678 comes back
 //     as …1234568 and 9007199254740993 as …992, while 1500000000.1234567 happens to survive. One
 //     rule a person can be told beats a per-number check, so past 15 everything is refused, never
-//     rounded. (amount.test.ts checks the JSON hop; the database holds the same double, and Postgres
-//     16 returned every accepted amount unchanged from float8 — owner review, 28 Nov 2026.)
+//     rounded. (amount.test.ts checks the JSON hop over 5,000+ amounts. The database was checked
+//     separately, by hand: Postgres 16 float8 round-trip on 11 representative accepted values, all
+//     unchanged — owner review, 28 Nov 2026. That is a sample, not proof for every value.)
 //   • Above 0, and no more than the limit of the field it is typed into (below).
 // Nothing else (spaces inside, signs, «1e3», «0x10», «.5») is a number.
 //
